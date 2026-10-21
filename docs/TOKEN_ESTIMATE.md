@@ -2,6 +2,8 @@
 
 As of 21 October 2026. Models requested: GPT-6.1 Sol and Claude Opus 5.5.
 
+> Subscription follow-up: [DELIVERY_PLAN.md](DELIVERY_PLAN.md) now estimates elapsed months from task scope and capacity. Current Anthropic documentation also describes a separate, eligibility-dependent monthly API credit for Max; it does not extend interactive Claude Code limits. The processed-token envelopes below remain uncalibrated and cannot establish subscription throughput or months of work.
+
 ## How to interpret the estimate
 
 There is no measured token count for this unbuilt project. The following are deliberately broad planning envelopes, not quotes or model benchmark results. The same token workload is priced for both models to isolate price differences; this does not claim that they need equal tokens or deliver equal results. Actual retries, reasoning effort, context reuse, reviews, and integration surprises can change consumption by multiples.

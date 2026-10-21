@@ -2,6 +2,8 @@
 
 Assessment date: 21 October 2026. Status: initial research, not an implementation proposal approved by a bank.
 
+> Follow-up: the [market research](MARKET_RESEARCH.md), [data specification](DATA_REQUIREMENTS.md), [bank gates](BANK_ACCEPTANCE.md) and [bottom-up delivery plan](DELIVERY_PLAN.md) refine this initial assessment. The one-month target is a narrower valuation demonstration; the expanded analyst/CIM-section pilot is 8–10+ weeks. A favorable bank-platform candidate may be possible in 3–6 months, while the conservative institutional envelope below remains 6–12+ months pending actual requirements. These are conditional planning estimates, not measured agent throughput.
+
 ## Finding
 
 A focused internal alternative to the analyst workflows advertised by Finster and Model ML is technically feasible using existing language models and licensed financial data. Generating an attractive interactive briefing is a relatively small part of the complete problem. Financial correctness, information barriers, reliable execution, and operational evidence dominate the institutional version.
