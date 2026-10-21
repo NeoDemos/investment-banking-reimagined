@@ -130,6 +130,8 @@ Incremental base owner effort: **232 hours**. Proposed accountable owner: @NeoDe
 - **T36:** Opus lead; Sonnet UI/integration workers. Additional review: Analysts/data/security owners: 12–24 h. External lead/gate: Per-integration rights/security review: 2–6+ weeks.
 - **T37:** Owner + Opus lead. Additional review: Business/operations/procurement: 8–16 h. External lead/gate: Budget and procurement decision: 2–6+ weeks.
 
+Total base owner effort across all 37 scoped tasks is **680 hours**, or 21.25 productive weeks at 32 planned hours/week; the summed high case is 1,020 hours. Conditional calendar windows include outside queues/reviews and live-use observation. Pull work forward when prerequisites permit. This does not estimate complete competitor parity.
+
 ## Using the plan
 
 Each linked issue contains task-specific acceptance criteria, scope/authorization boundaries, effort and elapsed-time assumptions. Native sub-issues under #1 and blocking links express the dependencies. The Project has phase, numeric owner hours, effort range, start and target dates, authorization, executor, horizon, external wait and specialist-review fields, plus task, board and roadmap views.

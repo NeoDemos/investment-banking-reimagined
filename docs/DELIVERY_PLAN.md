@@ -44,6 +44,14 @@ Use the low/high task ranges for uncertainty, not as statistical confidence inte
 
 These are elapsed-month arithmetic, **not a conversion of processed tokens to subscription allowance**. Buying additional seats is not assumed; parallel workers on the same account share its limits. Pausing a subscription during external waits could change cash spend. This does not make the total project cost $200/month.
 
+## Active engineering versus calendar time
+
+The 37 scoped tasks total **680 base owner hours** (85 eight-hour person-days), or **21.25 productive weeks at 32 planned hours/week**. Their summed high case is 1,020 hours before external specialists and additional reserve. These are estimates for the listed initial modules and assessment work, not for complete competitor parity.
+
+Cumulative base effort is 128 hours through the demonstration, 232 through the expanded pilot, 448 through the bank-assessment work, and 680 through the initial expansion roadmap. With every input and reviewer immediately available, that is roughly 4, 7.25, 14 and 21.25 productive weeks respectively. This is the engineering acceleration case; it must not be presented as a bank's acceptance calendar.
+
+The later roadmap deliberately leaves conditional windows for supplier/bank queues, specialist reviews, evidence collection and live-use observation. It does not imply 13 months of continuous coding. Pull later modules forward when prerequisites and owner capacity permit, or use waiting time to close independent evidence gaps; do not manufacture delay to match the illustrative dates. Reforecast these windows from actual throughput and access at each gate. Full-platform capabilities beyond the bounded selected modules need a new backlog and estimate.
+
 ## Claude Code, agents and runtime economics
 
 Anthropic lists [Max 20× at $200/month](https://support.claude.com/en/articles/11049741-what-is-the-max-plan). Its [Claude Code plan documentation](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan) specifies shared five-hour and weekly limits. There is no stable published processed-token allowance from which to prove that this project's workload fits one month. Do not use stale prompts-per-five-hours examples as an Opus 5.5 throughput guarantee.
