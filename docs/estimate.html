@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investment Banking Reimagined — coding-agent estimate</title>
+<style>
+body{font:14px/1.5 var(--font-sans,system-ui);color:var(--foreground,#1b263b);margin:0}
+h2{font-size:21px;margin:0 0 8px}p{margin:8px 0;color:var(--muted-foreground,#586578)}
+.controls{display:flex;flex-wrap:wrap;gap:18px;margin:18px 0}
+label{flex:1;min-width:200px}input{display:block;width:100%;accent-color:var(--accent,#3172b9)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:right;padding:12px 7px;border-bottom:1px solid var(--border,#dce3ed)}
+th:first-child,td:first-child{text-align:left;padding-left:0}th{color:var(--muted-foreground,#586578);font-weight:600}
+.focus{background:var(--accent-surface,#edf5ff)}.focus td:first-child{padding-left:8px}
+.small{font-size:12px}a{color:var(--accent,#2563a7)}strong{color:var(--foreground,#1b263b)}
+@media(max-width:480px){th,td{padding:10px 4px;font-size:11px}h2{font-size:19px}.controls{gap:9px}label{min-width:140px}}
+</style>
+<h2>Provisional coding-agent budget</h2>
+<p>One organisation, licensed provider data, existing models. <strong>Unmeasured planning ranges; bank approval and non-model costs excluded.</strong></p>
+<div class="controls">
+<label>Billed output share: <strong id="outputLabel">15%</strong><input id="output" type="range" min="5" max="70" value="15" step="5" aria-label="Billed output percentage"></label>
+<label>Input cache-hit share: <strong id="cacheLabel">0%</strong><input id="cache" type="range" min="0" max="95" value="0" step="5" aria-label="Input cache hit percentage"></label>
+</div>
+<table><thead><tr><th>Cumulative scope</th><th>Tokens</th><th>GPT‑6.1 Sol</th><th>Opus 5.5</th></tr></thead><tbody id="rows"></tbody></table>
+<p class="small" id="effective"></p>
+<p class="small">Processed tokens include repeated input, cache reads and billed output/reasoning. Standard short-context API rates, USD, checked 21 October 2026. Cache writes, long-context/fast/regional premiums, tools, subscriptions, data licences, infrastructure, human reviews and audits are excluded. Equal token volumes are assumed for comparison; model productivity has not been benchmarked.</p>
+<p class="small"><a href="https://developers.openai.com/api/docs/models/gpt-6.1-sol">OpenAI prices</a> · <a href="https://platform.claude.com/docs/en/about-claude/pricing">Anthropic prices</a></p>
+<script>
+const scopes=[["Demonstration",2,10,"2–10M",false],["Analyst pilot",20,80,"20–80M",false],["Bank-assessment candidate",100,500,"100–500M",false],["Broad application",500,2000,"0.5–2B+",true]];
+const money=n=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:n<100?2:0}).format(n);
+function update(){
+const out=Number(document.getElementById("output").value)/100,cache=Number(document.getElementById("cache").value)/100;
+const sol=(1-out)*((1-cache)*2+cache*.1)+out*10,opus=(1-out)*((1-cache)*4+cache*.2)+out*20;
+document.getElementById("outputLabel").textContent=Math.round(out*100)+"%";
+document.getElementById("cacheLabel").textContent=Math.round(cache*100)+"%";
+document.getElementById("rows").innerHTML=scopes.map((s,i)=>'<tr'+(i===2?' class="focus"':'')+'><td>'+s[0]+'</td><td>'+s[3]+'</td><td>'+money(s[1]*sol)+'–'+money(s[2]*sol)+(s[4]?'+':'')+'</td><td>'+money(s[1]*opus)+'–'+money(s[2]*opus)+(s[4]?'+':'')+'</td></tr>').join("");
+document.getElementById("effective").textContent="Effective price per million processed tokens: "+money(sol)+" / "+money(opus)+". Each scope is a total from project start; rows are not additive.";
+}
+document.querySelectorAll("input").forEach(e=>e.addEventListener("input",update));update();
+console.log("Estimate initialized; four scope rows:",document.querySelectorAll("#rows tr").length);
+</script></html>
