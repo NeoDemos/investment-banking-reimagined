@@ -1,0 +1,37 @@
+{
+  "checksPassed": 17,
+  "checks": [
+    "Three seeded financial cases",
+    "Offline capabilities honestly reported",
+    "CSRF, Origin and Host boundaries reject invalid requests",
+    "Public observations respect the as-of date",
+    "bond Excel formula caches equal every Rust working",
+    "buyback Excel formula caches equal every Rust working",
+    "acquisition Excel formula caches equal every Rust working",
+    "Bond PV independently recomputed",
+    "Buyback EPS independently recomputed including opportunity cost",
+    "Acquisition EPS independently recomputed",
+    "Background revision actually completes",
+    "Review changes assumptions and recalculates",
+    "Unrecognized requests remain visible and pending",
+    "Historical calculations remain immutable",
+    "Freeze applies to exact version; editing creates a new draft",
+    "Invalid assumptions preserve the prior version",
+    "Missing API access fails explicitly"
+  ],
+  "measurement": {
+    "machine": "local Apple Silicon Mac; not representative of managed bank hardware",
+    "process": "release Rust backend only; browser excluded",
+    "startupMs": 19.2,
+    "backendRssMiB": 13.2,
+    "briefGetMedianMs": 0.19,
+    "briefGetP95Ms": 0.24,
+    "binaryMiB": 7.39
+  },
+  "notTested": [
+    "Live OpenAI text, transcription and WebRTC calls: no API key",
+    "Live Alpha Vantage quote: no key/entitlement",
+    "Managed Windows/macOS deployment",
+    "Bank acceptance"
+  ]
+}

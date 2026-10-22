@@ -1,0 +1,126 @@
+{
+  "checkedAt": "2026-10-22T05:59:01.852Z",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "case": "bond",
+      "page": 1,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "bond",
+      "page": 2,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "bond",
+      "page": 3,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "bond",
+      "page": 4,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "bond",
+      "page": 5,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "bond",
+      "page": 6,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "buyback",
+      "page": 1,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "buyback",
+      "page": 2,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "buyback",
+      "page": 3,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "buyback",
+      "page": 4,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "buyback",
+      "page": 5,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "buyback",
+      "page": 6,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "acquisition",
+      "page": 1,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "acquisition",
+      "page": 2,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "acquisition",
+      "page": 3,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "acquisition",
+      "page": 4,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "acquisition",
+      "page": 5,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    },
+    {
+      "case": "acquisition",
+      "page": 6,
+      "contentOverlapsFooter": 0,
+      "verticalOverflow": false
+    }
+  ],
+  "applicationMode": "present",
+  "reviewFlow": "Previously exercised sample note -> completed background job -> v2 with spread 175; assumptions form reset to 125 -> v3",
+  "offlineExport": {
+    "pages": 6,
+    "containsAudit": true,
+    "containsOriginalSources": true,
+    "hasScripts": false
+  },
+  "liveApisTested": false
+}

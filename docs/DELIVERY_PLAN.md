@@ -1,5 +1,7 @@
 # Phased delivery plan and the one-month challenge
 
+> **22 October update:** the owner authorized a separate, local public-data MVP for Monday 26 October. See [current MVP scope and tasks](planning/MONDAY_MVP.md). The research authorization statements below describe the original broader programme and do not revoke that narrow MVP authorization. Bank production and confidential processing remain outside scope.
+
 As of 21 October 2026. Parent: [issue #1](https://github.com/NeoDemos/investment-banking-reimagined/issues/1). [GitHub Project](https://github.com/users/NeoDemos/projects/3). Research and planning only; implementation remains subject to explicit owner authorization.
 
 ## Answer

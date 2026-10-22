@@ -1,31 +1,60 @@
 # Investment Banking Reimagined
 
-Research into an agent-assisted investment banking workspace centred on strategic decisions: acquisitions, capital structure, bond issuance, and IPO readiness.
+A local, public-data demonstration of a financial analysis and client-presentation workspace. **The owner authorized this MVP on 22 October 2026 for a Monday 26 October demonstration.** The earlier research-only plan remains the longer-term baseline, not a claim that its bank or analytical acceptance gates have been completed.
 
-The intended output is an evidence-backed, interactive client briefing in clear corporate language. Presentations and spreadsheets remain possible exports; they do not define the product.
+## Run the demo
 
-**Current phase: feasibility and scope only. No application has been built.**
+On the development Mac, double-click **Start Demo.command**, then open **http://localhost:4173**. A compiled Apple Silicon launcher is also built locally at `dist/Banking Studio.app`; it opens the web application in your existing browser. No Node, Python or Rust runtime is needed to run the compiled application. The unsigned local launcher is not an enterprise-distribution package.
 
-## Research and delivery planning
+To build from source with a Rust toolchain:
 
-- [Market research and build-versus-buy findings](docs/MARKET_RESEARCH.md)
-- [One-month challenge, subscription capacity and full delivery plan](docs/DELIVERY_PLAN.md)
-- [Provider field requirements and validation gate](docs/DATA_REQUIREMENTS.md)
-- [Bank control and evidence gates](docs/BANK_ACCEPTANCE.md)
-- [Dated task register with effort ranges](docs/planning/TASK_REGISTER.md)
-- [GitHub Project: phases, tasks, estimates and dates](https://github.com/users/NeoDemos/projects/3)
+```sh
+cargo build --release
+./target/release/banking-studio --open
+```
 
-One month is a stretch target for one reviewed valuation/briefing workflow. A broader pilot is estimated at 2–3 months, while bank assessment and acceptance depend on the actual institution, data rights and approved processing route. The plan assumes one full-time owner using one Claude Max 20× account, an Opus 5.5 lead and smaller agents for bounded work. No implementation is authorized by creating the plan.
+The development machine's user-local Cargo is at `~/.cargo/bin/cargo`; installation did not modify shell startup files. Stop the terminal server with Ctrl+C. Source launcher data lives in `.local/studio.sqlite`; the `.app` launcher uses `~/Library/Application Support/Banking Studio Demo`. The server binds to `127.0.0.1` only. Do not expose it on a network.
 
-## Initial assessment
+## What is implemented
 
-- [Feasibility, data alternatives, security, and delivery effort](docs/FEASIBILITY.md)
-- [Token budgets and current model pricing](docs/TOKEN_ESTIMATE.md)
-- [Interactive cost sensitivity calculator](docs/estimate.html) (download and open in a browser)
-- [Initial scoping issue](https://github.com/NeoDemos/investment-banking-reimagined/issues/1)
+- Three PepsiCo scenarios: USD fixed-rate bond financing, cash-funded share repurchase, and a hypothetical Campbell’s acquisition.
+- Six-page digital presentations using a native HTML design adaptation of Rabobank’s public presentation references; no proprietary fonts or extracted presentation artwork.
+- SEC annual financials for PepsiCo, Campbell’s and General Mills, with period, tag, filing and source provenance; dated U.S. Treasury observations.
+- Rust calculations, editable assumptions, sensitivities, source inspection, version history and per-version demo freeze. SQLite holds application state; Excel is an inspection export.
+- Page review notes, bounded offline assumption-edit commands, real background revision jobs, recalculated versions and in-app completion messages. Desktop alerts require browser permission.
+- Downloadable offline digital presentations, inspection XLSX with formulas and cached engine results, and browser printing to PDF.
+- Optional OpenAI text revision, recorded transcription and WebRTC voice-review adapters. Optional Alpha Vantage dated equity-quote adapter. **Live provider calls remain untested without account keys and entitlements.** Add keys privately in the local Settings dialog; never put them in chat or commit them. API use is separately billed from coding/chat subscriptions.
 
-Functional reference products are [Model ML](https://modelml.com/product/dataset-llm) and [Finster](https://www.finster.ai/product). The research concerns independently implementing comparable capabilities, not copying proprietary code, datasets, branding, or unpublished designs.
+Stock prices and issuer credit spreads start as **scenario assumptions**, not live quotes. This is a financing and capital-allocation demonstration, not a complete valuation, trading, credit or transaction-execution product. No confidential bank/client material is used. There is no bank affiliation, endorsement or acceptance claim.
 
-The security target is suitability for assessment by an international bank. No bank affiliation, endorsement, procurement engagement, or security approval is implied. Public documentation cannot establish a particular bank's internal acceptance criteria.
+## Demo, evidence and next steps
 
-This public repository contains project planning and public sources only. It is not a location for credentials, provider-licensed datasets, client information, or confidential bank requirements.
+- [Monday demonstration script and implementation boundaries](docs/MONDAY_DEMO.md)
+- [Free/trial data providers, Copilot integration and native-app path](docs/MVP_DATA_AND_PLATFORM.md)
+- [MVP task estimates, horizons and remaining gates](docs/planning/MONDAY_MVP.md)
+- [Architecture, financial conventions and limitations](docs/MVP_ARCHITECTURE.md)
+- [Local integration measurements and check results](docs/verification.json)
+- [Browser checks for all 18 presentation pages](docs/browser-verification.json)
+
+```sh
+cargo test
+python3 scripts/verify_demo.py
+scripts/package-mac.sh
+```
+
+The verification utility uses an isolated temporary database and never calls external model/data APIs. Python is a development/test utility only. The application and exports run in Rust plus the browser. `scripts/refresh_public_data.py` can rebuild a dated SEC/Treasury snapshot; review its diff, rebuild, and use a fresh database before demonstrating refreshed facts. Existing versions are tied to the embedded demo snapshot; general data-vintage migrations are future work.
+
+## Research and full delivery plan
+
+[GitHub Project](https://github.com/users/NeoDemos/projects/3) · [Parent issue #1](https://github.com/NeoDemos/investment-banking-reimagined/issues/1)
+
+- [Market and peer research](docs/MARKET_RESEARCH.md)
+- [One-month challenge and full delivery/capacity plan](docs/DELIVERY_PLAN.md)
+- [Provider field and entitlement requirements](docs/DATA_REQUIREMENTS.md)
+- [Bank control/evidence gates](docs/BANK_ACCEPTANCE.md)
+- [Original 37-task register](docs/planning/TASK_REGISTER.md)
+- [Initial feasibility](docs/FEASIBILITY.md) and [uncalibrated token/cost illustrations](docs/TOKEN_ESTIMATE.md)
+
+The original month-one scope includes reviewed comps/DCF, editable PowerPoint and stronger review/identity controls. This smaller public demonstration does not replace those requirements. Full bank readiness depends on actual control owners, permitted processing, data contracts, independent review and acceptance.
+
+This repository is independent of the NeoDemos product. It contains independently authored application code, planning and a small public-data snapshot. It must not contain credentials, licensed provider responses or confidential information.

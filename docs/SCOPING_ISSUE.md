@@ -1,5 +1,7 @@
 ## Objective and current authorization
 
+> **22 October update:** the owner authorized a separate, local public-data MVP for Monday 26 October. See [current MVP scope and tasks](planning/MONDAY_MVP.md). The research authorization statements below describe the original broader programme and do not revoke that narrow MVP authorization. Bank production and confidential processing remain outside scope.
+
 Research and specify an independent financial-analysis and client-materials workspace for corporate finance/M&A, capital markets, PE and VC. Independently implement useful capabilities comparable to Finster, Model ML and peers; buy licensed content where suitable. Legal-document review/drafting is outside scope.
 
 **Research, scoping and estimation only. Product implementation is not authorized.** Creating future tasks does not authorize execution, purchases, provider outreach, confidential processing or deployment.

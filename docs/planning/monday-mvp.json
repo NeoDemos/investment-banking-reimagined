@@ -1,0 +1,210 @@
+{
+  "asOf": "2026-10-22",
+  "target": "2026-10-26",
+  "parent": {
+    "number": 39,
+    "id": 5973894277,
+    "node_id": "I_kwDOVSrbdM8AAAABZBJkhQ",
+    "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/39",
+    "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQSI"
+  },
+  "milestone": 6,
+  "tasks": [
+    {
+      "code": "M01",
+      "title": "Verify public references and free/trial data routes",
+      "start": "2026-10-22",
+      "target": "2026-10-22",
+      "lowHours": 3,
+      "ownerHours": 4,
+      "highHours": 6,
+      "dependsOn": [],
+      "technicalComplete": true,
+      "github": {
+        "number": 40,
+        "id": 5973894695,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJmJw",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/40",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQSw"
+      }
+    },
+    {
+      "code": "M02",
+      "title": "Implement and validate the three bounded financial methods",
+      "start": "2026-10-22",
+      "target": "2026-10-23",
+      "lowHours": 4,
+      "ownerHours": 6,
+      "highHours": 9,
+      "dependsOn": [
+        "M01"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 41,
+        "id": 5973895066,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJnmg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/41",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQUg"
+      }
+    },
+    {
+      "code": "M03",
+      "title": "Build the efficient Rust and SQLite local application",
+      "start": "2026-10-22",
+      "target": "2026-10-23",
+      "lowHours": 3,
+      "ownerHours": 4,
+      "highHours": 6,
+      "dependsOn": [
+        "M01"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 42,
+        "id": 5973895494,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJpRg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/42",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQWA"
+      }
+    },
+    {
+      "code": "M04",
+      "title": "Build and inspect digital Rabobank-reference presentations",
+      "start": "2026-10-23",
+      "target": "2026-10-23",
+      "lowHours": 3,
+      "ownerHours": 5,
+      "highHours": 8,
+      "dependsOn": [
+        "M02",
+        "M03"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 43,
+        "id": 5973895830,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJqlg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/43",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQX0"
+      }
+    },
+    {
+      "code": "M05",
+      "title": "Implement page review, real revisions and completion messages",
+      "start": "2026-10-23",
+      "target": "2026-10-24",
+      "lowHours": 2,
+      "ownerHours": 3,
+      "highHours": 5,
+      "dependsOn": [
+        "M03",
+        "M04"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 44,
+        "id": 5973896187,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJr-w",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/44",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQaU"
+      }
+    },
+    {
+      "code": "M06",
+      "title": "Export offline briefings and Excel inspection copies",
+      "start": "2026-10-24",
+      "target": "2026-10-24",
+      "lowHours": 2,
+      "ownerHours": 3,
+      "highHours": 4,
+      "dependsOn": [
+        "M02",
+        "M04"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 45,
+        "id": 5973896689,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJt8Q",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/45",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQb0"
+      }
+    },
+    {
+      "code": "M07",
+      "title": "Rehearse API text, recorded speech and live voice end to end",
+      "start": "2026-10-24",
+      "target": "2026-10-24",
+      "lowHours": 2,
+      "ownerHours": 3,
+      "highHours": 6,
+      "dependsOn": [
+        "M05"
+      ],
+      "technicalComplete": false,
+      "github": {
+        "number": 46,
+        "id": 5973897132,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJvrA",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/46",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQfU"
+      }
+    },
+    {
+      "code": "M08",
+      "title": "Verify financial results, state boundaries, UI and footprint",
+      "start": "2026-10-24",
+      "target": "2026-10-25",
+      "lowHours": 4,
+      "ownerHours": 5,
+      "highHours": 8,
+      "dependsOn": [
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 47,
+        "id": 5973897493,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJxFQ",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/47",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQf4"
+      }
+    },
+    {
+      "code": "M09",
+      "title": "Package and rehearse the Monday demonstration with owner review",
+      "start": "2026-10-25",
+      "target": "2026-10-26",
+      "lowHours": 2,
+      "ownerHours": 2,
+      "highHours": 3,
+      "dependsOn": [
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08"
+      ],
+      "technicalComplete": false,
+      "github": {
+        "number": 48,
+        "id": 5973897845,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJydQ",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/48",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQh0"
+      }
+    }
+  ],
+  "project": {
+    "url": "https://github.com/users/NeoDemos/projects/3",
+    "id": "PVT_kwHOD8BOsc4BoIS3",
+    "phaseOption": "725ddb26",
+    "authorizationOption": "321e8f88",
+    "nativeDependencies": 19
+  }
+}

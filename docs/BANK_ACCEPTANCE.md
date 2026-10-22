@@ -1,5 +1,7 @@
 # Bank assessment and evidence gates
 
+> **22 October update:** the owner authorized a separate, local public-data MVP for Monday 26 October. See [current MVP scope and tasks](planning/MONDAY_MVP.md). The research authorization statements below describe the original broader programme and do not revoke that narrow MVP authorization. Bank production and confidential processing remain outside scope.
+
 Planning target, 21 October 2026. Assume an EU international bank as the first reference deployment; the actual institution and classification are unconfirmed. Other jurisdictions require a separate mapping. This is a proposed engineering/evidence specification, not legal advice, an audit conclusion, or bank approval.
 
 ## Two delivery routes

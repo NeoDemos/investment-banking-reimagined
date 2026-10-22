@@ -1,0 +1,415 @@
+{
+  "asOf": "2026-10-22",
+  "retrievedAt": "2026-10-22T05:33:50.901904+00:00",
+  "companies": [
+    {
+      "symbol": "PEP",
+      "cik": "0000077476",
+      "name": "PepsiCo",
+      "fiscalYear": 2025,
+      "periodEnd": "2025-12-27",
+      "facts": {
+        "revenue": {
+          "value": 93925000000,
+          "unit": "USD",
+          "periodStart": "2024-12-29",
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "Revenues",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Reported US GAAP"
+        },
+        "netIncome": {
+          "value": 8240000000,
+          "unit": "USD",
+          "periodStart": "2024-12-29",
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Reported US GAAP"
+        },
+        "operatingIncome": {
+          "value": 11498000000,
+          "unit": "USD",
+          "periodStart": "2024-12-29",
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "OperatingIncomeLoss",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Reported US GAAP"
+        },
+        "da": {
+          "value": 3451000000,
+          "unit": "USD",
+          "periodStart": "2024-12-29",
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "DepreciationDepletionAndAmortization",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Reported US GAAP"
+        },
+        "cash": {
+          "value": 9159000000,
+          "unit": "USD",
+          "periodStart": null,
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "CashAndCashEquivalentsAtCarryingValue",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Reported US GAAP"
+        },
+        "shares": {
+          "value": 1373000000,
+          "unit": "shares",
+          "periodStart": "2024-12-29",
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Reported US GAAP"
+        },
+        "reportedEPS": {
+          "value": 6,
+          "unit": "USD/shares",
+          "periodStart": "2024-12-29",
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "EarningsPerShareDiluted",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Reported US GAAP"
+        },
+        "debt": {
+          "value": 49182000000,
+          "unit": "USD",
+          "periodStart": null,
+          "periodEnd": "2025-12-27",
+          "filed": "2026-02-03",
+          "accession": "0000077476-26-000007",
+          "tag": "DebtCurrent + LongTermDebtNoncurrent",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+          "basis": "Sum of reported current debt and noncurrent debt",
+          "inputs": [
+            {
+              "value": 6861000000,
+              "unit": "USD",
+              "periodStart": null,
+              "periodEnd": "2025-12-27",
+              "filed": "2026-02-03",
+              "accession": "0000077476-26-000007",
+              "tag": "DebtCurrent",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+              "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+              "basis": "Reported US GAAP"
+            },
+            {
+              "value": 42321000000,
+              "unit": "USD",
+              "periodStart": null,
+              "periodEnd": "2025-12-27",
+              "filed": "2026-02-03",
+              "accession": "0000077476-26-000007",
+              "tag": "LongTermDebtNoncurrent",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000007/",
+              "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000077476.json",
+              "basis": "Reported US GAAP"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "CPB",
+      "cik": "0000016732",
+      "name": "The Campbell’s Company",
+      "fiscalYear": 2026,
+      "periodEnd": "2026-08-02",
+      "facts": {
+        "revenue": {
+          "value": 9744000000,
+          "unit": "USD",
+          "periodStart": "2025-08-04",
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "Revenues",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        },
+        "netIncome": {
+          "value": 398000000,
+          "unit": "USD",
+          "periodStart": "2025-08-04",
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        },
+        "operatingIncome": {
+          "value": 852000000,
+          "unit": "USD",
+          "periodStart": "2025-08-04",
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "OperatingIncomeLoss",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        },
+        "da": {
+          "value": 413000000,
+          "unit": "USD",
+          "periodStart": "2025-08-04",
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "DepreciationDepletionAndAmortization",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        },
+        "cash": {
+          "value": 394000000,
+          "unit": "USD",
+          "periodStart": null,
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "CashAndCashEquivalentsAtCarryingValue",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        },
+        "shares": {
+          "value": 300000000,
+          "unit": "shares",
+          "periodStart": "2025-08-04",
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        },
+        "reportedEPS": {
+          "value": 1.31,
+          "unit": "USD/shares",
+          "periodStart": "2025-08-04",
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "EarningsPerShareDiluted",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        },
+        "debt": {
+          "value": 7137000000,
+          "unit": "USD",
+          "periodStart": null,
+          "periodEnd": "2026-08-02",
+          "filed": "2026-09-24",
+          "accession": "0000016732-26-000026",
+          "tag": "DebtLongtermAndShorttermCombinedAmount",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/16732/000001673226000026/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000016732.json",
+          "basis": "Reported US GAAP"
+        }
+      }
+    },
+    {
+      "symbol": "GIS",
+      "cik": "0000040704",
+      "name": "General Mills",
+      "fiscalYear": 2026,
+      "periodEnd": "2026-05-31",
+      "facts": {
+        "revenue": {
+          "value": 18424600000,
+          "unit": "USD",
+          "periodStart": "2025-05-26",
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP"
+        },
+        "netIncome": {
+          "value": -87600000,
+          "unit": "USD",
+          "periodStart": "2025-05-26",
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "NetIncomeLoss",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP"
+        },
+        "operatingIncome": {
+          "value": 885800000,
+          "unit": "USD",
+          "periodStart": "2025-05-26",
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "OperatingIncomeLoss",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP"
+        },
+        "da": {
+          "value": 555200000,
+          "unit": "USD",
+          "periodStart": "2025-05-26",
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "DepreciationDepletionAndAmortization",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP"
+        },
+        "cash": {
+          "value": 453800000,
+          "unit": "USD",
+          "periodStart": null,
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "CashAndCashEquivalentsAtCarryingValue",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP"
+        },
+        "shares": {
+          "value": 537700000,
+          "unit": "shares",
+          "periodStart": "2025-05-26",
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP"
+        },
+        "reportedEPS": {
+          "value": -0.16,
+          "unit": "USD/shares",
+          "periodStart": "2025-05-26",
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "EarningsPerShareDiluted",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP"
+        },
+        "debt": {
+          "value": 13538000000,
+          "unit": "USD",
+          "periodStart": null,
+          "periodEnd": "2026-05-31",
+          "filed": "2026-07-01",
+          "accession": "0001628280-26-046466",
+          "tag": "LongTermDebt + ShortTermBorrowings",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+          "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+          "basis": "Reported US GAAP",
+          "inputs": [
+            {
+              "value": 13469600000,
+              "unit": "USD",
+              "periodStart": null,
+              "periodEnd": "2026-05-31",
+              "filed": "2026-07-01",
+              "accession": "0001628280-26-046466",
+              "tag": "LongTermDebt",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+              "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+              "basis": "Reported US GAAP"
+            },
+            {
+              "value": 68400000,
+              "unit": "USD",
+              "periodStart": null,
+              "periodEnd": "2026-05-31",
+              "filed": "2026-07-01",
+              "accession": "0001628280-26-046466",
+              "tag": "ShortTermBorrowings",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/40704/000162828026046466/",
+              "apiUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000040704.json",
+              "basis": "Reported US GAAP"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "curve": {
+    "date": "2026-10-21",
+    "currency": "USD",
+    "type": "Treasury par yield curve",
+    "source": "U.S. Treasury",
+    "sourceUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2026",
+    "points": [
+      {
+        "years": 1,
+        "yield": 4.52
+      },
+      {
+        "years": 2,
+        "yield": 4.81
+      },
+      {
+        "years": 3,
+        "yield": 4.89
+      },
+      {
+        "years": 5,
+        "yield": 4.95
+      },
+      {
+        "years": 7,
+        "yield": 5.03
+      },
+      {
+        "years": 10,
+        "yield": 5.13
+      },
+      {
+        "years": 20,
+        "yield": 5.47
+      },
+      {
+        "years": 30,
+        "yield": 5.42
+      }
+    ],
+    "retrievedAt": "2026-10-22T05:33:50.901904+00:00"
+  }
+}
