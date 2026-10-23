@@ -21,7 +21,13 @@ fn fact(a: &Value, symbol: &str, k: &str) -> Value {
         .find(|c| c["symbol"] == symbol)
         .unwrap();
     let f = &c["facts"][k];
-    json!({"id":f["evidenceId"],"label":format!("{symbol} {k}"),"classification":"reported observation","value":f["value"].as_f64().unwrap()/1e6,"unit":if k=="shares"{"m shares"}else{"USDm"},"reportedValue":f["value"],"reportedUnit":f["unit"],"periodStart":f["periodStart"],"periodEnd":f["periodEnd"],"filed":f["filed"],"sourceUrl":f["sourceUrl"],"tag":f["tag"],"accession":f["accession"]})
+    let reported: Vec<&Value> = if let Some(parts) = f["inputs"].as_array() {
+        parts.iter().collect()
+    } else {
+        vec![f]
+    };
+    let concepts:Vec<Value>=reported.iter().map(|part|json!({"tag":part["tag"],"url":format!("https://data.sec.gov/api/xbrl/companyconcept/CIK{}/us-gaap/{}.json",c["cik"].as_str().unwrap(),part["tag"].as_str().unwrap()),"context":"Match the retained accession, units and period; this link is a fact series, not a verified document anchor"})).collect();
+    json!({"id":f["evidenceId"],"label":format!("{symbol} {k}"),"cik":c["cik"],"classification":if f["inputs"].is_array(){"derived from reported components"}else{"reported observation"},"definition":f["basis"],"value":f["value"].as_f64().unwrap()/1e6,"unit":if k=="shares"{"m shares"}else{"USDm"},"reportedValue":f["value"],"reportedUnit":f["unit"],"periodStart":f["periodStart"],"periodEnd":f["periodEnd"],"filed":f["filed"],"sourceUrl":f["sourceUrl"],"sourceDestination":"filing directory","tag":f["tag"],"accession":f["accession"],"components":f["inputs"],"conceptLinks":concepts})
 }
 fn curve(a: &Value, years: f64) -> Value {
     let c = &a["sourceSnapshot"]["curve"];
@@ -109,7 +115,7 @@ pub fn attach(room: &mut Value, id: &str) -> Result<(), ApiError> {
                 "Net proceeds",
                 get("netProceeds"),
                 "USDm",
-                "Y = Treasury par yield (%) + spread (bps)/100. N = 2 × tenor (years). r = Y/200. C = coupon (%)/2 per 100 each half-year. P = Σ[t=1..N] (C + 100 if t=N, otherwise C)/(1+r)^t. Net proceeds (USDm) = notional (USDm) × P/100 − notional × fee bps/10,000.",
+                finance::BOND_NET_FORMULA,
                 &["amount", "coupon", "tenor", "spread", "fees"],
                 &[],
                 &[],
@@ -216,7 +222,7 @@ pub fn attach(room: &mut Value, id: &str) -> Result<(), ApiError> {
                 "Illustrative EPS",
                 get("eps"),
                 "USD/share",
-                "EPS = [historical common earnings (USDm) − spend (USDm) × one-year Treasury yield (%)/100 × (1 − tax (%)/100)] / [historical diluted shares (m) − spend (USDm) / execution price (USD/share)]. Full-period illustrative repurchase.",
+                finance::BUYBACK_EPS_FORMULA,
                 &["amount", "sharePrice", "tax"],
                 &["netIncome", "shares"],
                 &[],
@@ -305,7 +311,7 @@ pub fn attach(room: &mut Value, id: &str) -> Result<(), ApiError> {
                 "EPS before purchase accounting",
                 eps,
                 "USD/share",
-                "Equity cheque E (USDm) = target shares (m) × target price (USD/share) × (1+premium (%)/100). New debt D = E × debt funding (%)/100; cash C = E−D. Interest I = D × [five-year Treasury (%)+spread (bps)/100]/100. Lost cash income L = C × one-year Treasury (%)/100. EPS = [acquirer + target common earnings (USDm) + (synergies−I−L) × (1−tax (%)/100)] / acquirer diluted shares (m). No new equity issuance; excludes PPA, fees and integration timing.",
+                finance::ACQUISITION_EPS_FORMULA,
                 &[
                     "targetShares",
                     "targetPrice",

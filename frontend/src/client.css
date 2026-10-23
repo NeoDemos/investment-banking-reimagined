@@ -1955,3 +1955,29 @@
 .bound-decision-comparison > small {
   margin-top: 1.5cqw;
 }
+.proof-inspector article .source-definition-label {
+  font-size: 11px;
+  color: #7e8aa3;
+  font-weight: 600;
+}
+.proof-inspector article code.visible-source-tag {
+  font-size: 11px;
+  color: #586a8a;
+  display: inline;
+  overflow-wrap: anywhere;
+}
+.source-components {
+  border-left: 2px solid #e5eaf2;
+  padding-left: 12px;
+  margin: 12px 0;
+}
+.fact-context {
+  margin-top: 5px;
+  font-size: 9px;
+  color: #9da7bd;
+}
+.fact-context span {
+  font-size: 9px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}

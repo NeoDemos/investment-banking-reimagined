@@ -121,6 +121,11 @@ export function ClientBriefEditor({
 }) {
   const [edit, setEdit] = useState(false);
   const m = room.mandate;
+  const [fundingNeed, setFundingNeed] = useState<number | string>(
+    m.fundingNeed ?? "",
+  );
+  const fundingChanged =
+    m.kind === "bond" && Number(fundingNeed) !== m.fundingNeed;
   return (
     <section className="brief-amend">
       <div className="section-heading">
@@ -147,6 +152,8 @@ export function ClientBriefEditor({
               criteria: f.get("criteria"),
               constraints: f.get("constraints"),
               owner: f.get("owner"),
+              fundingNeed: m.kind === "bond" ? Number(fundingNeed) : null,
+              fundingRequirementConfirmed: f.get("fundingConfirmed") === "on",
             }).then((r) => {
               if (r) setEdit(false);
             });
@@ -182,6 +189,22 @@ export function ClientBriefEditor({
             </label>
           </div>
           <div className="brief-fields two">
+            {m.kind === "bond" && (
+              <label>
+                Required net funding (USDm)
+                <input
+                  aria-label="Amended net funding requirement"
+                  name="fundingNeed"
+                  type="number"
+                  min="0.01"
+                  max="100000"
+                  step="any"
+                  required
+                  value={fundingNeed}
+                  onChange={(e) => setFundingNeed(e.target.value)}
+                />
+              </label>
+            )}
             <label>
               Decision criteria
               <textarea
@@ -204,11 +227,20 @@ export function ClientBriefEditor({
             </label>
           </div>
           <p className="review-provenance">
-            This reopens the banker view and narrative review. Underlying
-            company, financial method and any structured net-funding requirement
-            remain scoped to the original brief; start new client work to change
-            those.
+            This reopens advice and review. A changed net-funding requirement
+            refreshes gaps using the same source snapshot and retained
+            transaction terms; it does not resize either issue. The question is
+            not automatically reinterpreted. Use new client work to change the
+            company or financial method.
           </p>
+          {fundingChanged && (
+            <label className="confirmation">
+              <input name="fundingConfirmed" type="checkbox" required />I
+              reconciled the structured requirement with the client question. I
+              will deliberately size any structure that should meet the new
+              need.
+            </label>
+          )}
           <button className="primary-action" disabled={busy}>
             Save amended brief
           </button>

@@ -6,6 +6,8 @@ The owner’s revised instruction defers model/data API connections to the next 
 
 ## What the comparable products actually show
 
+The Finster product, Model ML workflow and Rogo May-update pages were re-opened during the five-pass workroom review on 23 October. Their public descriptions continue to support source-linked workflow/artifact patterns; no vendor account or independent outcome measurement was available. [The current client-workroom implementation](CLIENT_WORKROOM_ARCHITECTURE.md) applies these patterns to a bounded CFO decision rather than claiming vendor feature parity.
+
 | Reference and evidence | Observable pattern | What we implement from that pattern | What the evidence does not establish |
 |---|---|---|---|
 | [Finster product](https://www.finster.ai/product) | Cited exploration, company-oriented research, background workflows, firm-styled presentation creation and intent-shaped interactive outputs | A workroom groups conversation, evidence, analytical outputs and materials; artifacts outlive a chat turn; layout is an output decision | Its prompts, orchestrator code, exact export engine or numerical reliability |

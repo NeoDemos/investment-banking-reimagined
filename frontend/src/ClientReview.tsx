@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { api } from "./api";
 import { Page } from "./AgentStudio";
+import { useRevisionDraft } from "./useRevisionDraft";
 type J = Record<string, any>;
 type Act = (path: string, body: J) => Promise<any>;
 function exportJson(name: string, value: unknown) {
@@ -172,22 +173,48 @@ export function ClientReview({
   busy: boolean;
   pageIndex?: number;
 }) {
-  const [page, setPage] = useState(
-      room.draft?.slides[pageIndex]?.id || "decision",
-    ),
-    [body, setBody] = useState(""),
-    [owner, setOwner] = useState(""),
-    [category, setCategory] = useState("question"),
-    [copies, setCopies] = useState<J[]>([]),
+  const [draft, setDraft, clearDraft] = useRevisionDraft(
+    `review-note:${room.id}`,
+    room.revision,
+    {
+      page: room.draft?.slides[pageIndex]?.id || "decision",
+      body: "",
+      owner: "",
+      category: "question",
+    },
+  );
+  const { page, body, owner, category } = draft;
+  const setPage = (page: string) => setDraft((old) => ({ ...old, page })),
+    setBody = (body: string) => setDraft((old) => ({ ...old, body })),
+    setOwner = (owner: string) => setDraft((old) => ({ ...old, owner })),
+    setCategory = (category: string) =>
+      setDraft((old) => ({ ...old, category }));
+  const [copies, setCopies] = useState<J[]>([]),
+    [copyListing, setCopyListing] = useState<J>({}),
     [selected, setSelected] = useState<J | null>(null),
     [copyPage, setCopyPage] = useState(0),
     [historyRevision, setHistoryRevision] = useState(""),
     [error, setError] = useState("");
   useEffect(() => {
     void api<J>(`/api/client-work/${room.id}/copies`)
-      .then((r) => setCopies(r.copies))
+      .then((r) => {
+        setCopies(r.copies);
+        setCopyListing(r);
+      })
       .catch((e) => setError(String(e)));
   }, [room.id, room.revision]);
+  const olderCopies = async () => {
+    if (copyListing.nextCursor == null) return;
+    try {
+      const page = await api<J>(
+        `/api/client-work/${room.id}/copies?maxId=${copyListing.maxId}&before=${copyListing.nextCursor}`,
+      );
+      setCopies((old) => [...old, ...page.copies]);
+      setCopyListing(page);
+    } catch (e) {
+      setError(String(e));
+    }
+  };
   if (!room.draft)
     return (
       <div className="empty-client">
@@ -222,7 +249,7 @@ export function ClientReview({
             owner,
             category,
           }).then((r) => {
-            if (r) setBody("");
+            if (r) clearDraft();
           });
         }}
       >
@@ -424,6 +451,10 @@ export function ClientReview({
       </section>
       <section className="review-copies">
         <h3>Saved review copies</h3>
+        <p className="review-provenance">
+          Showing {copies.length} of {copyListing.totalStored || 0} copies in
+          this fixed snapshot.
+        </p>
         {copies.length ? (
           copies.map((c) => (
             <button
@@ -451,6 +482,11 @@ export function ClientReview({
           <p className="review-provenance">No immutable review copy yet.</p>
         )}
       </section>
+      {copyListing.nextCursor != null && (
+        <button className="quiet-action" onClick={() => void olderCopies()}>
+          Load older review copies
+        </button>
+      )}
       {selected && (
         <div className="client-modal-shade">
           <section
@@ -609,6 +645,35 @@ export function ProofDrawer({
                 {i.owner}. Range: {i.range}
               </p>
             )}
+            {i.tag && (
+              <p>
+                <strong className="source-definition-label">
+                  Retained fact context
+                </strong>
+                <br />
+                CIK {i.cik} · accession {i.accession}
+                <br />
+                XBRL tag: <code className="visible-source-tag">{i.tag}</code>
+                {i.definition && (
+                  <>
+                    <br />
+                    {i.definition}
+                  </>
+                )}
+              </p>
+            )}
+            {i.components?.length > 0 && (
+              <div className="source-components">
+                <small>Reported components of this total</small>
+                {i.components.map((p: J, n: number) => (
+                  <p key={n}>
+                    {p.tag}: {p.value.toLocaleString()} {p.unit}
+                    <br />
+                    Period {p.periodEnd} · accession {p.accession}
+                  </p>
+                ))}
+              </div>
+            )}
             {i.date && (
               <p>
                 Reference date {i.date}. {i.method}
@@ -619,11 +684,29 @@ export function ProofDrawer({
             )}
             {i.sourceUrl ? (
               <a href={i.sourceUrl} target="_blank" rel="noreferrer">
-                Open exact public source
+                {i.sourceDestination === "filing directory"
+                  ? "Open filing directory (original documents)"
+                  : "Open public rate source"}
               </a>
             ) : i.classification === "illustrative assumption" ? (
               <small>No market-source claim</small>
             ) : null}
+            {i.conceptLinks?.map((link: J) => (
+              <a
+                key={link.tag}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                SEC fact series · {link.tag}
+              </a>
+            ))}
+            {i.conceptLinks?.length > 0 && (
+              <small>
+                Match the accession, units and period shown above. A
+                company-concept series is not a page-level document anchor.
+              </small>
+            )}
             <code>{i.id}</code>
           </article>
         ))}

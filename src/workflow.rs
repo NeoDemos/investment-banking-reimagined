@@ -39,7 +39,7 @@ pub(crate) fn revised(mut r: Value, expected: i64, kind: &str) -> Value {
     if !r["mandate"].is_null() && !r["reviewState"].is_null() && kind != "discussion_copy_frozen" {
         r["reviewCopyOutOfDate"] = json!(true);
         for t in r["workItems"].as_array_mut().unwrap() {
-            if t["id"] == "review" {
+            if t["id"] == "review" && t["status"] == "complete" {
                 t["status"] = json!("ready");
             }
         }

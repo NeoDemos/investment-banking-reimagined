@@ -1,3 +1,5 @@
+> Current product layer: [client decision workroom](CLIENT_WORKROOM_ARCHITECTURE.md). The local blueprint foundation below now serves typed client briefs, comparable decisions, exact figure dependencies, accountable tasks and immutable discussion review. External model/data/voice ports remain deferred.
+
 # MCP-backed financial workspace — 23 October 2026
 
 The current owner instruction is **architecture first; external API/model/data connections later**. This replaces the previous assumption that live model access had to unblock the present demonstration. No key is requested for this phase. [Peer research and sources](PEER_ARCHITECTURE_RESEARCH.md) records the product patterns studied and separates evidence from our design inferences.

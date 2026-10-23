@@ -22,6 +22,7 @@ import { ClientReview, ProofDrawer } from "./ClientReview";
 import { ClientBriefEditor, WorkItem } from "./ClientPlan";
 import { ClientMaterials } from "./ClientMaterials";
 import { ClientEvaluation } from "./ClientEvaluation";
+import { useRevisionDraft } from "./useRevisionDraft";
 import { PlatformWorkspace, type Platform } from "./PlatformWorkspace";
 import "./client.css";
 type J = Record<string, any>;
@@ -177,7 +178,7 @@ function ParamsEditor({
             aria-label={INPUTS[k]?.[0] || k}
             type="number"
             step={k === "tenor" ? 1 : "any"}
-            value={Number.isNaN(v) ? "" : v}
+            value={v == null || Number.isNaN(v) ? "" : v}
             disabled={disabled}
             onChange={(e) =>
               onChange({ ...value, [k]: e.target.valueAsNumber })
@@ -483,16 +484,39 @@ function Scenarios({
 }: {
   room: J;
   busy: boolean;
-  onRevise: (v: J) => void;
+  onRevise: (v: J) => Promise<any>;
 }) {
-  const [which, setWhich] = useState("base"),
-    [params, setParams] = useState<Record<string, number>>({}),
-    [rationale, setRationale] = useState("");
+  const [which, setWhich] = useRevisionDraft(
+    `scenario-selection:${room.id}`,
+    0,
+    "base",
+  );
   const option = room.options?.find((o: J) => o.id === which);
   const a = option ? room.analyses[option.analysisId] : null;
-  useEffect(() => {
-    if (a) setParams({ ...a.params });
-  }, [room.revision, which]);
+  const [draft, setDraft, clearDraft] = useRevisionDraft(
+    `scenario:${room.id}:${which}`,
+    room.revision,
+    {
+      params: { ...(a?.params || {}) } as Record<string, number>,
+      rationale: "",
+    },
+  );
+  const params = draft.params,
+    rationale = draft.rationale;
+  const setParams = (params: Record<string, number>) =>
+    setDraft((old) => ({ ...old, params }));
+  const setRationale = (rationale: string) =>
+    setDraft((old) => ({ ...old, rationale }));
+  const submit = (sizeToFunding = false) =>
+    onRevise({
+      expectedRevision: room.revision,
+      optionId: which,
+      params,
+      rationale,
+      sizeToFunding,
+    }).then((r) => {
+      if (r) clearDraft();
+    });
   if (!a)
     return (
       <div className="empty-client">
@@ -519,7 +543,6 @@ function Scenarios({
             className={which === o.id ? "selected" : ""}
             onClick={() => {
               setWhich(o.id);
-              setRationale("");
             }}
           >
             {o.name}
@@ -530,12 +553,7 @@ function Scenarios({
         className="scenario-edit"
         onSubmit={(e) => {
           e.preventDefault();
-          onRevise({
-            expectedRevision: room.revision,
-            optionId: which,
-            params,
-            rationale,
-          });
+          void submit();
         }}
       >
         <ParamsEditor value={params} onChange={setParams} disabled={busy} />
@@ -572,15 +590,7 @@ function Scenarios({
               type="button"
               className="quiet-action"
               disabled={busy || rationale.trim().length < 20}
-              onClick={() =>
-                onRevise({
-                  expectedRevision: room.revision,
-                  optionId: which,
-                  params,
-                  rationale,
-                  sizeToFunding: true,
-                })
-              }
+              onClick={() => void submit(true)}
             >
               Size issue to required net funding <ArrowRight size={14} />
             </button>
@@ -621,14 +631,25 @@ function Decision({
 }: {
   room: J;
   onView: (v: string) => void;
-  onSave: (v: J) => void;
+  onSave: (v: J) => Promise<any>;
   busy: boolean;
   onInspect: (proof: J) => void;
 }) {
   const { columns, options } = comparison(room);
-  const [choice, setChoice] = useState(room.mandate.preferredOption || ""),
-    [reason, setReason] = useState(room.mandate.recommendation || ""),
-    [reversal, setReversal] = useState(room.mandate.reversalCondition || "");
+  const [draft, setDraft, clearDraft] = useRevisionDraft(
+    `decision:${room.id}`,
+    room.revision,
+    {
+      choice: room.mandate.preferredOption || "",
+      reason: room.mandate.recommendation || "",
+      reversal: room.mandate.reversalCondition || "",
+    },
+  );
+  const { choice, reason, reversal } = draft;
+  const setChoice = (choice: string) => setDraft((old) => ({ ...old, choice }));
+  const setReason = (reason: string) => setDraft((old) => ({ ...old, reason }));
+  const setReversal = (reversal: string) =>
+    setDraft((old) => ({ ...old, reversal }));
   return (
     <div className="client-scroll">
       <div className="decision-hero">
@@ -840,11 +861,13 @@ function Decision({
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  onSave({
+                  void onSave({
                     expectedRevision: room.revision,
                     preferredOption: choice,
                     recommendation: reason,
                     reversalCondition: reversal,
+                  }).then((r) => {
+                    if (r) clearDraft();
                   });
                 }}
               >
@@ -940,8 +963,12 @@ export default function ClientStudio() {
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [page, setPage] = useState(0),
-    [discussion, setDiscussion] = useState(false),
-    [prompt, setPrompt] = useState("");
+    [discussion, setDiscussion] = useState(false);
+  const [prompt, setPrompt, clearPrompt] = useRevisionDraft(
+    `discussion:${room?.id || "none"}`,
+    room?.revision || 0,
+    "",
+  );
   const [proof, setProof] = useState<J | null>(null);
   const refresh = async () => {
     const r = await api<J>("/api/agent/rooms");
@@ -1046,11 +1073,22 @@ export default function ClientStudio() {
     if (busy) return;
     setBusy(true);
     setError("");
+    const startedHash = location.hash,
+      startedRoom = room?.id;
     try {
       const r = await api<J>(path, body);
-      setRoom(r);
       await refresh();
-      if (next) navigate(next, r);
+      const currentRoom = location.hash.match(
+        /^#(?:client|workroom)\/([^/]+)/,
+      )?.[1];
+      if (startedHash !== location.hash && currentRoom !== startedRoom) {
+        setNotice(
+          "Saved the previous workroom. Your current context was preserved.",
+        );
+        return r;
+      }
+      setRoom(r);
+      if (next && location.hash === startedHash) navigate(next, r);
       setNotice("Saved to this workroom.");
       return r;
     } catch (e) {
@@ -1242,6 +1280,7 @@ export default function ClientStudio() {
               />
             ) : view === "evaluation" ? (
               <ClientEvaluation
+                key={room?.id || "global"}
                 room={room}
                 rooms={rooms}
                 onSelect={(id) => void open(id, "evaluation")}
@@ -1285,15 +1324,16 @@ export default function ClientStudio() {
                 onInspect={setProof}
                 onView={navigate}
                 onSave={(v) =>
-                  void action(`/api/client-work/${room.id}/decision`, v)
+                  action(`/api/client-work/${room.id}/decision`, v)
                 }
               />
             ) : view === "scenarios" ? (
               <Scenarios
+                key={`${room.id}-${room.revision}`}
                 room={room}
                 busy={busy}
                 onRevise={(v) =>
-                  void action(`/api/client-work/${room.id}/scenario`, v)
+                  action(`/api/client-work/${room.id}/scenario`, v)
                 }
               />
             ) : view === "materials" ? (
@@ -1336,7 +1376,23 @@ export default function ClientStudio() {
                         {Object.entries(c.facts).map(
                           ([k, f]: [string, any]) => (
                             <div key={k}>
-                              <strong>{k}</strong>
+                              <div>
+                                <strong>{k}</strong>
+                                <details className="fact-context">
+                                  <summary>Tag / filing context</summary>
+                                  <span>
+                                    {f.tag}
+                                    <br />
+                                    {f.basis}
+                                    <br />
+                                    Accession {f.accession}
+                                    <br />
+                                    Period{" "}
+                                    {f.periodStart ? `${f.periodStart} → ` : ""}
+                                    {f.periodEnd}
+                                  </span>
+                                </details>
+                              </div>
                               <span>
                                 {f.value.toLocaleString()} {f.unit}
                               </span>
@@ -1353,7 +1409,7 @@ export default function ClientStudio() {
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                Filing · {f.filed}
+                                Filing directory · {f.filed}
                               </a>
                             </div>
                           ),
@@ -1375,6 +1431,7 @@ export default function ClientStudio() {
               </div>
             ) : (
               <ClientReview
+                key={room.id}
                 room={room}
                 act={action}
                 busy={busy}
@@ -1409,7 +1466,7 @@ export default function ClientStudio() {
                     expectedRevision: room.revision,
                     prompt,
                   }).then((r) => {
-                    if (r) setPrompt("");
+                    if (r) clearPrompt();
                   });
                 }}
               >

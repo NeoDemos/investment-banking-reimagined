@@ -95,7 +95,7 @@ pub(crate) fn advice_pages(r: &Value) -> Vec<Value> {
 pub(crate) fn reopen_reviews(r: &mut Value, pages: &[Value], revision: i64, reason: &str) {
     for issue in r["reviewIssues"].as_array_mut().into_iter().flatten() {
         if pages.contains(&issue["pageId"])
-            && ["verified", "applied"].contains(&issue["status"].as_str().unwrap_or(""))
+            && ["verified", "applied", "deferred"].contains(&issue["status"].as_str().unwrap_or(""))
         {
             issue["supersededVerification"] = json!({"status":issue["status"],"verifiedBy":issue["verifiedBy"],"verifiedRevision":issue["verifiedRevision"],"appliedRevision":issue["appliedRevision"]});
             issue["status"] = json!("open");
@@ -415,7 +415,7 @@ pub async fn prepare(
         }
         for item in r["workItems"].as_array_mut().unwrap() {
             if ["evidence","alternatives","materials"].contains(&item["id"].as_str().unwrap_or("")){item["status"]=json!("complete");}
-            if item["id"]=="review"{item["status"]=json!("ready");}
+            if item["id"]=="review" && !["blocked","deferred"].contains(&item["status"].as_str().unwrap_or("")){item["status"]=json!("ready");}
         }
         r["messages"].as_array_mut().unwrap().push(json!({"role":"system","text":"Prepared client-bound discussion pages and comparable alternatives from the public archive. Current-market confirmation, qualified judgement and review remain open. No model inference or live source call was used.","at":now()}));
         workflow::commit(&s,r,b.expected_revision,"client_work_prepared")
@@ -498,7 +498,7 @@ pub async fn revise(
         sync_client_document(&mut r)?;
         affected.extend(advice_pages(&r));affected.sort_by(|a,b|a.as_str().cmp(&b.as_str()));affected.dedup();
         reopen_reviews(&mut r,&affected,b.expected_revision+1,"Active economics changed; the prior correction or advice requires a fresh check");
-        for task in r["workItems"].as_array_mut().unwrap(){if task["id"]=="review"{task["status"]=json!("ready");}}
+        for task in r["workItems"].as_array_mut().unwrap(){if task["id"]=="review" && !["blocked","deferred"].contains(&task["status"].as_str().unwrap_or("")){task["status"]=json!("ready");}}
         let symbols:Vec<String>=r["sources"].as_object().unwrap().keys().filter_map(|k|k.strip_prefix("sec:").map(str::to_string)).collect();
         r["contextPacket"]=evidence::packet(&r,r["mandate"]["question"].as_str().unwrap(),&symbols,24000)?;
         r["changeLog"].as_array_mut().unwrap().push(json!({"at":now(),"revision":b.expected_revision+1,"type":"scenario_recalculation","optionId":b.option_id,"oldAnalysisId":old,"newAnalysisId":new,"affectedPages":affected,"rationale":b.rationale,"narrativeReviewRequired":true}));
@@ -569,6 +569,9 @@ pub struct BriefUpdate {
     criteria: String,
     constraints: String,
     owner: String,
+    funding_need: Option<f64>,
+    #[serde(default)]
+    funding_requirement_confirmed: bool,
 }
 pub async fn update_brief(
     State(s): State<App>,
@@ -583,7 +586,22 @@ pub async fn update_brief(
     text(&b.owner, 2, 100, "Responsible banker")?;
     chrono::NaiveDate::parse_from_str(&b.meeting_date, "%Y-%m-%d")
         .map_err(|_| bad("Valid meeting date required"))?;
-    for (k, v) in [
+    if let Some(need) = b.funding_need {
+        if r["mandate"]["kind"] != "bond" || !need.is_finite() || need <= 0. || need > 100000. {
+            return Err(bad(
+                "A positive net-funding requirement applies to a bond decision, up to USD100,000m",
+            ));
+        }
+    }
+    let funding_changed = b
+        .funding_need
+        .is_some_and(|n| r["mandate"]["fundingNeed"].as_f64() != Some(n));
+    if funding_changed && !b.funding_requirement_confirmed {
+        return Err(bad(
+            "Reconcile and confirm the structured net-funding requirement against the client question",
+        ));
+    }
+    for (key, value) in [
         ("question", b.question),
         ("audience", b.audience),
         ("meetingDate", b.meeting_date),
@@ -591,44 +609,94 @@ pub async fn update_brief(
         ("constraints", b.constraints),
         ("decisionOwner", b.owner),
     ] {
-        r["mandate"][k] = json!(v.trim());
+        r["mandate"][key] = json!(value.trim());
+    }
+    if let Some(need) = b.funding_need {
+        r["mandate"]["fundingNeed"] = json!(need);
     }
     r["mandate"]["decisionState"] = json!("review_required");
     r["mandate"]["preferredOption"] = Value::Null;
-    if !r["draft"].is_null() {
-        let symbols: Vec<String> = r["sources"]
-            .as_object()
-            .unwrap()
-            .keys()
-            .filter_map(|k| k.strip_prefix("sec:").map(str::to_string))
-            .collect();
-        r["contextPacket"] = evidence::packet(
-            &r,
-            r["mandate"]["question"].as_str().unwrap(),
-            &symbols,
-            24000,
-        )?;
-    }
-    for w in r["workItems"].as_array_mut().unwrap() {
-        if w["id"] == "review" {
-            w["status"] = json!("ready");
+    let mut affected = advice_pages(&r);
+    let _permit = if funding_changed && !r["draft"].is_null() {
+        Some(
+            s.agent_gate
+                .clone()
+                .try_acquire_owned()
+                .map_err(|_| bad("Another local workflow is running"))?,
+        )
+    } else {
+        None
+    };
+    let mut pending_run = None;
+    if funding_changed && !r["draft"].is_null() {
+        let run = begin(&s, &id)?;
+        r["lastRunId"] = json!(run);
+        pending_run = Some(run.clone());
+        let outcome=async {
+            let options=r["options"].as_array().unwrap().clone();
+            let session=mcp::Session::new(s.clone(),r,false).await?;
+            for option in &options {
+                let old=option["analysisId"].as_str().unwrap();let snapshot=session.server.snapshot().await;let a=&snapshot["analyses"][old];
+                let new=format!("{}_need_r{}",option["id"].as_str().unwrap(),b.expected_revision+1);
+                tool(&s,&run,&session,"calculate_finance",json!({"analysisId":new,"kind":a["kind"],"issuer":a["issuer"],"target":a["target"],"params":a["params"],"rationale":a["assumptionRationale"]})).await?;
+            }
+            let mut r=session.server.snapshot().await;
+            for option in options {
+                let old=option["analysisId"].as_str().unwrap().to_string();let new=format!("{}_need_r{}",option["id"].as_str().unwrap(),b.expected_revision+1);
+                for page in r["draft"]["slides"].as_array().unwrap(){if page["blocks"].as_array().unwrap().iter().any(|b|b["analysisId"]==old||b["type"]=="decision_comparison"){affected.push(page["id"].clone());}}
+                replace_reference(&mut r["draft"],&old,&new);for active in r["options"].as_array_mut().unwrap(){if active["id"]==option["id"]{active["analysisId"]=json!(new);}}
+                r["analyses"][&new]["displayName"]=option["name"].clone();lineage::attach(&mut r,&new)?;
+            }
+            Ok::<Value,ApiError>(r)
+        }.await;
+        if outcome.is_err() {
+            finish(&s, &run, &outcome)?;
         }
+        r = outcome?;
     }
-    sync_client_document(&mut r)?;
-    let pages = advice_pages(&r);
-    reopen_reviews(
-        &mut r,
-        &pages,
-        b.expected_revision + 1,
-        "The client brief or decision criteria changed",
-    );
-    r["changeLog"].as_array_mut().unwrap().push(json!({"revision":b.expected_revision+1,"type":"brief_amended","affectedPages":pages,"narrativeReviewRequired":true,"at":now()}));
-    Ok(Json(workflow::commit(
-        &s,
-        r,
-        b.expected_revision,
-        "brief_amended",
-    )?))
+    let outcome = (|| -> Result<Value, ApiError> {
+        for task in r["workItems"].as_array_mut().unwrap() {
+            if task["id"] == "review"
+                && !["blocked", "deferred"].contains(&task["status"].as_str().unwrap_or(""))
+            {
+                task["status"] = json!("ready");
+            }
+        }
+        sync_client_document(&mut r)?;
+        affected.extend(advice_pages(&r));
+        affected.sort_by(|a, b| a.as_str().cmp(&b.as_str()));
+        affected.dedup();
+        reopen_reviews(
+            &mut r,
+            &affected,
+            b.expected_revision + 1,
+            if funding_changed {
+                "The client net-funding requirement changed; prior advice and dispositions need renewed review"
+            } else {
+                "The client brief or decision criteria changed"
+            },
+        );
+        if !r["draft"].is_null() {
+            let symbols: Vec<String> = r["sources"]
+                .as_object()
+                .unwrap()
+                .keys()
+                .filter_map(|k| k.strip_prefix("sec:").map(str::to_string))
+                .collect();
+            r["contextPacket"] = evidence::packet(
+                &r,
+                r["mandate"]["question"].as_str().unwrap(),
+                &symbols,
+                24000,
+            )?;
+        }
+        r["changeLog"].as_array_mut().unwrap().push(json!({"revision":b.expected_revision+1,"type":if funding_changed{"funding_requirement_amended"}else{"brief_amended"},"affectedPages":affected,"narrativeReviewRequired":true,"rationale":"Client brief amended. Changing required net cash does not automatically resize the transaction.","at":now()}));
+        workflow::commit(&s, r, b.expected_revision, "brief_amended")
+    })();
+    if let Some(run) = pending_run {
+        finish(&s, &run, &outcome)?;
+    }
+    Ok(Json(outcome?))
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
@@ -848,6 +916,22 @@ pub async fn freeze(
     let document: materials::Draft = serde_json::from_value(r["draft"].clone())
         .map_err(|_| bad("Prepare client materials before freezing"))?;
     materials::validate_draft(&document, &r).map_err(bad)?;
+    for item in r["workItems"].as_array().unwrap() {
+        let key = item["id"].as_str().unwrap_or("");
+        let state = item["status"].as_str().unwrap_or("");
+        if ["brief", "evidence", "alternatives", "materials"].contains(&key) && state != "complete"
+        {
+            return Err(bad(format!(
+                "Complete the required local task ‘{}’ before freezing a reviewed discussion copy. The external commercial gate remains separate.",
+                item["title"].as_str().unwrap()
+            )));
+        }
+        if key == "review" && !["ready", "complete"].contains(&state) {
+            return Err(bad(
+                "Resolve the blocked or deferred local review task before freezing",
+            ));
+        }
+    }
     text(&b.label, 4, 120, "Copy name")?;
     text(&b.reviewer, 2, 100, "Reviewer")?;
     if r["draft"].is_null()
@@ -927,12 +1011,56 @@ pub async fn freeze(
     tx.commit().map_err(internal)?;
     Ok(Json(r))
 }
-pub async fn copies(State(s): State<App>, Path(id): Path<String>) -> ApiResult {
+#[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct PageQuery {
+    pub before: Option<i64>,
+    pub max_id: Option<i64>,
+    pub limit: Option<usize>,
+}
+impl PageQuery {
+    pub fn limit(&self) -> Result<usize, ApiError> {
+        let n = self.limit.unwrap_or(25);
+        if !(1..=100).contains(&n)
+            || self.before.is_some_and(|v| v <= 0)
+            || self.max_id.is_some_and(|v| v < 0)
+        {
+            return Err(bad("Use a positive cursor and a page size of 1–100"));
+        }
+        Ok(n)
+    }
+}
+pub async fn copies(
+    State(s): State<App>,
+    Path(id): Path<String>,
+    Query(page): Query<PageQuery>,
+) -> ApiResult {
     agent::load(&s, &id)?;
+    let limit = page.limit()?;
     let db = s.db.lock().unwrap();
-    let mut q=db.prepare("SELECT id,revision,created_at,json_extract(payload,'$.reviewCopy.label'),json_extract(payload,'$.reviewCopy.reviewer') FROM client_review_copies WHERE room_id=? ORDER BY created_at DESC LIMIT 50").map_err(internal)?;
-    let rows=q.query_map([id],|r|Ok(json!({"id":r.get::<_,String>(0)?,"revision":r.get::<_,i64>(1)?,"createdAt":r.get::<_,String>(2)?,"label":r.get::<_,String>(3)?,"reviewer":r.get::<_,String>(4)?}))).map_err(internal)?.collect::<Result<Vec<_>,_>>().map_err(internal)?;
-    Ok(Json(json!({"copies":rows})))
+    let latest: i64 = db
+        .query_row(
+            "SELECT COALESCE(MAX(rowid),0) FROM client_review_copies WHERE room_id=?",
+            [&id],
+            |r| r.get(0),
+        )
+        .map_err(internal)?;
+    let ceiling = page.max_id.unwrap_or(latest).min(latest);
+    let total: i64 = db
+        .query_row(
+            "SELECT COUNT(*) FROM client_review_copies WHERE room_id=? AND rowid<=?",
+            params![id, ceiling],
+            |r| r.get(0),
+        )
+        .map_err(internal)?;
+    let mut q=db.prepare("SELECT rowid,id,revision,created_at,json_extract(payload,'$.reviewCopy.label'),json_extract(payload,'$.reviewCopy.reviewer') FROM client_review_copies WHERE room_id=?1 AND rowid<=?2 AND (?3 IS NULL OR rowid<?3) ORDER BY rowid DESC LIMIT ?4").map_err(internal)?;
+    let mut rows=q.query_map(params![id,ceiling,page.before,(limit+1) as i64],|r|Ok((r.get::<_,i64>(0)?,json!({"id":r.get::<_,String>(1)?,"revision":r.get::<_,i64>(2)?,"createdAt":r.get::<_,String>(3)?,"label":r.get::<_,String>(4)?,"reviewer":r.get::<_,String>(5)?})))).map_err(internal)?.collect::<Result<Vec<_>,_>>().map_err(internal)?;
+    let more = rows.len() > limit;
+    rows.truncate(limit);
+    let next = if more { rows.last().map(|r| r.0) } else { None };
+    Ok(Json(
+        json!({"copies":rows.into_iter().map(|r|r.1).collect::<Vec<_>>(),"nextCursor":next,"maxId":ceiling,"totalStored":total}),
+    ))
 }
 pub async fn copy(State(s): State<App>, Path((id, cid)): Path<(String, String)>) -> ApiResult {
     let payload: String =

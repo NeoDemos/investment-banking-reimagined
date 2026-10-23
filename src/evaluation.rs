@@ -158,18 +158,35 @@ pub async fn record(
         .map_err(internal)?;
     Ok(Json(entry))
 }
-pub async fn list(State(s): State<App>, Path(id): Path<String>) -> ApiResult {
+pub async fn list(
+    State(s): State<App>,
+    Path(id): Path<String>,
+    Query(page): Query<engagement::PageQuery>,
+) -> ApiResult {
     agent::load(&s, &id)?;
+    let limit = page.limit()?;
     let db = s.db.lock().unwrap();
-    let mut q=db.prepare("SELECT payload FROM client_evaluations WHERE room_id=? ORDER BY created_at DESC LIMIT 100").map_err(internal)?;
-    let rows = q
-        .query_map([id], |r| r.get::<_, String>(0))
+    let latest: i64 = db
+        .query_row(
+            "SELECT COALESCE(MAX(rowid),0) FROM client_evaluations WHERE room_id=?",
+            [&id],
+            |r| r.get(0),
+        )
+        .map_err(internal)?;
+    let ceiling = page.max_id.unwrap_or(latest).min(latest);
+    let (total,qualified,baseline,assisted):(i64,i64,f64,f64)=db.query_row("SELECT COUNT(*),COALESCE(SUM(CASE WHEN json_extract(payload,'$.metrics.qualityGatePassed')=1 THEN 1 ELSE 0 END),0),COALESCE(SUM(json_extract(payload,'$.baselineTotalStaffMinutes')),0),COALESCE(SUM(json_extract(payload,'$.assistedTotalStaffMinutes')),0) FROM client_evaluations WHERE room_id=? AND rowid<=?",params![id,ceiling],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?))).map_err(internal)?;
+    let mut q=db.prepare("SELECT rowid,payload FROM client_evaluations WHERE room_id=?1 AND rowid<=?2 AND (?3 IS NULL OR rowid<?3) ORDER BY rowid DESC LIMIT ?4").map_err(internal)?;
+    let mut rows = q
+        .query_map(params![id, ceiling, page.before, (limit + 1) as i64], |r| {
+            Ok((r.get::<_, i64>(0)?, r.get::<_, String>(1)?))
+        })
         .map_err(internal)?
         .collect::<Result<Vec<_>, _>>()
-        .map_err(internal)?
-        .into_iter()
-        .map(parse)
-        .collect::<Vec<_>>();
+        .map_err(internal)?;
+    let more = rows.len() > limit;
+    rows.truncate(limit);
+    let next = if more { rows.last().map(|r| r.0) } else { None };
+    let rows = rows.into_iter().map(|r| parse(r.1)).collect::<Vec<_>>();
     let mut values: Vec<f64> = rows
         .iter()
         .filter_map(|r| r["metrics"]["enteredStaffTimeRatio"].as_f64())
@@ -186,7 +203,7 @@ pub async fn list(State(s): State<App>, Path(id): Path<String>) -> ApiResult {
         })
     };
     Ok(Json(
-        json!({"observations":rows,"summary":{"enteredPairs":rows.len(),"observationWindow":"Latest 100 entries; all earlier records remain stored","qualityQualifiedPairs":values.len(),"medianEnteredStaffTimeRatio":median,"productivityClaim":"Unproven; unverified entries do not establish a general 10× result","clientImpactClaim":"Unproven; no realized client-outcome evidence recorded"}}),
+        json!({"observations":rows,"nextCursor":next,"maxId":ceiling,"summary":{"enteredPairs":total,"qualityQualifiedPairs":qualified,"displayedPageCount":rows.len(),"medianDisplayedQualifiedRatio":median,"observationWindow":format!("This page contains up to {limit} entries from a fixed snapshot of {total}; load older pages or export the complete snapshot."),"totalBaselineStaffMinutes":baseline,"totalAssistedStaffMinutes":assisted,"aggregateEnteredStaffTimeRatio":if total>0&&total==qualified&&assisted>0.{Some(baseline/assisted)}else{None},"productivityClaim":"Unproven; unverified entries do not establish a general 10× result","clientImpactClaim":"Unproven; no realized client-outcome evidence recorded"}}),
     ))
 }
 #[cfg(test)]

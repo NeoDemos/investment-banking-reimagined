@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { api } from "./api";
+import { completeSnapshot } from "./paging";
 type J = Record<string, any>;
 const phases = [
   ["setup", "Setup & coordination"],
@@ -32,6 +33,7 @@ export function ClientEvaluation({
   const [data, setData] = useState<J>({ observations: [], summary: {} }),
     [copies, setCopies] = useState<J[]>([]),
     [copyId, setCopyId] = useState(""),
+    [copyPage, setCopyPage] = useState<J>({}),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const load = async () => {
@@ -42,9 +44,52 @@ export function ClientEvaluation({
     ]);
     setData(d);
     setCopies(c.copies);
+    setCopyPage(c);
     setCopyId((id) =>
       c.copies.some((c: J) => c.id === id) ? id : c.copies[0]?.id || "",
     );
+  };
+  const moreObservations = async () => {
+    if (!room || data.nextCursor == null) return;
+    try {
+      const next = await api<J>(
+        `/api/client-work/${room.id}/evaluations?before=${data.nextCursor}&maxId=${data.maxId}`,
+      );
+      setData((old: J) => ({
+        ...next,
+        observations: [...old.observations, ...next.observations],
+      }));
+    } catch (e) {
+      setError(String(e));
+    }
+  };
+  const moreCopies = async () => {
+    if (!room || copyPage.nextCursor == null) return;
+    try {
+      const next = await api<J>(
+        `/api/client-work/${room.id}/copies?before=${copyPage.nextCursor}&maxId=${copyPage.maxId}`,
+      );
+      setCopies((old) => [...old, ...next.copies]);
+      setCopyPage(next);
+    } catch (e) {
+      setError(String(e));
+    }
+  };
+  const exportAll = async () => {
+    if (!room) return;
+    setBusy(true);
+    setError("");
+    try {
+      const all = await completeSnapshot(
+        `/api/client-work/${room.id}/evaluations`,
+        "observations",
+      );
+      exportJson(`evaluation-${room.id}-complete-snapshot.json`, all);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setBusy(false);
+    }
   };
   useEffect(() => {
     setData({ observations: [], summary: {} });
@@ -170,8 +215,13 @@ export function ClientEvaluation({
               quality gate
             </strong>
             <p>
+              Showing {data.observations.length} of{" "}
+              {data.summary.enteredPairs || 0} stored observations in this fixed
+              snapshot. {data.summary.observationWindow}
+            </p>
+            <p>
               {data.observations.length
-                ? `Median among qualified entered pairs: ${data.summary.medianEnteredStaffTimeRatio == null ? "not available" : data.summary.medianEnteredStaffTimeRatio.toFixed(2) + "×"}. Failed-quality observations remain in the log. This is arithmetic on unverified entries, not an established general productivity result.`
+                ? `Full snapshot staff minutes: ${data.summary.totalBaselineStaffMinutes} baseline → ${data.summary.totalAssistedStaffMinutes} assisted, including failed-quality pairs. Median for the most recently loaded page’s qualified entries: ${data.summary.medianDisplayedQualifiedRatio == null ? "not available" : data.summary.medianDisplayedQualifiedRatio.toFixed(2) + "×"}. Unverified entries do not establish a general productivity result.`
                 : "No paired banker observations recorded. Backend speed and the five model review passes do not establish either multiplier."}
             </p>
           </section>
@@ -224,6 +274,14 @@ export function ClientEvaluation({
               </details>
             </article>
           ))}
+          {data.nextCursor != null && (
+            <button
+              className="primary-action"
+              onClick={() => void moreObservations()}
+            >
+              Load older observations, including failures
+            </button>
+          )}
           <section className="observation-form">
             <h2>Record an actual paired observation.</h2>
             <p>
@@ -296,6 +354,15 @@ export function ClientEvaluation({
                         </option>
                       ))}
                     </select>
+                    {copyPage.nextCursor != null && (
+                      <button
+                        type="button"
+                        className="quiet-action"
+                        onClick={() => void moreCopies()}
+                      >
+                        Load older review copies
+                      </button>
+                    )}
                   </label>
                   <label>
                     Task label
@@ -484,10 +551,11 @@ export function ClientEvaluation({
           </section>
           <button
             className="quiet-action"
-            onClick={() => exportJson("evaluation-observations.json", data)}
+            disabled={busy}
+            onClick={() => void exportAll()}
           >
-            <Download size={14} /> Export all entered observations and quality
-            failures
+            <Download size={14} /> Export complete observation snapshot,
+            including failures
           </button>
         </>
       )}
