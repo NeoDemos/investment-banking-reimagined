@@ -4,6 +4,7 @@ import io
 import json
 import math
 import os
+import re
 from pathlib import Path
 import socket
 import statistics
@@ -60,6 +61,9 @@ def main():
                 raise AssertionError("Server did not start")
             startup = (time.perf_counter() - start) * 1000
             token = boot["token"]
+            html = request("/", raw=True).decode()
+            asset = re.search(r'src="([^"]+\.js)"', html)
+            check("Compiled React assets serve without a frontend development server", 'id="root"' in html and asset is not None and len(request(asset[1], raw=True)) > 0)
             check("Three seeded financial cases", len(boot["briefs"]) == 3)
             check("Offline capabilities honestly reported", not boot["capabilities"]["ai"] and not boot["capabilities"]["quotes"])
             request("/api/settings", {}, status=403, extra={"x-demo-token": ""})
@@ -120,6 +124,52 @@ def main():
             request("/api/voice", {"briefId": "bond", "sdp": ""}, status=400)
             request("/api/quotes/PEP", {}, status=400)
             check("Missing API access fails explicitly", True)
+            seed = request("/api/projects")["projects"]
+            check("Existing financial cases migrate into a connected engagement", len(seed) == 1 and len(seed[0]["analyses"]) == 3 and len(seed[0]["document"]["sections"]) == 6)
+            project = request("/api/projects", {"title": "Integration review", "client": "PepsiCo", "objective": "Test connected financial work and materials", "dueDate": "2026-10-26"})
+            pid = project["id"]
+            check("New engagement owns three independent analysis records", len(project["analyses"]) == 3 and all(a["id"] not in ("bond", "buyback", "acquisition") for a in project["analyses"]))
+            document = project["document"]
+            document["sections"][0]["body"] = {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Banker-written commentary", "marks": [{"type": "bold"}]}]}]}
+            project = request(f"/api/projects/{pid}/document", {"expectedRevision": 1, "document": document})
+            check("Structured rich text persists as a material revision", project["revision"] == 2 and project["document"] == document)
+            request(f"/api/projects/{pid}/document", {"expectedRevision": 1, "document": document}, status=409)
+            check("Stale material saves cannot overwrite current work", request(f"/api/projects/{pid}")["revision"] == 2)
+            import copy
+            malicious = copy.deepcopy(document)
+            malicious["sections"][0]["body"] = {"type": "script", "text": "alert(1)"}
+            request(f"/api/projects/{pid}/document", {"expectedRevision": 2, "document": malicious}, status=400)
+            malicious = copy.deepcopy(document)
+            malicious["sections"][0]["linkedAnalyses"] = ["bond"]
+            request(f"/api/projects/{pid}/document", {"expectedRevision": 2, "document": malicious}, status=400)
+            check("Document validation rejects scripts and cross-engagement analysis links", True)
+            snap = request(f"/api/projects/{pid}/snapshots", {"expectedRevision": 2})
+            analysis = project["analyses"][0]
+            params = analysis["params"].copy()
+            params["spread"] = 200
+            request(f"/api/briefs/{analysis['id']}/assumptions", {"expectedVersion": 1, "params": params})
+            changed = request(f"/api/projects/{pid}")
+            check("Recalculation updates the project analysis while preserving written narrative", changed["analyses"][0]["version"] == 2 and changed["document"] == document)
+            frozen = request(f"/api/projects/{pid}/snapshots/{snap['id']}")
+            check("Review copy preserves exact narrative and old financial versions", frozen == snap and frozen["analyses"][0]["version"] == 1 and frozen["document"] == document)
+            result = request(f"/api/projects/{pid}/generate", {"expectedRevision": 2})
+            check("Draft workflow binds current calculations into a new editable revision", result["project"]["revision"] == 3 and result["project"]["document"]["generatedFrom"][analysis["id"]] == 2 and len(result["steps"]) == 4)
+            request("/api/projects", {"title":"Wrong client","client":"Unknown","dueDate":"2026-10-26"}, status=400)
+            check("Unsupported client is not silently priced with PepsiCo data", True)
+            proc.terminate()
+            proc.wait(timeout=10)
+            proc = subprocess.Popen([str(BINARY)], cwd=local, env=env, stdout=subprocess.DEVNULL)
+            for _ in range(300):
+                try:
+                    restarted = request("/api/bootstrap")
+                    break
+                except urllib.error.URLError:
+                    time.sleep(.01)
+            else:
+                raise AssertionError("Server did not restart")
+            token = restarted["token"]
+            persisted = request(f"/api/projects/{pid}")
+            check("Engagement, draft revision and exact review copy survive process restart", persisted["revision"] == 3 and request(f"/api/projects/{pid}/snapshots/{snap['id']}") == snap)
             latency = []
             for _ in range(100):
                 t = time.perf_counter()

@@ -1,6 +1,7 @@
 {
-  "checksPassed": 17,
+  "checksPassed": 28,
   "checks": [
+    "Compiled React assets serve without a frontend development server",
     "Three seeded financial cases",
     "Offline capabilities honestly reported",
     "CSRF, Origin and Host boundaries reject invalid requests",
@@ -17,16 +18,26 @@
     "Historical calculations remain immutable",
     "Freeze applies to exact version; editing creates a new draft",
     "Invalid assumptions preserve the prior version",
-    "Missing API access fails explicitly"
+    "Missing API access fails explicitly",
+    "Existing financial cases migrate into a connected engagement",
+    "New engagement owns three independent analysis records",
+    "Structured rich text persists as a material revision",
+    "Stale material saves cannot overwrite current work",
+    "Document validation rejects scripts and cross-engagement analysis links",
+    "Recalculation updates the project analysis while preserving written narrative",
+    "Review copy preserves exact narrative and old financial versions",
+    "Draft workflow binds current calculations into a new editable revision",
+    "Unsupported client is not silently priced with PepsiCo data",
+    "Engagement, draft revision and exact review copy survive process restart"
   ],
   "measurement": {
     "machine": "local Apple Silicon Mac; not representative of managed bank hardware",
     "process": "release Rust backend only; browser excluded",
-    "startupMs": 19.2,
-    "backendRssMiB": 13.2,
-    "briefGetMedianMs": 0.19,
-    "briefGetP95Ms": 0.24,
-    "binaryMiB": 7.39
+    "startupMs": 400.7,
+    "backendRssMiB": 10.8,
+    "briefGetMedianMs": 0.2,
+    "briefGetP95Ms": 0.26,
+    "binaryMiB": 8.51
   },
   "notTested": [
     "Live OpenAI text, transcription and WebRTC calls: no API key",

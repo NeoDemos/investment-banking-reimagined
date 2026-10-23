@@ -33,7 +33,7 @@ Inference: a proof of concept may reuse eligible licensing if tenant policy perm
 
 ## Efficient native Windows and macOS path
 
-The MVP uses **Rust + SQLite + vanilla HTML/CSS/JavaScript**. Calculations and state management execute in Rust; modest browser rendering is the only UI runtime. There is no bundled Chromium, Node server, Python service, local LLM or background polling when idle. The browser polls only while a revision job is active. Backend HTTP I/O is asynchronous with two runtime worker threads; database work is small and serialized.
+The revised MVP uses **Rust + SQLite + React/TypeScript**. Calculations and state management execute in Rust; React and the browser handle the interface; the Tiptap editor is loaded only when needed. Node/npm are build tools, not runtime services. There is no bundled Chromium, Node server, Python service, local LLM or background polling when idle. The browser polls only while a revision job is active. Backend HTTP I/O is asynchronous with two runtime worker threads; database work is small and serialized.
 
 Rust is a practical choice for a fast, memory-conscious native core, not a claim that one language is universally fastest. Network/model latency, database access, document rendering and workload size often matter more. The measured backend footprint is in [verification.json](verification.json); browser memory is explicitly excluded. Managed-laptop performance has not been measured.
 

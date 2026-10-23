@@ -1,6 +1,6 @@
 # MVP architecture and financial methods
 
-Status: local external demonstration, 22 October 2026. Independently implemented; public-data only. For operation and limitations see [Monday demo](MONDAY_DEMO.md), [provider/platform findings](MVP_DATA_AND_PLATFORM.md), and [the original bank acceptance gates](BANK_ACCEPTANCE.md).
+Status: local external React application, revised 23 October 2026. Independently implemented; public-data only. For operation and limitations see [Monday demo](MONDAY_DEMO.md), [provider/platform findings](MVP_DATA_AND_PLATFORM.md), and [the original bank acceptance gates](BANK_ACCEPTANCE.md).
 
 ## Application structure
 
@@ -16,9 +16,9 @@ flowchart LR
     N --> A
 ```
 
-`src/finance.rs` owns financial mathematics and input limits. `src/main.rs` owns the loopback API, SQLite, revision jobs and optional provider requests. `src/workbook.rs` creates XLSX inspection copies. `public/` contains the entire small browser interface. Assets and the dated public snapshot are embedded in the release binary. Python scripts are development utilities only.
+`frontend/src/` contains the React/TypeScript application, with Tiptap editing and TanStack financial grids. `src/finance.rs` owns mathematics and input limits; `src/workspace.rs` owns engagements, material revisions, analysis bindings and saved review copies. `src/main.rs` serves the loopback API, revision jobs and provider requests. `src/workbook.rs` creates XLSX inspection copies. Vite builds static assets into ignored `public/react/`; Rust embeds them in the release binary. Node/npm and Python are development tools, not application runtime services.
 
-SQLite stores financial facts, method references, assumptions, immutable calculation versions, review notes, job states, optional dated quotes and exact-version demonstration freezes. A database does not acquire corporate-finance expertise by containing documents: this MVP makes financial conventions executable in Rust, and stores the methods/version identifiers alongside results. Models propose bounded input edits; they do not compute material figures or overwrite reported facts.
+SQLite stores financial facts, methods, assumptions, immutable calculation versions, review notes, jobs and dated quotes, plus engagements, analysis membership, structured rich-text revisions and saved review copies. A review copy captures both narrative and exact analysis versions. New engagements get independent analysis IDs. A database does not acquire corporate-finance expertise by containing documents: this MVP makes financial conventions executable in Rust, and stores the methods/version identifiers alongside results. Models propose bounded input edits; they do not compute material figures or overwrite reported facts.
 
 Each save checks the expected version. A stale save fails rather than overwriting another draft. Existing calculation snapshots remain unchanged. A demo freeze records that exact version, while further edits create another draft. This is single-user review state, not maker/checker separation of duties or a regulatory records system. Version models use the embedded public snapshot; refreshing sources requires a rebuild and fresh demo database. Durable multi-vintage source snapshots and migration controls remain future work.
 
@@ -36,7 +36,7 @@ Each save checks the expected version. A stale save fails rather than overwritin
 
 References are the public [Rabobank investor presentations page](https://www.rabobank.com/about-us/investor-relations/presentations), [H1 2026 results](https://media.rabobank.com/asset/e7a03d73-245e-47a1-a3de-5517892a183b/Results-Presentation-H1-2026.pdf) and [FY2025 investor presentation](https://media.rabobank.com/asset/d6eb375a-c232-4194-b8e5-0a9a044f0a2e/Investor-Presentation-FY-2025.pdf). H1 slides were visually inspected, including the cover and financial-information layouts.
 
-The public H1 reference uses a 4:3 canvas. The app adapts its navy/blue/orange palette, pale backgrounds, large light-weight headings, orange financial figures, blue captions, thin separators and discreet footer to 16:10 digital pages. CSS uses system Arial/Helvetica rather than proprietary Myriad for Rabobank. No original photography, proprietary font file or extracted logo artwork is bundled. A text wordmark provides the requested identity study; this is not an official bank template, endorsement or brand-approval claim. Brand-owner review and an authorized template remain necessary for real client use.
+The public H1 reference uses a 4:3 canvas. The app adapts its navy/blue/orange palette, pale backgrounds, large light-weight headings, orange financial figures, blue captions, thin separators and discreet footer to 16:10 digital pages. CSS uses locally installed Myriad and Myriad Light when available, with bundled OFL-licensed Source Sans 3 fallback. The exact customized Myriad for Rabobank font is not bundled or claimed. No original photography, proprietary font file or extracted logo artwork is bundled. A text wordmark provides the requested identity study; this is not an official bank template, endorsement or brand-approval claim. Brand-owner review and an authorized template remain necessary for real client use.
 
 ## Trust boundaries and known gaps
 
@@ -48,4 +48,4 @@ When explicitly used, external model requests send public briefing data and note
 
 ## Verification evidence
 
-Ten Rust unit tests cover pricing identities, sensitivities, input validation and review handling. The isolated integration script checks three seeded cases, independent Python recomputation of principal financial outputs, all XLSX working-result caches, revision/version behavior, unresolved notes, freeze semantics and loopback request boundaries. It does not run a full independent valuation validation or recalculate XLSX formulas in Microsoft Excel. Browser checks cover the three presentations, laptop layout and the review-to-new-version flow. See [machine-readable results](verification.json).
+Twelve Rust unit tests cover pricing identities, sensitivities, input validation, review handling and rich-text allowlists. The isolated integration script checks three seeded cases, independent Python recomputation of principal financial outputs, all XLSX working-result caches, revision/version behavior, unresolved notes, freeze semantics and loopback request boundaries. It does not run a full independent valuation validation or recalculate XLSX formulas in Microsoft Excel. The integration script now covers 28 check groups, including engagement creation, rich-text persistence, optimistic material saves, rejected script/cross-engagement nodes, narrative preservation and exact saved review copies. Browser checks cover React navigation, actual editor input/save, model-to-material updates, source inspection and typed review. See [machine-readable results](verification.json).

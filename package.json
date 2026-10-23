@@ -1,0 +1,27 @@
+{
+  "name": "banking-studio-workspace",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config frontend/vite.config.ts",
+    "build": "tsc -p frontend/tsconfig.json && vite build --config frontend/vite.config.ts && node scripts/frontend-notices.mjs",
+    "check": "tsc -p frontend/tsconfig.json"
+  },
+  "dependencies": {
+    "@fontsource/source-sans-3": "5.2.9",
+    "@tanstack/react-table": "8.21.3",
+    "@tiptap/react": "3.32.0",
+    "@tiptap/starter-kit": "3.32.0",
+    "@tiptap/pm": "3.32.0",
+    "lucide-react": "1.61.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "7.0.2",
+    "vite": "8.3.5"
+  }
+}
