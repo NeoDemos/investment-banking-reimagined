@@ -1,0 +1,7 @@
+{
+  "name": "banking-studio-cowork",
+  "version": "0.1.0",
+  "description": "Public-data investment banking research, financial analysis, IBD writing and Rabobank public-reference client presentations.",
+  "author": {"name": "Investment Banking Reimagined"},
+  "keywords": ["investment-banking", "presentations", "public-data", "financial-modeling"]
+}

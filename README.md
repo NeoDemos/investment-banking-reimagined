@@ -10,6 +10,8 @@ React/TypeScript presents the work; Rust and SQLite own financial calculations, 
 
 The same banking workflow can be trialled in Cowork without the custom frontend. [Setup, pricing research and limits](docs/COWORK_AND_PROVIDER_CONNECTIONS.md) covers the portable [Rabo banking materials skill](skills/rabo-banking-materials/SKILL.md), Gain/DEDALE/Kensho connection tooling and the distinction between configured URLs and authenticated provider data. Run `python3 scripts/package-cowork-skill.py` to create the upload ZIP. No licensed provider is authenticated by default.
 
+The combined **Banking Studio Cowork plugin** is installed locally in Claude with five skills for research, modeling, IBD copywriting and Rabo-style slide production. [Installation and project details](docs/COWORK_INSTALLATION.md) records the verified state and remaining model-usage limit. Run `python3 scripts/package-cowork-plugin.py` to rebuild the package and clean public-only task workspace; [first test brief](cowork/briefs/apple-bond-pitch.md).
+
 ## Run on this Mac
 
 Double-click **Start Demo.command**, or:

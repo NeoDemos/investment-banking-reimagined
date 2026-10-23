@@ -1,0 +1,22 @@
+{
+  "name": "US sector valuation references \u2014 Damodaran / NYU Stern",
+  "sourceUrl": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/vebitda.htm",
+  "retrievedAt": "2026-10-23T11:51:19.614518+00:00",
+  "valuationDate": "Not independently verified from this table; dated lookup snapshot, not a live quote",
+  "definition": "EV/EBITDA columns as published: positive-EBITDA firms and all firms. These are broad US industry aggregates, not target-company comparables or transaction multiples.",
+  "rows": [
+    {
+      "industry": "Beverage (Soft)",
+      "firms": 27,
+      "positiveEbitdaEvEbitda": 16.9,
+      "allFirmsEvEbitda": 18.24
+    },
+    {
+      "industry": "Food Processing",
+      "firms": 78,
+      "positiveEbitdaEvEbitda": 10.01,
+      "allFirmsEvEbitda": 9.63
+    }
+  ],
+  "use": "Context only. Do not mechanically apply to the operating-income-plus-D&A proxy or infer an equity value."
+}
