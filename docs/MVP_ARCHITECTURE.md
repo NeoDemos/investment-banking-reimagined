@@ -1,0 +1,23 @@
+# MVP architecture and financial methods
+
+Status: local external React application, revised 23 October 2026. Independently implemented; public-data only. For operation and limitations see [Monday demo](MONDAY_DEMO.md), [provider/platform findings](MVP_DATA_AND_PLATFORM.md), and [the original bank acceptance gates](BANK_ACCEPTANCE.md).
+
+## Application structure
+
+The current [MCP architecture](MCP_ARCHITECTURE.md) separates provider ports, canonical evidence, real SDK tools/resources, bounded context, workflow/model ports and semantic document/scene rendering. External model, voice and live source connections are deferred under the owner's revised instruction. Local blueprints exercise the full data-to-materials path without a model or API key; free-form instructions are saved for the next phase. [Peer research](PEER_ARCHITECTURE_RESEARCH.md) grounds these decisions in public product and technical sources.
+
+This supersedes the preceding manual-first and direct-tool-call prototypes. Legacy local state/APIs are retained. Source and calculation snapshots remain versioned with document revisions, and floating-point JSON values round-trip exactly. These are prototype state controls, not bank records, maker/checker or bank acceptance.
+
+## Financial conventions
+
+**Reported inputs.** US GAAP annual company facts; fiscal years are shown explicitly. Earnings use common-shareholder earnings when available. Diluted weighted-average shares are appropriate to the illustrative EPS denominator, not automatically to transaction equity consideration; the deal share count is therefore a separate assumption. Reported diluted EPS is retained for inspection but modeled EPS uses common earnings divided by shares and can differ due to share-class allocation and rounding. Debt definitions and tags are visible. D&A plus reported operating income is an unadjusted EBITDA proxy, not adjusted/covenant/rating EBITDA.
+
+**Bond issuance.** Regular semiannual coupon payments and redemption at 100; no accrued interest at issuance. Indicative yield is a linearly interpolated Treasury **par** yield at the chosen tenor plus an assumed credit spread. Discount every coupon and principal at a flat semiannual yield to maturity. Gross proceeds = notional × price / 100; net proceeds subtract assumed fees. Annual coupon cash cost uses notional × coupon. DV01 uses a central ±1bp yield shock. Net leverage assumes the new proceeds are deployed. This is not a bootstrapped zero-curve valuation, spread-curve fit, executable new-issue pricing, OAS or pricing of callable/convertible/irregular bonds.
+
+**Share repurchase.** Shares retired = cash spend / assumed execution price. Reduce common earnings for lost after-tax cash interest using the dated one-year Treasury reference. Reduce the historical diluted denominator for a full modeled period. Compute EPS and compare with historical modeled EPS. This is a stylized cash-funded scenario, not a forecast or time-weighted EPS result. Cash shortages are flagged. EPS accretion does not prove value creation. Sensitivity points that would retire all modeled shares are excluded.
+
+**Acquisition.** Equity consideration = assumed deal shares × assumed stock price × (1 + premium). Enterprise value adds reported target debt and subtracts cash. Funding splits the equity cheque between new debt and acquirer cash; target debt remains assumed outstanding. Combined earnings add target common earnings and after-tax synergies, then subtract after-tax new debt interest and forgone cash interest. Pro forma EPS uses the acquirer's diluted shares with no new issuance. Net leverage combines existing/new debt less remaining combined cash, divided by both EBITDA proxies and full assumed synergies. This excludes PPA, transaction fees, one-off integration costs, financing amortization, timing, shareholder/class complications, pension/lease/minority/associate EV adjustments and strategic/regulatory feasibility. The 3.5x discussion threshold is illustrative, not a rating rule. Fiscal periods are not calendarized.
+
+## Presentation adaptation
+
+The current canvas follows the public 4:3 reference, the actual public investor-site SVG wordmark and locally installed Myriad website font assets. No proprietary fonts are committed or bundled. The PDF's customized MyriadforRabobank font is distinct, and pixel-identical PDF reproduction is not claimed. Model-selected block composition is validated and remains subject to page-density and banker review. See [branding and design evidence](AGENT_WORKFLOW.md#dynamic-design-and-branding).

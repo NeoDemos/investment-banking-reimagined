@@ -1,0 +1,869 @@
+{
+  "asOf": "2026-10-23T13:00:29.096223+00:00",
+  "scope": "Actual local public-data demonstrations; no confidential data, human acceptance or bank approval",
+  "runtime": {
+    "frontend": "React/TypeScript",
+    "financialEngine": "Rust corporate-finance/0.2.0",
+    "database": "local SQLite",
+    "url": "http://localhost:4173",
+    "binarySha256": "a218ac8bec0c11695f802aa3ead5f2e92cfeb147c525f8ddb28e03b781e88c41"
+  },
+  "automated": {
+    "rustTestsPassed": 29,
+    "integrationGroupsPassed": 73,
+    "suites": {
+      "verify_capital_models": {
+        "checksPassed": 8,
+        "checks": [
+          "IPO: independent offer-equity/share-price, new-share ownership and fee/net-proceeds bridge",
+          "ipo: every headline metric resolves to inspectable financial lineage",
+          "ipo: scoped recalculation preserves source/prior/other-action snapshots and rejects stale or invalid edits",
+          "LBO: closed-form debt amortization and independently discounted sponsor cash flows reconcile to the annual schedule",
+          "lbo: every headline metric resolves to inspectable financial lineage",
+          "LBO: unfunded operating gaps suppress IRR/MOIC instead of assuming an unrequested financing cure",
+          "lbo: scoped recalculation preserves source/prior/other-action snapshots and rejects stale or invalid edits",
+          "IPO and LBO models, schedules, lineage, amendments and materials survive process restart unchanged"
+        ],
+        "externalCalls": 0,
+        "scope": "Hypothetical deterministic models; no underwriting, human acceptance or productivity claim"
+      },
+      "verify_director": {
+        "checksPassed": 8,
+        "checks": [
+          "Only fixed public connectors can fetch; report registration is explicit pending extraction and cannot silently promote source facts",
+          "Saved multi-source/profile settings, High CLI arguments, restored run metadata and cancellation are exercised against an isolated real server",
+          "Unchecked bank, sector and EUR references are excluded from the new workroom and model context",
+          "Unsupported model plan asks for clarification without claiming a model or materials",
+          "Explicit fake CLI exercises plan\u2192MCP pool retrieval\u2192deterministic same-net funding\u2192typed source-bound story; no banker acceptance inferred",
+          "An existing-turn client-priority change persists into brief/context/conversation; target substitution is rejected without modifying the room",
+          "Invalid generated financial prose cannot overwrite current work; stale agent turns reject before execution",
+          "Older document contract migrates once as a new review-required revision; complete advice retained, old document/source/model snapshots preserved and restart is idempotent"
+        ],
+        "externalCalls": 0,
+        "model": "explicit fake CLI for contract failures only",
+        "realInferenceOrHumanValueEstablished": false
+      },
+      "verify_mcp_architecture": {
+        "asOf": "2026-10-23",
+        "checksPassed": 11,
+        "checks": [
+          "Architecture is discovered from the real MCP server and planned providers are explicit",
+          "Model invocation is deferred without requesting a key",
+          "Free-form briefs persist honestly without fake generated materials; stale captures fail",
+          "Lightweight room summaries do not download analytical/source/history payloads",
+          "Three genuine local MCP workflows generate different page counts with canonical source/context/financial bindings",
+          "Scoped document edits/reordering recompile scenes without changing financial data",
+          "Stale and partially invalid edit batches cannot overwrite a saved artifact",
+          "Invalid financial bindings are rejected at the document boundary",
+          "Unsupported entities and invalid financial workflow scope fail explicitly",
+          "Restart preserves exact document, scene and bounded context snapshots",
+          "Standalone SDK stdio supports legacy MCP initialization, tool discovery/call, structured observations and citation resource read; arbitrary files are rejected"
+        ],
+        "localWorkflowLatencyMs": {
+          "bondMs": 11.27,
+          "buybackMs": 6.12,
+          "acquisitionMs": 13.43
+        },
+        "externalConnections": "Deferred; proxy points to a closed port during tests",
+        "modelCalls": 0,
+        "blueprintPageCounts": {
+          "bond": 5,
+          "buyback": 4,
+          "acquisition": 7
+        },
+        "notClaimed": [
+          "Autonomous natural-language drafting",
+          "Live provider entitlements or model/API integration",
+          "Bank acceptance",
+          "General pixel-perfect typesetting"
+        ]
+      },
+      "verify_client_controls": {
+        "checksPassed": 5,
+        "checks": [
+          "Blocked local material/evidence/review tasks prevent freezing across later commits; explicit clearance permits it while commercial gate stays blocked",
+          "Changed advice reopens a deferred story issue; an unchanged source deferral remains scoped and preserved",
+          "Confirmed USD500m\u2192600m amendment creates new exact-gap lineages without resizing or changing archived models/sources/copies; deliberate sizing affects only one action",
+          "Working-sheet and displayed net-proceeds formulas agree on all conversions; derived debt exposes exact tags, components, units, period and accession with honestly labelled source destinations",
+          "Stable bounded pagination retrieves all 101 observations including the oldest quality failure and all 53 copies; concurrent inserts stay outside a fixed snapshot; invalid cursors rejected"
+        ],
+        "externalCalls": 0,
+        "syntheticDataOnly": true,
+        "humanProductivityOrClientImpactEstablished": false
+      },
+      "verify_demo": {
+        "checksPassed": 28,
+        "checks": [
+          "Compiled React assets serve without a frontend development server",
+          "Three seeded financial cases",
+          "Offline capabilities honestly reported",
+          "CSRF, Origin and Host boundaries reject invalid requests",
+          "Public observations respect the as-of date",
+          "bond Excel formula caches equal every Rust working",
+          "buyback Excel formula caches equal every Rust working",
+          "acquisition Excel formula caches equal every Rust working",
+          "Bond PV independently recomputed",
+          "Buyback EPS independently recomputed including opportunity cost",
+          "Acquisition EPS independently recomputed",
+          "Background revision actually completes",
+          "Review changes assumptions and recalculates",
+          "Unrecognized requests remain visible and pending",
+          "Historical calculations remain immutable",
+          "Freeze applies to exact version; editing creates a new draft",
+          "Invalid assumptions preserve the prior version",
+          "Deferred external connections fail explicitly",
+          "Existing financial cases migrate into a connected engagement",
+          "New engagement owns three independent analysis records",
+          "Structured rich text persists as a material revision",
+          "Stale material saves cannot overwrite current work",
+          "Document validation rejects scripts and cross-engagement analysis links",
+          "Recalculation updates the project analysis while preserving written narrative",
+          "Review copy preserves exact narrative and old financial versions",
+          "Draft workflow binds current calculations into a new editable revision",
+          "Unsupported client is not silently priced with PepsiCo data",
+          "Engagement, draft revision and exact review copy survive process restart"
+        ],
+        "measurement": {
+          "machine": "local Apple Silicon Mac; not representative of managed bank hardware",
+          "process": "release Rust backend only; browser excluded",
+          "startupMs": 586.1,
+          "backendRssMiB": 12.2,
+          "briefGetMedianMs": 0.25,
+          "briefGetP95Ms": 0.34,
+          "binaryMiB": 12.06
+        },
+        "notTested": [
+          "Live model, transcription and voice: deferred by owner instruction",
+          "Live quote/provider integration: deferred by owner instruction",
+          "Managed Windows/macOS deployment",
+          "Bank acceptance"
+        ]
+      },
+      "verify_client_workflow": {
+        "checksPassed": 13,
+        "checks": [
+          "bond: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+          "bond: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+          "bond: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+          "bond: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+          "buyback: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+          "buyback: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+          "buyback: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+          "buyback: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+          "acquisition: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+          "acquisition: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+          "acquisition: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+          "acquisition: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+          "Exact client state and observations survive restart; legacy full histories migrate transactionally to immutable on-demand revisions"
+        ],
+        "externalCalls": 0,
+        "notEstablished": [
+          "10x productivity",
+          "5x client impact",
+          "Autonomous model drafting",
+          "Bank acceptance"
+        ]
+      }
+    }
+  },
+  "liveCases": [
+    {
+      "name": "appleDebt",
+      "runId": "e8fd55e7-31ed-4075-aecf-e2dac38addeb",
+      "status": "completed",
+      "connection": {
+        "effort": "high",
+        "id": "codex_high",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local"
+      },
+      "startedAt": "2026-10-23T12:43:03.419047+00:00",
+      "finishedAt": "2026-10-23T12:45:55.971188+00:00",
+      "sourceIds": [
+        "sec",
+        "issuer_reports",
+        "treasury",
+        "bund",
+        "sector",
+        "bank"
+      ],
+      "sourceRefreshes": [
+        {
+          "adapter": "public-structured/1",
+          "effect": "Previous pool receipts and existing workrooms are unchanged; no live success was inferred.",
+          "error": "Public source HTTP 403 Forbidden",
+          "finishedAt": "2026-10-23T12:43:49.356625+00:00",
+          "id": "94473023-85cd-4b06-9195-0b4a99258b1e",
+          "source": "sec:AAPL",
+          "startedAt": "2026-10-23T12:43:48.871793+00:00",
+          "state": "failed"
+        },
+        {
+          "adapter": "public-structured/1",
+          "finishedAt": "2026-10-23T12:43:49.934200+00:00",
+          "id": "e5bb7e95-ec0f-40cb-b90b-539c69d169e0",
+          "receiptId": "pool-5ad66fe37a3780cd054d63b08bda71df7b102c9244faf031b07a43a5e0fa3d58",
+          "source": "issuer:apple",
+          "startedAt": "2026-10-23T12:43:49.357066+00:00",
+          "state": "ingested"
+        },
+        {
+          "adapter": "public-structured/1",
+          "finishedAt": "2026-10-23T12:44:10.860120+00:00",
+          "id": "3402d0f5-4bda-475c-add6-f771c7943980",
+          "receiptId": "pool-247f98460428efb7828d2e6416283775578a1402914bec88a55c3ff759bcaf2e",
+          "source": "treasury:USD",
+          "startedAt": "2026-10-23T12:43:49.934547+00:00",
+          "state": "ingested"
+        },
+        {
+          "adapter": "public-structured/1",
+          "finishedAt": "2026-10-23T12:44:11.294150+00:00",
+          "id": "248ce5c8-559f-46f4-80e8-ca5070fbf876",
+          "receiptId": "pool-dbcfdab40da919ff4db2700681828c2b3e0a444108b53d311bbc071d78fcbe6c",
+          "source": "bund:EUR",
+          "startedAt": "2026-10-23T12:44:10.860424+00:00",
+          "state": "ingested"
+        },
+        {
+          "adapter": "public-structured/1",
+          "finishedAt": "2026-10-23T12:44:13.288539+00:00",
+          "id": "26ea5420-4ca4-44f8-9898-47a328629f0f",
+          "receiptId": "pool-8c4c6758c835792510a136b9cda8de9359312e170fccf5b01881f18e57a7d503",
+          "source": "sector:US",
+          "startedAt": "2026-10-23T12:44:11.294487+00:00",
+          "state": "ingested"
+        }
+      ],
+      "roomId": "722744f8-b593-4a2a-885c-e4b174c85937",
+      "error": null,
+      "kind": "bond",
+      "currentRevision": 4,
+      "frames": 12,
+      "sourceKeys": [
+        "bank:rabobank",
+        "bund:EUR",
+        "sec:AAPL",
+        "sector:US",
+        "treasury:USD"
+      ],
+      "scenarios": [
+        {
+          "optionId": "base",
+          "analysisId": "base_case",
+          "params": {
+            "amount": 497.82151103276067,
+            "coupon": 6.25,
+            "fees": 50.0,
+            "spread": 125.0,
+            "tenor": 5.0
+          },
+          "metrics": [
+            {
+              "key": "yield",
+              "label": "Indicative issue yield",
+              "unit": "%",
+              "value": 6.03
+            },
+            {
+              "key": "netProceeds",
+              "label": "Net proceeds",
+              "unit": "USDm",
+              "value": 499.99999999999994
+            },
+            {
+              "key": "interest",
+              "label": "Annual coupon cost",
+              "unit": "USDm",
+              "value": 31.11384443954754
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 0.43332550363390165
+            }
+          ]
+        },
+        {
+          "optionId": "alternative",
+          "analysisId": "alternative_case",
+          "params": {
+            "amount": 498.70941983266425,
+            "coupon": 6.25,
+            "fees": 50.0,
+            "spread": 125.0,
+            "tenor": 3.0
+          },
+          "metrics": [
+            {
+              "key": "yield",
+              "label": "Indicative issue yield",
+              "unit": "%",
+              "value": 5.97
+            },
+            {
+              "key": "netProceeds",
+              "label": "Net proceeds",
+              "unit": "USDm",
+              "value": 500.0
+            },
+            {
+              "key": "interest",
+              "label": "Annual coupon cost",
+              "unit": "USDm",
+              "value": 31.169338739541516
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 0.43332550363390165
+            }
+          ]
+        }
+      ],
+      "framesGeneratedInThisRun": 12
+    },
+    {
+      "name": "ipo",
+      "runId": "bf5b974c-e1a2-4dcf-ba11-f58e517bfbb9",
+      "status": "completed",
+      "connection": {
+        "effort": "high",
+        "id": "codex_high",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local"
+      },
+      "startedAt": "2026-10-23T12:47:50.006452+00:00",
+      "finishedAt": "2026-10-23T12:50:19.112039+00:00",
+      "sourceIds": [
+        "sec",
+        "sector"
+      ],
+      "sourceRefreshes": [
+        {
+          "adapter": "public-structured/1",
+          "effect": "Previous pool receipts and existing workrooms are unchanged; no live success was inferred.",
+          "error": "Public source HTTP 403 Forbidden",
+          "finishedAt": "2026-10-23T12:48:45.510725+00:00",
+          "id": "77bba167-e661-4c0d-a8aa-76424f6f5fa1",
+          "source": "sec:GIS",
+          "startedAt": "2026-10-23T12:48:45.326797+00:00",
+          "state": "failed"
+        },
+        {
+          "adapter": "public-structured/1",
+          "finishedAt": "2026-10-23T12:48:46.444917+00:00",
+          "id": "18283f42-4c29-4f65-8517-91dc746169d6",
+          "receiptId": "pool-a53c3acaccb5df1aa49e2fbe7ab218f2485f46a3966fe4fc7ceb66f027de26cb",
+          "source": "sector:US",
+          "startedAt": "2026-10-23T12:48:45.511025+00:00",
+          "state": "ingested"
+        }
+      ],
+      "roomId": "6dcc8839-4bdf-4be4-81b6-44e3c6eb3a2f",
+      "error": null,
+      "kind": "ipo",
+      "currentRevision": 4,
+      "frames": 12,
+      "sourceKeys": [
+        "sec:CPB",
+        "sec:GIS",
+        "sec:PEP",
+        "sector:US"
+      ],
+      "scenarios": [
+        {
+          "optionId": "base",
+          "analysisId": "base_case",
+          "params": {
+            "evMultiple": 12.0,
+            "fees": 5.0,
+            "offerDiscount": 10.0,
+            "primaryRaise": 500.0
+          },
+          "metrics": [
+            {
+              "key": "offerPrice",
+              "label": "Illustrative offer price",
+              "unit": "USD/share",
+              "value": 7.04299795424958
+            },
+            {
+              "key": "netProceeds",
+              "label": "Net primary proceeds",
+              "unit": "USDm",
+              "value": 475.0
+            },
+            {
+              "key": "dilution",
+              "label": "New investor ownership",
+              "unit": "%",
+              "value": 11.663113304813134
+            },
+            {
+              "key": "enterpriseValue",
+              "label": "Enterprise value before offer discount",
+              "unit": "USDm",
+              "value": 17292.0
+            },
+            {
+              "key": "preMoneyEquity",
+              "label": "Pre-money equity before discount",
+              "unit": "USDm",
+              "value": 4207.799999999999
+            },
+            {
+              "key": "newShares",
+              "label": "New shares issued",
+              "unit": "m shares",
+              "value": 70.9924954185613
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 9.079944482997918
+            }
+          ]
+        },
+        {
+          "optionId": "alternative",
+          "analysisId": "alternative_case",
+          "params": {
+            "evMultiple": 10.0,
+            "fees": 5.0,
+            "offerDiscount": 10.0,
+            "primaryRaise": 500.0
+          },
+          "metrics": [
+            {
+              "key": "offerPrice",
+              "label": "Illustrative offer price",
+              "unit": "USD/share",
+              "value": 2.219118467546958
+            },
+            {
+              "key": "netProceeds",
+              "label": "Net primary proceeds",
+              "unit": "USDm",
+              "value": 475.0
+            },
+            {
+              "key": "dilution",
+              "label": "New investor ownership",
+              "unit": "%",
+              "value": 29.529535441348447
+            },
+            {
+              "key": "enterpriseValue",
+              "label": "Enterprise value before offer discount",
+              "unit": "USDm",
+              "value": 14410.0
+            },
+            {
+              "key": "preMoneyEquity",
+              "label": "Pre-money equity before discount",
+              "unit": "USDm",
+              "value": 1325.7999999999993
+            },
+            {
+              "key": "newShares",
+              "label": "New shares issued",
+              "unit": "m shares",
+              "value": 225.31469469167476
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 9.079944482997918
+            }
+          ]
+        }
+      ],
+      "framesGeneratedInThisRun": 12
+    },
+    {
+      "name": "lbo",
+      "runId": "e29b6d52-38ce-4032-8bfa-831b72989997",
+      "status": "completed",
+      "connection": {
+        "effort": "high",
+        "id": "codex_high",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local"
+      },
+      "startedAt": "2026-10-23T12:51:52.647545+00:00",
+      "finishedAt": "2026-10-23T12:54:42.274898+00:00",
+      "sourceIds": [
+        "sec",
+        "sector"
+      ],
+      "sourceRefreshes": [
+        {
+          "adapter": "public-structured/1",
+          "effect": "Previous pool receipts and existing workrooms are unchanged; no live success was inferred.",
+          "error": "Public source HTTP 403 Forbidden",
+          "finishedAt": "2026-10-23T12:53:04.399408+00:00",
+          "id": "8fbba9f3-558c-40af-b181-31989f203f8a",
+          "source": "sec:CPB",
+          "startedAt": "2026-10-23T12:53:04.259586+00:00",
+          "state": "failed"
+        },
+        {
+          "adapter": "public-structured/1",
+          "finishedAt": "2026-10-23T12:53:05.722032+00:00",
+          "id": "c9fec500-5bdf-4fa2-a0c8-21ca9c89ae5a",
+          "receiptId": "pool-46f17e237e69e113b798470d9e0a60fc4b6ba42acaba5ec7c082b43d0a78a87f",
+          "source": "sector:US",
+          "startedAt": "2026-10-23T12:53:04.399626+00:00",
+          "state": "ingested"
+        }
+      ],
+      "roomId": "4584d566-9135-4b0e-bc1c-821ac056b219",
+      "error": null,
+      "kind": "lbo",
+      "currentRevision": 7,
+      "frames": 15,
+      "sourceKeys": [
+        "sec:CPB",
+        "sec:GIS",
+        "sec:PEP",
+        "sector:US"
+      ],
+      "scenarios": [
+        {
+          "optionId": "base",
+          "analysisId": "base_r6",
+          "params": {
+            "cashConversion": 40.0,
+            "entryMultiple": 10.0,
+            "exitMultiple": 10.0,
+            "fees": 2.0,
+            "growth": 2.0,
+            "interestRate": 8.0,
+            "leverage": 5.0,
+            "years": 5.0
+          },
+          "metrics": [
+            {
+              "key": "sponsorEquity",
+              "label": "Sponsor equity contribution",
+              "unit": "USDm",
+              "value": 6578.0
+            },
+            {
+              "key": "irr",
+              "label": "Illustrative sponsor IRR",
+              "unit": "%",
+              "value": 3.506301499860176
+            },
+            {
+              "key": "moic",
+              "label": "Sponsor MOIC",
+              "unit": "x",
+              "value": 1.1880479054769233
+            },
+            {
+              "key": "exitEquity",
+              "label": "Exit equity proceeds",
+              "unit": "USDm",
+              "value": 7814.9791222272015
+            },
+            {
+              "key": "exitDebt",
+              "label": "Debt at exit",
+              "unit": "USDm",
+              "value": 6151.6430382528
+            },
+            {
+              "key": "cashShortfall",
+              "label": "Unfunded cash shortfall",
+              "unit": "USDm",
+              "value": 0.0
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 5.3304347826086955
+            }
+          ]
+        },
+        {
+          "optionId": "alternative",
+          "analysisId": "alternative_r5",
+          "params": {
+            "cashConversion": 40.0,
+            "entryMultiple": 10.0,
+            "exitMultiple": 7.5,
+            "fees": 2.0,
+            "growth": 0.0,
+            "interestRate": 8.0,
+            "leverage": 5.0,
+            "years": 5.0
+          },
+          "metrics": [
+            {
+              "key": "sponsorEquity",
+              "label": "Sponsor equity contribution",
+              "unit": "USDm",
+              "value": 6578.0
+            },
+            {
+              "key": "irr",
+              "label": "Illustrative sponsor IRR",
+              "unit": "%",
+              "value": -13.62514466439011
+            },
+            {
+              "key": "moic",
+              "label": "Sponsor MOIC",
+              "unit": "x",
+              "value": 0.4807692307692308
+            },
+            {
+              "key": "exitEquity",
+              "label": "Exit equity proceeds",
+              "unit": "USDm",
+              "value": 3162.5
+            },
+            {
+              "key": "exitDebt",
+              "label": "Debt at exit",
+              "unit": "USDm",
+              "value": 6325.0
+            },
+            {
+              "key": "cashShortfall",
+              "label": "Unfunded cash shortfall",
+              "unit": "USDm",
+              "value": 0.0
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 5.3304347826086955
+            }
+          ]
+        }
+      ],
+      "framesGeneratedInThisRun": 14
+    },
+    {
+      "name": "coaching",
+      "runId": "21a94042-2c69-4823-9fb6-ef501f08247b",
+      "status": "completed",
+      "connection": {
+        "effort": "high",
+        "id": "codex_high",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local"
+      },
+      "startedAt": "2026-10-23T12:55:57.874986+00:00",
+      "finishedAt": "2026-10-23T12:58:25.605838+00:00",
+      "sourceIds": [
+        "sec",
+        "sector"
+      ],
+      "sourceRefreshes": [],
+      "roomId": "4584d566-9135-4b0e-bc1c-821ac056b219",
+      "error": null,
+      "kind": "lbo",
+      "currentRevision": 7,
+      "frames": 15,
+      "sourceKeys": [
+        "sec:CPB",
+        "sec:GIS",
+        "sec:PEP",
+        "sector:US"
+      ],
+      "scenarios": [
+        {
+          "optionId": "base",
+          "analysisId": "base_r6",
+          "params": {
+            "cashConversion": 40.0,
+            "entryMultiple": 10.0,
+            "exitMultiple": 10.0,
+            "fees": 2.0,
+            "growth": 2.0,
+            "interestRate": 8.0,
+            "leverage": 5.0,
+            "years": 5.0
+          },
+          "metrics": [
+            {
+              "key": "sponsorEquity",
+              "label": "Sponsor equity contribution",
+              "unit": "USDm",
+              "value": 6578.0
+            },
+            {
+              "key": "irr",
+              "label": "Illustrative sponsor IRR",
+              "unit": "%",
+              "value": 3.506301499860176
+            },
+            {
+              "key": "moic",
+              "label": "Sponsor MOIC",
+              "unit": "x",
+              "value": 1.1880479054769233
+            },
+            {
+              "key": "exitEquity",
+              "label": "Exit equity proceeds",
+              "unit": "USDm",
+              "value": 7814.9791222272015
+            },
+            {
+              "key": "exitDebt",
+              "label": "Debt at exit",
+              "unit": "USDm",
+              "value": 6151.6430382528
+            },
+            {
+              "key": "cashShortfall",
+              "label": "Unfunded cash shortfall",
+              "unit": "USDm",
+              "value": 0.0
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 5.3304347826086955
+            }
+          ]
+        },
+        {
+          "optionId": "alternative",
+          "analysisId": "alternative_r5",
+          "params": {
+            "cashConversion": 40.0,
+            "entryMultiple": 10.0,
+            "exitMultiple": 7.5,
+            "fees": 2.0,
+            "growth": 0.0,
+            "interestRate": 8.0,
+            "leverage": 5.0,
+            "years": 5.0
+          },
+          "metrics": [
+            {
+              "key": "sponsorEquity",
+              "label": "Sponsor equity contribution",
+              "unit": "USDm",
+              "value": 6578.0
+            },
+            {
+              "key": "irr",
+              "label": "Illustrative sponsor IRR",
+              "unit": "%",
+              "value": -13.62514466439011
+            },
+            {
+              "key": "moic",
+              "label": "Sponsor MOIC",
+              "unit": "x",
+              "value": 0.4807692307692308
+            },
+            {
+              "key": "exitEquity",
+              "label": "Exit equity proceeds",
+              "unit": "USDm",
+              "value": 3162.5
+            },
+            {
+              "key": "exitDebt",
+              "label": "Debt at exit",
+              "unit": "USDm",
+              "value": 6325.0
+            },
+            {
+              "key": "cashShortfall",
+              "label": "Unfunded cash shortfall",
+              "unit": "USDm",
+              "value": 0.0
+            },
+            {
+              "key": "baseLeverage",
+              "label": "Existing net debt / EBITDA proxy",
+              "unit": "x",
+              "value": 5.3304347826086955
+            }
+          ]
+        }
+      ],
+      "framesGeneratedInThisRun": 15
+    },
+    {
+      "name": "claudeQuota",
+      "runId": "7b056124-5352-42e5-98cb-aa3c06b62a12",
+      "status": "failed",
+      "connection": {
+        "effort": "medium",
+        "id": "claude_opus_medium",
+        "model": "opus",
+        "provider": "claude_local"
+      },
+      "startedAt": "2026-10-23T12:55:23.220395+00:00",
+      "finishedAt": "2026-10-23T12:55:25.150378+00:00",
+      "sourceIds": [
+        "sec",
+        "treasury"
+      ],
+      "sourceRefreshes": [],
+      "roomId": null,
+      "error": "Claude Code is signed in but its subscription usage limit has been reached. Choose Codex High or retry after the account limit resets. Previous saved work is preserved.",
+      "framesGeneratedInThisRun": null
+    }
+  ],
+  "browser": {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "applePagesWithoutOverflow": 12,
+    "ipoPagesWithoutOverflow": 12,
+    "finalLboPagesWithoutOverflow": 15,
+    "defectsFoundAndCorrected": [
+      "IPO/LBO fee assumptions were displayed with the legacy bond bps unit; now percent",
+      "Eight-row LBO assumptions plus rationale overflowed the page; now a two-column assumptions frame"
+    ],
+    "verifiedInteractions": [
+      "Exact original Apple prompt submitted through UI and completed",
+      "Live run restores after browser reload, including elapsed time, stages and cancellation",
+      "Multiple source checkboxes persist; unchecked sources excluded from IPO/LBO room/context",
+      "Completion feedback remains visible in Data pool",
+      "Actual Claude quota error remains visible and saved work unchanged",
+      "Model inspector alternative edit changes only chosen action and preserves originals",
+      "Discuss this model opens contextual prompt; actual agent changes only requested base growth",
+      "Model draft clears only after the request is accepted",
+      "Final app reload restores completed coaching and exact model parameters",
+      "Final model schedule uses ordered, named columns and explicit USDm units; LBO comparison includes exit equity and debt"
+    ],
+    "feeUnit": "IPO/LBO transaction fees are percentage values; bond issue fees remain bps"
+  },
+  "liveCoachingMath": {
+    "growthBefore": 4,
+    "growthAfter": 2,
+    "irrBefore": 7.4493736204609196,
+    "irrAfter": 3.506301499860176,
+    "exitDebtClosedForm": 6151.643038252803,
+    "sourceOtherActionAndPriorModelsPreserved": true,
+    "briefPreserved": true
+  },
+  "limitations": [
+    "Claude Opus Medium is signed in but actual invocation hit weekly usage_limit_reached; successful Claude generation not established",
+    "SEC live requests returned HTTP403; PEP/CPB/GIS use explicitly dated public archive receipts",
+    "Apple annual-report HTML adapter is report-specific; arbitrary company discovery/general PDF extraction unimplemented",
+    "No live issuer credit spreads or stock prices; transaction and forecast inputs remain assumptions",
+    "IPO share/proceeds and single-tranche LBO are bounded illustrations, not underwriting",
+    "No qualified human task observations; 10x productivity,5x impact and bank acceptance unproven"
+  ]
+}

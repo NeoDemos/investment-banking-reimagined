@@ -1,0 +1,551 @@
+{
+  "asOf": "2026-10-23",
+  "target": "2026-10-26",
+  "parent": {
+    "number": 39,
+    "id": 5973894277,
+    "node_id": "I_kwDOVSrbdM8AAAABZBJkhQ",
+    "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/39",
+    "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQSI"
+  },
+  "milestone": 6,
+  "tasks": [
+    {
+      "code": "M01",
+      "title": "Verify public references and free/trial data routes",
+      "start": "2026-10-22",
+      "target": "2026-10-22",
+      "lowHours": 3,
+      "ownerHours": 4,
+      "highHours": 6,
+      "dependsOn": [],
+      "technicalComplete": true,
+      "github": {
+        "number": 40,
+        "id": 5973894695,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJmJw",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/40",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQSw"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M02",
+      "title": "Implement and validate the three bounded financial methods",
+      "start": "2026-10-22",
+      "target": "2026-10-23",
+      "lowHours": 4,
+      "ownerHours": 6,
+      "highHours": 9,
+      "dependsOn": [
+        "M01"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 41,
+        "id": 5973895066,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJnmg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/41",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQUg"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M03",
+      "title": "Build the efficient Rust and SQLite local application",
+      "start": "2026-10-22",
+      "target": "2026-10-23",
+      "lowHours": 3,
+      "ownerHours": 4,
+      "highHours": 6,
+      "dependsOn": [
+        "M01"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 42,
+        "id": 5973895494,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJpRg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/42",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQWA"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M04",
+      "title": "Build and inspect digital Rabobank-reference presentations",
+      "start": "2026-10-23",
+      "target": "2026-10-23",
+      "lowHours": 3,
+      "ownerHours": 5,
+      "highHours": 8,
+      "dependsOn": [
+        "M02",
+        "M03"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 43,
+        "id": 5973895830,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJqlg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/43",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQX0"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M05",
+      "title": "Implement page review, real revisions and completion messages",
+      "start": "2026-10-23",
+      "target": "2026-10-24",
+      "lowHours": 2,
+      "ownerHours": 3,
+      "highHours": 5,
+      "dependsOn": [
+        "M03",
+        "M04"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 44,
+        "id": 5973896187,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJr-w",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/44",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQaU"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M06",
+      "title": "Export offline briefings and Excel inspection copies",
+      "start": "2026-10-24",
+      "target": "2026-10-24",
+      "lowHours": 2,
+      "ownerHours": 3,
+      "highHours": 4,
+      "dependsOn": [
+        "M02",
+        "M04"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 45,
+        "id": 5973896689,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJt8Q",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/45",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQb0"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M07",
+      "title": "Rehearse API text, recorded speech and live voice end to end",
+      "start": null,
+      "target": null,
+      "lowHours": 2,
+      "ownerHours": 3,
+      "highHours": 6,
+      "dependsOn": [
+        "M05"
+      ],
+      "technicalComplete": false,
+      "github": {
+        "number": 46,
+        "id": 5973897132,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJvrA",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/46",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQfU"
+      },
+      "phase": "Next phase",
+      "deferredByOwner": true,
+      "horizon": "1\u20133 working days after model-port acceptance and access",
+      "acceptanceGate": "Deferred; not a Monday architecture blocker",
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M08",
+      "title": "Verify financial results, state boundaries, UI and footprint",
+      "start": "2026-10-24",
+      "target": "2026-10-25",
+      "lowHours": 4,
+      "ownerHours": 5,
+      "highHours": 8,
+      "dependsOn": [
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 47,
+        "id": 5973897493,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJxFQ",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/47",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQf4"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M09",
+      "title": "Package and rehearse the Monday demonstration with owner review",
+      "start": "2026-10-25",
+      "target": "2026-10-26",
+      "lowHours": 2,
+      "ownerHours": 2,
+      "highHours": 3,
+      "dependsOn": [
+        "M04",
+        "M05",
+        "M06",
+        "M08",
+        "M12",
+        "M13",
+        "M14"
+      ],
+      "technicalComplete": false,
+      "github": {
+        "number": 48,
+        "id": 5973897845,
+        "node_id": "I_kwDOVSrbdM8AAAABZBJydQ",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/48",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQh0"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M10",
+      "title": "Integrated React application correction",
+      "start": "2026-10-23",
+      "target": "2026-10-26",
+      "lowHours": 8,
+      "ownerHours": 12,
+      "highHours": 20,
+      "dependsOn": [
+        "M02",
+        "M03",
+        "M04"
+      ],
+      "technicalComplete": true,
+      "github": {
+        "number": 50,
+        "id": 5993369337,
+        "node_id": "I_kwDOVSrbdM8AAAABZTuO-Q",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/50",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC64ec"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M11",
+      "title": "Alternative model and remote API acceptance",
+      "start": null,
+      "target": null,
+      "lowHours": 4,
+      "ownerHours": 8,
+      "highHours": 14,
+      "dependsOn": [
+        "M10"
+      ],
+      "technicalComplete": false,
+      "implementationPresent": true,
+      "liveGate": "Working local Codex route accepted under M14; alternative remote/API/Claude transport remains separate",
+      "github": {
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/51",
+        "id": 5994019134,
+        "node_id": "I_kwDOVSrbdM8AAAABZUV5Pg",
+        "number": 51,
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC7jmk"
+      },
+      "phase": "Next phase",
+      "deferredByOwner": true,
+      "horizon": "2\u20135 working days after access and architecture review",
+      "historicalForecast": {
+        "lowHours": 12,
+        "ownerHours": 20,
+        "highHours": 32,
+        "note": "Superseded scope; not cumulative actual runtime"
+      },
+      "currentAcceptanceBaseline": false
+    },
+    {
+      "code": "M12",
+      "title": "MCP evidence, context and dynamic-document architecture",
+      "start": "2026-10-23",
+      "target": "2026-10-26",
+      "lowHours": 8,
+      "ownerHours": 14,
+      "highHours": 24,
+      "dependsOn": [
+        "M10"
+      ],
+      "technicalComplete": true,
+      "currentAcceptanceBaseline": false,
+      "estimationNote": "Overlaps historical M10/M11 foundations; do not sum correction estimates as actual delivered effort",
+      "github": {
+        "number": 52,
+        "id": 5995475071,
+        "node_id": "I_kwDOVSrbdM8AAAABZVuwfw",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/52",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC9CnM"
+      }
+    },
+    {
+      "code": "M13",
+      "title": "[M13 \u00b7 Monday MVP] Client decision workroom and five banker gauntlet passes",
+      "start": "2026-10-23",
+      "target": "2026-10-26",
+      "lowHours": 23,
+      "ownerHours": 37,
+      "highHours": 63,
+      "dependsOn": [
+        "M12"
+      ],
+      "technicalComplete": true,
+      "currentAcceptanceBaseline": false,
+      "estimationNote": "Prospective owner effort, not elapsed agent runtime; reuses/overlaps earlier correction foundations; do not naively sum historical estimates",
+      "github": {
+        "number": 53,
+        "id": 5997060752,
+        "node_id": "I_kwDOVSrbdM8AAAABZXPikA",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/53",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC-i2E"
+      },
+      "subtasks": [
+        {
+          "title": "Client brief, accountable plan and controlled recalculation",
+          "start": "2026-10-23",
+          "target": "2026-10-24",
+          "lowHours": 6,
+          "ownerHours": 10,
+          "highHours": 16
+        },
+        {
+          "title": "Exact lineage, complete advice and immutable review",
+          "start": "2026-10-23",
+          "target": "2026-10-25",
+          "lowHours": 8,
+          "ownerHours": 12,
+          "highHours": 20
+        },
+        {
+          "title": "Five independent gauntlet reviews and corrections",
+          "start": "2026-10-23",
+          "target": "2026-10-25",
+          "lowHours": 3,
+          "ownerHours": 5,
+          "highHours": 9
+        },
+        {
+          "title": "History, evaluation and regressions",
+          "start": "2026-10-23",
+          "target": "2026-10-25",
+          "lowHours": 4,
+          "ownerHours": 7,
+          "highHours": 12
+        },
+        {
+          "title": "Package, technical demo and documentation",
+          "start": "2026-10-23",
+          "target": "2026-10-26",
+          "lowHours": 2,
+          "ownerHours": 3,
+          "highHours": 6
+        }
+      ]
+    },
+    {
+      "code": "M14",
+      "title": "[M14 \u00b7 Monday MVP] Director-led agent, public data pool and generated client story",
+      "start": "2026-10-23",
+      "target": "2026-10-26",
+      "lowHours": 14,
+      "ownerHours": 24,
+      "highHours": 40,
+      "dependsOn": [
+        "M13"
+      ],
+      "technicalComplete": true,
+      "currentAcceptanceBaseline": false,
+      "estimationNote": "Prospective owner effort, not elapsed agent runtime; reuses/overlaps earlier correction foundations; do not naively sum historical estimates",
+      "github": {
+        "number": 54,
+        "id": 5997354506,
+        "node_id": "I_kwDOVSrbdM8AAAABZXheCg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/54",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC-1E4"
+      },
+      "subtasks": [
+        {
+          "title": "Local subscription and bounded agent planning/composition",
+          "start": "2026-10-23",
+          "target": "2026-10-24",
+          "lowHours": 3,
+          "ownerHours": 5,
+          "highHours": 8
+        },
+        {
+          "title": "Versioned public pool and narrow ingestion",
+          "start": "2026-10-23",
+          "target": "2026-10-24",
+          "lowHours": 3,
+          "ownerHours": 5,
+          "highHours": 9
+        },
+        {
+          "title": "Director-first storyline and data-bound frames",
+          "start": "2026-10-23",
+          "target": "2026-10-25",
+          "lowHours": 3,
+          "ownerHours": 5,
+          "highHours": 8
+        },
+        {
+          "title": "Banking work catalog and public sector references",
+          "start": "2026-10-23",
+          "target": "2026-10-25",
+          "lowHours": 2,
+          "ownerHours": 3,
+          "highHours": 5
+        },
+        {
+          "title": "Real rehearsal, targeted verification and handoff",
+          "start": "2026-10-23",
+          "target": "2026-10-26",
+          "lowHours": 3,
+          "ownerHours": 6,
+          "highHours": 10
+        }
+      ]
+    },
+    {
+      "title": "Observable director drafting, selected live sources and inspectable IPO/LBO models",
+      "start": "2026-10-23",
+      "target": "2026-10-23",
+      "lowHours": 8,
+      "ownerHours": 12,
+      "highHours": 16,
+      "dependsOn": [
+        "M14"
+      ],
+      "technicalComplete": true,
+      "currentAcceptanceBaseline": false,
+      "estimationNote": "Prospective 1\u20132 focused developer-day range, not elapsed agent runtime or subscription allowance; task slices overlap prior foundations. Human acceptance remains M09.",
+      "github": {
+        "number": 55,
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/55",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC_lPU",
+        "id": 5998076251,
+        "node_id": "I_kwDOVSrbdM8AAAABZYNhWw"
+      },
+      "subtasks": [
+        {
+          "title": "Persistent stage, heartbeat, cancel and terminal feedback",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 1,
+          "ownerHours": 2,
+          "highHours": 3
+        },
+        {
+          "title": "Multi-source selection and fixed live public adapters",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 2,
+          "ownerHours": 3,
+          "highHours": 4
+        },
+        {
+          "title": "Local Codex High / Claude Opus Medium login profiles",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 1,
+          "ownerHours": 2,
+          "highHours": 3
+        },
+        {
+          "title": "IPO and LBO calculations, lineage and model inspector",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 2,
+          "ownerHours": 3,
+          "highHours": 4
+        },
+        {
+          "title": "Actual varied prompts, coaching and independent regression checks",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 2,
+          "ownerHours": 2,
+          "highHours": 2
+        }
+      ],
+      "code": "M15"
+    },
+    {
+      "code": "M16",
+      "title": "Guided client positioning and request-specific market evidence",
+      "start": "2026-10-23",
+      "target": "2026-10-23",
+      "lowHours": 8,
+      "ownerHours": 14,
+      "highHours": 24,
+      "dependsOn": [
+        "M15"
+      ],
+      "technicalComplete": true,
+      "currentAcceptanceBaseline": true,
+      "estimationNote": "Prospective1\u20133 focused developer days, not recorded runtime or subscription allowance; overlaps existing foundations. Human acceptance remains M09.",
+      "github": {
+        "number": 56,
+        "id": 5998852710,
+        "node_id": "I_kwDOVSrbdM8AAAABZY86Zg",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/56",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhDATmo"
+      },
+      "subtasks": [
+        {
+          "title": "Isolate layout and compact source/activity controls",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 1,
+          "ownerHours": 2,
+          "highHours": 4
+        },
+        {
+          "title": "Tailored narrative questions and persistent continuation",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 1,
+          "ownerHours": 3,
+          "highHours": 5
+        },
+        {
+          "title": "Contextual sources, MCP and model-input provenance",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 3,
+          "ownerHours": 5,
+          "highHours": 8
+        },
+        {
+          "title": "Independent contracts, live rehearsal and handoff",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 3,
+          "ownerHours": 4,
+          "highHours": 7
+        }
+      ]
+    }
+  ],
+  "project": {
+    "url": "https://github.com/users/NeoDemos/projects/3",
+    "id": "PVT_kwHOD8BOsc4BoIS3",
+    "phaseOption": "725ddb26",
+    "authorizationOption": "321e8f88",
+    "nativeDependencies": 27
+  },
+  "currentScope": "Guided native-agent client briefing; compact React workspace; task-specific public evidence via a versioned pool and MCP; Treasury history, dated issuer credit disclosures and delayed equity context; observed model-price baselines with lineage and explicit pricing/evidence gaps."
+}

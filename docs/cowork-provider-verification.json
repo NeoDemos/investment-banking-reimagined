@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-23",
+  "scope": "Portable Cowork banking skill and provider connection capability",
+  "rustTestsPassed": 33,
+  "providerAndRendererTestsPassed": 8,
+  "existingMcpIntegrationChecksPassed": 11,
+  "portableZip": "Extracted into a temporary directory; provider catalogue and renderer ran independently of repository paths",
+  "skillValidation": "Passed skill-creator quick_validate",
+  "liveKenshoProbe": {
+    "url": "https://kfinance.kensho.com/integrations/mcp",
+    "httpStatus": 401,
+    "state": "Authentication or entitlement required"
+  },
+  "browser": {
+    "viewport": [
+      1280,
+      800
+    ],
+    "pages": 1,
+    "syntheticData": true,
+    "horizontalOverflow": false,
+    "missingImages": 0,
+    "charts": 1,
+    "evidenceRecords": 3
+  },
+  "notClaimed": [
+    "Authenticated data retrieval from any licensed provider",
+    "Gain or DEDALE endpoint discovery",
+    "Successful execution inside the owner\u2019s Cowork account",
+    "Vendor data normalised into the app engine",
+    "Official-template pixel parity",
+    "Published numeric MCP prices",
+    "Bank approval"
+  ],
+  "sources": [
+    "https://www.gain.ai/product",
+    "https://www.dedale.com/articles/dedale-intelligence-is-now-accessible-via-mcp",
+    "https://docs.kensho.com/llmreadyapi/mcp/custom",
+    "https://docs.kensho.com/llmreadyapi/mcp/custom/refresh-or-access-token",
+    "https://support.claude.com/en/articles/12512180-use-skills-in-claude"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-23T06:59:35.567Z",
+  "reactMounted": true,
+  "localMyriadAvailable": true,
+  "desktop": {
+    "width": 1280,
+    "height": 800,
+    "horizontalOverflow": false
+  },
+  "verifiedInteractions": [
+    "Create engagement through the actual modal, with independent analyses and six material sections",
+    "Edit and save a Tiptap narrative paragraph",
+    "Recalculate spread from 125 to 175 bps; linked material figures show 6.70%, $488.1m and $31.3m",
+    "Written narrative preserved across recalculation and material binding changes",
+    "Save review copy at 175 bps; later live-model change to 200 bps leaves the review copy at 6.70%",
+    "Save typed review feedback, complete actual revision job and inspect applied note",
+    "Inspect original source value, unit, period, filing date, tag and accession",
+    "Build a local draft through the actual workflow modal",
+    "Reload material hash URL and use browser back to return to the correct engagement/tab"
+  ],
+  "mobile": {
+    "width": 375,
+    "height": 812,
+    "documentWidth": 375,
+    "horizontalOverflow": false
+  },
+  "postFixRuntimeErrorsObserved": 0,
+  "htmlExport": {
+    "exportBytes": 27554,
+    "sections": 6,
+    "sourceAudit": true,
+    "hasInlineScript": false,
+    "hasKey": false
+  },
+  "liveExternalApisTested": false,
+  "limitations": [
+    "Voice/text/transcription and equity quote services require keys/entitlements and live rehearsal",
+    "No bank acceptance, expert financial sign-off or Windows/native-webview verification",
+    "Six material sections and PepsiCo demo-client coverage remain bounded"
+  ]
+}

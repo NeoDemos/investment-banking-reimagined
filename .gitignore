@@ -1,0 +1,14 @@
+node_modules/
+.local/
+.env
+.env.local
+*.log
+.DS_Store
+coverage/
+target/
+dist/
+__pycache__/
+*.pyc
+outputs/
+public/react/
+cowork/plugin/skills/

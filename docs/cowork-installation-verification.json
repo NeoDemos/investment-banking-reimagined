@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-23",
+  "plugin": "banking-studio-cowork",
+  "version": "0.1.0",
+  "installedVia": "Claude Desktop Customize > Plugins > Upload plugin",
+  "enabled": true,
+  "skillsVisible": [
+    "ibd-financial-modeling",
+    "ibd-storyline-copywriting",
+    "public-financial-research",
+    "rabo-banking-materials",
+    "rabo-slide-production"
+  ],
+  "composerPickerVerified": true,
+  "privateProjectCreated": true,
+  "projectInstructionsSaved": true,
+  "publicTestBriefSavedAsContext": true,
+  "publicWorkspaceAttachedToPreparedComposer": true,
+  "projectModel": "Opus 5.5 Medium",
+  "liveTreasuryReceipt": {
+    "httpStatus": 200,
+    "state": "retrieved"
+  },
+  "pluginManifestValidation": "passed",
+  "skillValidationCount": 5,
+  "existingTransportAndRenderingTestsPassed": 8,
+  "portableArchiveExecution": "passed",
+  "modelExecution": "not run: actual Claude UI weekly limit exhausted; resets 2026-10-24 06:00 Europe/Amsterdam",
+  "notClaimed": [
+    "PowerPoint generation inside Cowork",
+    "Authenticated paid-provider access",
+    "Bank approval",
+    "Official template pixel parity"
+  ]
+}

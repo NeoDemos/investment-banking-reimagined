@@ -1,0 +1,61 @@
+{
+  "model": "Explicit mock process; no live inference claimed",
+  "checks": [
+    "Clarification is durable and creates no invented draft",
+    "Stale revision rejected before model execution",
+    "Provider quota failure preserves saved revision and reports actual cause",
+    "Unknown tools are rejected and the bounded loop terminates",
+    "Cancellation stops active model work and frees the run slot",
+    "Real connectors, explicit cache provenance, Rust calculation and variable-page composition execute through the tool protocol",
+    "Fabricated bindings cannot enter the saved draft",
+    "Banker edits are versioned and stale saves fail",
+    "A concurrent human edit prevents an agent result from overwriting it",
+    "Restart marks interrupted runs failed and preserves committed draft/source history"
+  ],
+  "connectorModes": {
+    "sec:PEP": "cached",
+    "treasury:USD": "retrieved"
+  },
+  "asOf": "2026-10-23",
+  "rustUnitTests": 17,
+  "retainedApiChecks": 28,
+  "liveModel": {
+    "provider": "Claude Code CLI with personal Max login",
+    "status": "blocked by provider weekly usage limit",
+    "providerCode": "usage_limit_reached",
+    "httpStatus": 429,
+    "successfulLiveDraftVerified": false
+  },
+  "browser": {
+    "surface": "Chrome fallback after T3 preview host disconnected",
+    "viewport": [
+      1280,
+      800
+    ],
+    "modelFixture": "Explicitly labelled mock-model run; separate database on port 4174",
+    "checks": [
+      "All four fixture pages have no block clipping or page overflow",
+      "Direct headline edit persisted as revision 2",
+      "Review note attached to selected page",
+      "SEC source view exposes original units, filing tags, dates and HTTP 403 cache fallback",
+      "Retrieved Treasury curve dated 2026-10-22 displayed",
+      "Actual public SVG and local Myriad light/regular/bold load",
+      "Review notes remain queued after run-start rejection for an unconfigured API connection"
+    ],
+    "unverified": [
+      "Successful live model draft and redraft",
+      "Audio transcription and microphone workflow",
+      "Banker acceptance",
+      "PDF-custom font/pixel equivalence",
+      "Bank control acceptance"
+    ]
+  },
+  "brandComparison": {
+    "publicPdfRegular": "MyriadforRabobank",
+    "publicWebsiteRegular": "MyriadW01-Regular",
+    "sharedCodepointsCompared": 98,
+    "identicalNormalizedAdvanceWidths": 97,
+    "pixelParityVerified": false,
+    "fontFilesCommitted": false
+  }
+}

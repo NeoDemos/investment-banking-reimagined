@@ -1,0 +1,564 @@
+{
+  "asOf": "2026-10-23",
+  "implementation": "Director-led local Codex + public pool + typed Rust finance + dynamic React materials",
+  "unitTests": {
+    "command": "cargo test",
+    "passed": 24
+  },
+  "build": {
+    "typeScript": "passed",
+    "productionReact": "passed",
+    "releaseRust": "passed",
+    "warningNotes": [
+      "Local proprietary font URLs resolve at runtime",
+      "Bundler reports non-fatal lucide use-client directive warnings"
+    ]
+  },
+  "integration": {
+    "clientWorkflow": {
+      "checksPassed": 13,
+      "checks": [
+        "bond: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+        "bond: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+        "bond: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+        "bond: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+        "buyback: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+        "buyback: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+        "buyback: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+        "buyback: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+        "acquisition: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+        "acquisition: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+        "acquisition: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+        "acquisition: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+        "Exact client state and observations survive restart; legacy full histories migrate transactionally to immutable on-demand revisions"
+      ],
+      "externalCalls": 0,
+      "notEstablished": [
+        "10x productivity",
+        "5x client impact",
+        "Autonomous model drafting",
+        "Bank acceptance"
+      ]
+    },
+    "clientControls": {
+      "checksPassed": 5,
+      "checks": [
+        "Blocked local material/evidence/review tasks prevent freezing across later commits; explicit clearance permits it while commercial gate stays blocked",
+        "Changed advice reopens a deferred story issue; an unchanged source deferral remains scoped and preserved",
+        "Confirmed USD500m→600m amendment creates new exact-gap lineages without resizing or changing archived models/sources/copies; deliberate sizing affects only one action",
+        "Working-sheet and displayed net-proceeds formulas agree on all conversions; derived debt exposes exact tags, components, units, period and accession with honestly labelled source destinations",
+        "Stable bounded pagination retrieves all 101 observations including the oldest quality failure and all 53 copies; concurrent inserts stay outside a fixed snapshot; invalid cursors rejected"
+      ],
+      "externalCalls": 0,
+      "syntheticDataOnly": true,
+      "humanProductivityOrClientImpactEstablished": false
+    },
+    "directorContract": {
+      "checksPassed": 6,
+      "checks": [
+        "Only fixed public connectors can fetch; report registration is explicit pending extraction and cannot silently promote source facts",
+        "Unsupported model plan asks for clarification without claiming a model or materials",
+        "Explicit fake CLI exercises plan→MCP pool retrieval→deterministic same-net funding→typed source-bound story; no banker acceptance inferred",
+        "An existing-turn client-priority change persists into brief/context/conversation; target substitution is rejected without modifying the room",
+        "Invalid generated financial prose cannot overwrite current work; stale agent turns reject before execution",
+        "Older document contract migrates once as a new review-required revision; complete advice retained, old document/source/model snapshots preserved and restart is idempotent"
+      ],
+      "externalCalls": 0,
+      "model": "explicit fake CLI for contract failures only",
+      "realInferenceOrHumanValueEstablished": false
+    },
+    "mcpArchitecture": {
+      "asOf": "2026-10-23",
+      "checksPassed": 11,
+      "checks": [
+        "Architecture is discovered from the real MCP server and planned providers are explicit",
+        "Model invocation is deferred without requesting a key",
+        "Free-form briefs persist honestly without fake generated materials; stale captures fail",
+        "Lightweight room summaries do not download analytical/source/history payloads",
+        "Three genuine local MCP workflows generate different page counts with canonical source/context/financial bindings",
+        "Scoped document edits/reordering recompile scenes without changing financial data",
+        "Stale and partially invalid edit batches cannot overwrite a saved artifact",
+        "Invalid financial bindings are rejected at the document boundary",
+        "Unsupported entities and invalid financial workflow scope fail explicitly",
+        "Restart preserves exact document, scene and bounded context snapshots",
+        "Standalone SDK stdio supports legacy MCP initialization, tool discovery/call, structured observations and citation resource read; arbitrary files are rejected"
+      ],
+      "localWorkflowLatencyMs": {
+        "bondMs": 5.41,
+        "buybackMs": 4.76,
+        "acquisitionMs": 6.65
+      },
+      "externalConnections": "Deferred; proxy points to a closed port during tests",
+      "modelCalls": 0,
+      "blueprintPageCounts": {
+        "bond": 5,
+        "buyback": 4,
+        "acquisition": 7
+      },
+      "notClaimed": [
+        "Autonomous natural-language drafting",
+        "Live provider entitlements or model/API integration",
+        "Bank acceptance",
+        "General pixel-perfect typesetting"
+      ]
+    },
+    "retainedApi": {
+      "checksPassed": 28,
+      "checks": [
+        "Compiled React assets serve without a frontend development server",
+        "Three seeded financial cases",
+        "Offline capabilities honestly reported",
+        "CSRF, Origin and Host boundaries reject invalid requests",
+        "Public observations respect the as-of date",
+        "bond Excel formula caches equal every Rust working",
+        "buyback Excel formula caches equal every Rust working",
+        "acquisition Excel formula caches equal every Rust working",
+        "Bond PV independently recomputed",
+        "Buyback EPS independently recomputed including opportunity cost",
+        "Acquisition EPS independently recomputed",
+        "Background revision actually completes",
+        "Review changes assumptions and recalculates",
+        "Unrecognized requests remain visible and pending",
+        "Historical calculations remain immutable",
+        "Freeze applies to exact version; editing creates a new draft",
+        "Invalid assumptions preserve the prior version",
+        "Deferred external connections fail explicitly",
+        "Existing financial cases migrate into a connected engagement",
+        "New engagement owns three independent analysis records",
+        "Structured rich text persists as a material revision",
+        "Stale material saves cannot overwrite current work",
+        "Document validation rejects scripts and cross-engagement analysis links",
+        "Recalculation updates the project analysis while preserving written narrative",
+        "Review copy preserves exact narrative and old financial versions",
+        "Draft workflow binds current calculations into a new editable revision",
+        "Unsupported client is not silently priced with PepsiCo data",
+        "Engagement, draft revision and exact review copy survive process restart"
+      ],
+      "measurement": {
+        "machine": "local Apple Silicon Mac; not representative of managed bank hardware",
+        "process": "release Rust backend only; browser excluded",
+        "startupMs": 586.3,
+        "backendRssMiB": 12.1,
+        "briefGetMedianMs": 0.24,
+        "briefGetP95Ms": 0.44,
+        "binaryMiB": 11.87
+      },
+      "notTested": [
+        "Live model, transcription and voice: deferred by owner instruction",
+        "Live quote/provider integration: deferred by owner instruction",
+        "Managed Windows/macOS deployment",
+        "Bank acceptance"
+      ]
+    }
+  },
+  "liveAccountRehearsal": {
+    "provider": "Codex CLI0.164.0",
+    "model": "gpt-6.1-sol",
+    "loginStatus": "ChatGPT authentication reported by CLI; credentials not read by app",
+    "structuredReadinessProbe": "passed",
+    "initialAssignment": {
+      "runId": "4affc9e7-8c45-470f-8723-f4ce693d7a18",
+      "roomId": "5877aef9-080b-4a65-9692-09784d9c36b3",
+      "revision": 4,
+      "pages": 12,
+      "status": "completed",
+      "modelPort": {
+        "contextBoundary": "Public-data financial context; deterministic tool outputs own numeric figures",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local",
+        "runId": "4affc9e7-8c45-470f-8723-f4ce693d7a18",
+        "state": "executed"
+      },
+      "humanReviewCopies": 0,
+      "humanPairedObservations": 0,
+      "publicIngestion": [
+        {
+          "source": "sec:PEP",
+          "state": "failed",
+          "error": "Public source HTTP 403 Forbidden",
+          "receiptId": null,
+          "effect": "Previous pool receipts and existing workrooms are unchanged; no live success was inferred."
+        },
+        {
+          "source": "treasury:USD",
+          "state": "ingested",
+          "error": null,
+          "receiptId": "pool-1b7d1b54fe037f7725d296972cbd544484d83cfd0f3c220d12bcaadf54c44ff3",
+          "effect": null
+        }
+      ]
+    },
+    "followUp": {
+      "runId": "897b1e81-0a0c-48b4-8007-1e8b17810086",
+      "roomId": "5877aef9-080b-4a65-9692-09784d9c36b3",
+      "revision": 6,
+      "pages": 12,
+      "provider": {
+        "contextBoundary": "Public-data financial context; deterministic tool outputs own numeric figures",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local",
+        "runId": "897b1e81-0a0c-48b4-8007-1e8b17810086",
+        "state": "executed"
+      },
+      "checks": [
+        "Actual native-account planner and composition stages completed",
+        "Alternative spread175bps and all other terms preserved",
+        "Primary action, every original analysis, client brief and all sources unchanged",
+        "Bond net proceeds independently reconstructed",
+        "Follow-up instruction retained in conversation",
+        "No review declaration/copy or human timing observation inferred"
+      ],
+      "alternativeNetProceeds": 493.2671161348438,
+      "fundingGap": 6.732883865156225,
+      "humanObservations": 0,
+      "bankAcceptanceEstablished": false
+    },
+    "disclosure": "These are actual public-data model execution rehearsals, not qualified banker acceptance, staff timings or client outcomes. The separate director contract suite uses an explicit fake CLI."
+  },
+  "browser": {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "structuredFixtures": {
+      "disclosure": "Isolated synthetic layout fixtures with long summaries; not human acceptance",
+      "pages": [
+        {
+          "kind": "bond",
+          "page": 1,
+          "heading": "The client decision and our conditional action",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 2,
+          "heading": "The criteria and our conditional rationale",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 3,
+          "heading": "Conditions that could change our view",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 4,
+          "heading": "Ground the discussion in reported financials and rates",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 5,
+          "heading": "Separate transaction terms from observed data",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 6,
+          "heading": "Test the sensitivity of issue economics",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 7,
+          "heading": "Compare the choices against the client requirement",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 8,
+          "heading": "Make the alternative assumptions explicit",
+          "clipped": []
+        },
+        {
+          "kind": "bond",
+          "page": 9,
+          "heading": "Evidence, assumptions and review requirements",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 1,
+          "heading": "The client decision and our conditional action",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 2,
+          "heading": "The criteria and our conditional rationale",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 3,
+          "heading": "Conditions that could change our view",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 4,
+          "heading": "Assess the starting balance sheet and share base",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 5,
+          "heading": "Test the execution-price assumptions",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 6,
+          "heading": "Compare the choices against the client requirement",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 7,
+          "heading": "Make the alternative assumptions explicit",
+          "clipped": []
+        },
+        {
+          "kind": "buyback",
+          "page": 8,
+          "heading": "Evidence, assumptions and review requirements",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 1,
+          "heading": "The client decision and our conditional action",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 2,
+          "heading": "The criteria and our conditional rationale",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 3,
+          "heading": "Conditions that could change our view",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 4,
+          "heading": "Review PepsiCo and The Campbell’s Company",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 5,
+          "heading": "Distinguish reported accounts from proposed terms",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 6,
+          "heading": "Inspect purchase economics and financing",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 7,
+          "heading": "Challenge the acquisition premium and synergy case",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 8,
+          "heading": "Compare the choices against the client requirement",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 9,
+          "heading": "Make the alternative assumptions explicit",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 10,
+          "heading": "Challenge the primary action without synergies",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 11,
+          "heading": "Challenge the funding alternative without synergies",
+          "clipped": []
+        },
+        {
+          "kind": "acquisition",
+          "page": 12,
+          "heading": "Evidence, assumptions and review requirements",
+          "clipped": []
+        }
+      ]
+    },
+    "actualInitialStory": {
+      "roomId": "5877aef9-080b-4a65-9692-09784d9c36b3",
+      "revision": 4,
+      "pages": [
+        {
+          "page": 1,
+          "heading": "PepsiCo’s funding choice: certainty, cost and flexibility",
+          "clipped": []
+        },
+        {
+          "page": 2,
+          "heading": "Proposed view: match the refinancing horizon to the funding purpose",
+          "clipped": []
+        },
+        {
+          "page": 3,
+          "heading": "Assess proceeds, economic cost and refinancing exposure together",
+          "clipped": []
+        },
+        {
+          "page": 4,
+          "heading": "Revisit the choice if timing, liquidity or credit constraints change",
+          "clipped": []
+        },
+        {
+          "page": 5,
+          "heading": "Anchor the discussion in reported financials and dated rates",
+          "clipped": []
+        },
+        {
+          "page": 6,
+          "heading": "Primary structure: reconcile principal, proceeds and borrowing cost",
+          "clipped": []
+        },
+        {
+          "page": 7,
+          "heading": "Test pricing risk before treating illustrative proceeds as executable",
+          "clipped": []
+        },
+        {
+          "page": 8,
+          "heading": "Compare both maturities with the unmet funding need under deferral",
+          "clipped": []
+        },
+        {
+          "page": 9,
+          "heading": "Shorter maturity: lower indicative yield, earlier refinancing",
+          "clipped": []
+        },
+        {
+          "page": 10,
+          "heading": "Reported peer leverage provides context, not a borrowing limit",
+          "clipped": []
+        },
+        {
+          "page": 11,
+          "heading": "Rabobank relevance: sector context and financing capabilities",
+          "clipped": []
+        },
+        {
+          "page": 12,
+          "heading": "Dated public evidence, illustrative terms and banker review",
+          "clipped": []
+        }
+      ]
+    },
+    "actualNextTurn": {
+      "roomId": "5877aef9-080b-4a65-9692-09784d9c36b3",
+      "revision": 6,
+      "pages": [
+        {
+          "page": 1,
+          "heading": "PepsiCo’s funding choice: certainty, cost and flexibility",
+          "clipped": []
+        },
+        {
+          "page": 2,
+          "heading": "Proposed view: the revised economics favor the primary structure",
+          "clipped": []
+        },
+        {
+          "page": 3,
+          "heading": "Assess net proceeds, funding cost and refinancing exposure together",
+          "clipped": []
+        },
+        {
+          "page": 4,
+          "heading": "Revisit the proposed preference if funding timing or credit constraints change",
+          "clipped": []
+        },
+        {
+          "page": 5,
+          "heading": "Anchor capacity and pricing discussions in the unchanged evidence",
+          "clipped": []
+        },
+        {
+          "page": 6,
+          "heading": "Primary structure: preserve the original terms and modeled results",
+          "clipped": []
+        },
+        {
+          "page": 7,
+          "heading": "Wider assumed spread reduces proceeds without changing the coupon",
+          "clipped": []
+        },
+        {
+          "page": 8,
+          "heading": "Compare funding sufficiency, indicative cost and the refinancing horizon",
+          "clipped": []
+        },
+        {
+          "page": 9,
+          "heading": "Revised shorter maturity: higher indicative yield and earlier refinancing",
+          "clipped": []
+        },
+        {
+          "page": 10,
+          "heading": "Reported peer leverage provides context, not available borrowing capacity",
+          "clipped": []
+        },
+        {
+          "page": 11,
+          "heading": "Rabobank’s public capabilities inform a proposed financing discussion",
+          "clipped": []
+        },
+        {
+          "page": 12,
+          "heading": "Dated sources, differing fiscal periods, method limits and banker review",
+          "clipped": []
+        }
+      ]
+    }
+  },
+  "independentReview": {
+    "count": 5,
+    "model": "gpt-6.1-sol",
+    "rawReports": [
+      "docs/reviews/gauntlet-1.md",
+      "docs/reviews/gauntlet-2.md",
+      "docs/reviews/gauntlet-3.md",
+      "docs/reviews/gauntlet-4.md",
+      "docs/reviews/gauntlet-5.md"
+    ],
+    "boundedFifthFollowup": "docs/reviews/gauntlet-5-followup.md",
+    "responses": "docs/reviews/GAUNTLET.md",
+    "qualifiedHumanBankerReview": false
+  },
+  "notEstablished": [
+    "10x staff productivity",
+    "5x client impact",
+    "bank/ZDR acceptance",
+    "full IPO/DCF/LBO underwriting",
+    "general annual-report PDF/European taxonomy ingestion",
+    "live issuer spreads or executable equity prices",
+    "managed native distribution"
+  ],
+  "modelAndDataScope": {
+    "actualModelStagesPerCompletedAssignment": 2,
+    "publicOnly": true,
+    "stockPricesSpreadsAndDealTerms": "explicit illustrative assumptions",
+    "realHumanPairedObservations": 0
+  }
+}

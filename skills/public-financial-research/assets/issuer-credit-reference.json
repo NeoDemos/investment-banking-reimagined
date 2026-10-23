@@ -1,0 +1,18 @@
+{
+  "symbol": "AAPL",
+  "name": "Apple public issuance reference",
+  "date": "2025-05-05",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000114036125017410/ny20048442x2_fwp.htm",
+  "classification": "Dated issuer disclosure, not current secondary-market quotes or a complete outstanding-debt inventory",
+  "ratings": [
+    {"agency": "Moody's", "rating": "Aaa", "outlook": "Stable", "date": "2025-05-05"},
+    {"agency": "S&P", "rating": "AA+", "outlook": "Stable", "date": "2025-05-05"}
+  ],
+  "issues": [
+    {"maturity": "2028-05-12", "coupon": 4.0, "principalUSDm": 1500, "issuePrice": 99.804, "issueYield": 4.07, "issueSpreadBps": 25, "benchmarkYield": 3.82},
+    {"maturity": "2030-05-12", "coupon": 4.2, "principalUSDm": 1000, "issuePrice": 99.83, "issueYield": 4.238, "issueSpreadBps": 30, "benchmarkYield": 3.938},
+    {"maturity": "2032-05-12", "coupon": 4.5, "principalUSDm": 1000, "issuePrice": 99.84, "issueYield": 4.527, "issueSpreadBps": 40, "benchmarkYield": 4.127},
+    {"maturity": "2035-05-12", "coupon": 4.75, "principalUSDm": 1000, "issuePrice": 99.34, "issueYield": 4.834, "issueSpreadBps": 50, "benchmarkYield": 4.334}
+  ],
+  "limitations": "Ratings and original pricing terms are reported at issuance. Current rating affirmation, current outstanding amount, secondary prices/yields/spreads and new-issue concession must be obtained separately. Do not substitute these historical issue spreads for current issuer spreads. Securities include redemption features; the demo bond engine is a non-callable flat-yield illustration."
+}

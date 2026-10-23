@@ -1,0 +1,35 @@
+{
+  "asOf": "2026-10-23",
+  "checksPassed": 11,
+  "checks": [
+    "Architecture is discovered from the real MCP server and planned providers are explicit",
+    "Model invocation is deferred without requesting a key",
+    "Free-form briefs persist honestly without fake generated materials; stale captures fail",
+    "Lightweight room summaries do not download analytical/source/history payloads",
+    "Three genuine local MCP workflows generate different page counts with canonical source/context/financial bindings",
+    "Scoped document edits/reordering recompile scenes without changing financial data",
+    "Stale and partially invalid edit batches cannot overwrite a saved artifact",
+    "Invalid financial bindings are rejected at the document boundary",
+    "Unsupported entities and invalid financial workflow scope fail explicitly",
+    "Restart preserves exact document, scene and bounded context snapshots",
+    "Standalone SDK stdio supports legacy MCP initialization, tool discovery/call, structured observations and citation resource read; arbitrary files are rejected"
+  ],
+  "localWorkflowLatencyMs": {
+    "bondMs": 5.41,
+    "buybackMs": 4.76,
+    "acquisitionMs": 6.65
+  },
+  "externalConnections": "Deferred; proxy points to a closed port during tests",
+  "modelCalls": 0,
+  "blueprintPageCounts": {
+    "bond": 5,
+    "buyback": 4,
+    "acquisition": 7
+  },
+  "notClaimed": [
+    "Autonomous natural-language drafting",
+    "Live provider entitlements or model/API integration",
+    "Bank acceptance",
+    "General pixel-perfect typesetting"
+  ]
+}

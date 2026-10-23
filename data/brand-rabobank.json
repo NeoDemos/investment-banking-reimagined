@@ -1,0 +1,11 @@
+{
+  "id":"rabobank-public-study/v1",
+  "name":"Rabobank public-reference design study",
+  "canvas":{"width":1440,"height":1080,"aspectRatio":"4:3"},
+  "colors":{"navy":"#000099","blue":"#0058ff","orange":"#ff6700","ink":"#414244","muted":"#737578","background":"#ffffff"},
+  "typography":{"heading":"Myriad Light","body":"Myriad","source":"Locally supplied fonts; website Myriad differs from PDF-custom MyriadforRabobank","redistribute":false},
+  "wordmark":{"asset":"/rabobank-wordmark.svg","kind":"public investor-site vector path"},
+  "compositions":["cover","split","full","grid"],
+  "rules":{"maxPages":12,"maxBlocksPerPage":4,"financialNumbers":"bound to evidence or calculation references","classification":"Independent external prototype; public data and illustrative assumptions"},
+  "source":"https://www.rabobank.com/about-us/investor-relations/presentations"
+}
