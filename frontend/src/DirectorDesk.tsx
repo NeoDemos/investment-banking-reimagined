@@ -26,6 +26,7 @@ export function useDirector(onReady: (id: string) => void) {
   const [run, setRun] = useState<J | null>(null),
     [error, setError] = useState("");
   const start = async (body: J) => {
+    const originHash = location.hash;
     setError("");
     setRun({
       status: "starting",
@@ -36,6 +37,7 @@ export function useDirector(onReady: (id: string) => void) {
       const r = await api<J>("/api/director/assignments", body);
       setRun({
         runId: r.runId,
+        originHash,
         status: "running",
         result: { stage: "Planning the client story" },
         events: [],
@@ -52,8 +54,12 @@ export function useDirector(onReady: (id: string) => void) {
       try {
         const next = await api<J>(`/api/agent/runs/${run.runId}`);
         if (cancelled) return;
-        setRun({ ...next, runId: run.runId });
-        if (next.status === "completed" && next.result.roomId)
+        setRun({ ...next, runId: run.runId, originHash: run.originHash });
+        if (
+          next.status === "completed" &&
+          next.result.roomId &&
+          location.hash === run.originHash
+        )
           onReady(next.result.roomId);
         if (next.status === "failed")
           setError(
@@ -133,11 +139,12 @@ export function DirectorProgress({
                 </li>
               ))}
           </ol>
-          {run.result.roomId && run.status === "failed" && (
-            <a href={`#client/${run.result.roomId}/storyline`}>
-              Open saved work
-            </a>
-          )}
+          {run.result.roomId &&
+            ["failed", "completed"].includes(run.status) && (
+              <a href={`#client/${run.result.roomId}/storyline`}>
+                Open the prepared client story
+              </a>
+            )}
         </section>
       )}
     </>
@@ -164,7 +171,12 @@ export function DirectorDesk({
           FROM CLIENT QUESTION TO CLIENT CONVERSATION
         </span>
         <span className="archive-badge">
-          Local Codex · {status.enabled ? "agent enabled" : "agent not enabled"}
+          Local Codex ·{" "}
+          {status.enabled === undefined
+            ? "checking local agent…"
+            : status.enabled
+              ? "agent enabled"
+              : "agent not enabled"}
         </span>
       </div>
       <h1>

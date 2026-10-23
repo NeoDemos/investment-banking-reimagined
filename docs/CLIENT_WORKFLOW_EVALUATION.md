@@ -2,7 +2,7 @@
 
 23 October 2026. The owner requested five independent GPT-6.1 Sol gauntlet passes using a client-facing investment-banker lens. These are independent **model reviews**, not qualified human banker validation. Each reviewer receives the original objective, previous findings, implementation responses and unresolved objections. The parent implements and verifies changes between rounds. Raw findings live in `docs/reviews/gauntlet-N.md`; unfavorable findings must remain in the record.
 
-The current product scope remains a local external public-data MVP. Model/data/voice connections are deferred by the owner. A deterministic structured workflow is useful test infrastructure, but does not demonstrate autonomous understanding or unobserved productivity. No confidential bank or client information belongs in this public repository.
+The current product scope remains a local external public-data MVP. The owner subsequently authorized actual local subscription-backed agent work and public ingestion. Bounded Codex planning/composition now surrounds the deterministic financial workflow. Real model execution demonstrates that path for its rehearsal, but does not establish unobserved staff productivity or client outcomes. Remote API/voice and institutional data acceptance remain separate. No confidential bank or client information belongs in this public repository.
 
 ## What counts as a successful task
 
@@ -47,3 +47,7 @@ No seeded demo observations, model-invented timings or simulated reviewer scores
 [Model ML Operator](https://modelml.com/articles/operator-the-ai-agent-for-investment-banking-workflows) describes multi-step work in editable financial documents. [Rogo's banking overview](https://rogo.com/blog/ai-for-investment-banking) emphasizes sourcing, firm-format deliverables and revisions to the existing document. [Finster's product description](https://www.finster.ai/product) describes background tasks, cited exploration and interactive outputs. These are vendor descriptions, not independently measured productivity comparisons.
 
 [BankerToolBench](https://arxiv.org/abs/2604.11304) evaluates complete banking work products with banker-defined criteria and highlights cross-artifact consistency failures. It informs the choice to evaluate deliverables and review burden rather than tool-call completion. This app has not run that benchmark, and its published results do not establish the performance of this application or current models.
+
+## Observation retrieval contract
+
+The runnable local log records paired all-staff time components against an exact discussion copy. Identity, timings and acceptance remain user-entered and unverified. Lists use bounded cursor pages with a fixed upper snapshot ID and explicit full counts; page medians are labelled as page statistics. Complete export collects all pages, including failed-quality observations, and reconciles IDs/counts before saving. Synthetic 101-row/pagination and invalid-quality fixtures run only in isolated databases, never as human evaluation evidence. No actual human pairs have been entered by this implementation.

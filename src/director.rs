@@ -229,24 +229,45 @@ async fn execute(
     } else {
         json!({"defaultParams":{"bond":finance::defaults("bond"),"buyback":finance::defaults("buyback"),"acquisition":finance::defaults("acquisition")}})
     };
-    let plan=model(json!({"stage":"plan","instruction":b.prompt,"current":context,"today":chrono::Utc::now().format("%Y-%m-%d").to_string(),"defaultMeetingDate":"2026-10-26","coverage":["PEP PepsiCo","CPB Campbell's","GIS General Mills"],"rules":"Plan a client discussion using one supported deterministic method: bond, buyback or acquisition. Reject unsupported entities/methods; no implicit proxy substitution. Brief question/criteria/constraints <=300 chars each, all complete. Preserve explicit client instructions; record missing market terms as illustrative or missing. fundingNeed is USDm net cash for bond only; if unspecified choose500 as visibly proposed illustration, not inferred fact. Existing work: keep same issuer/method/fundingNeed unless explicitly asked to change it. scenarioChanges contains FULL validated params of only explicitly requested changes (at most2), otherwise empty. New work: scenarioChanges may adapt proposed defaultParams to explicitly requested terms; generate FULL numeric params for each changed base/alternative. If no explicit terms, keep demo defaults. Bond tenors whole years; spread and fees bps, coupon percent. A free-form request does not authorize replacing reported source facts. Summarize a client-led storyline with source requirements, peers and the sourced bank proposition."}),plan_schema()).await?;
+    let plan=model(json!({"stage":"plan","instruction":b.prompt,"current":context,"today":chrono::Utc::now().format("%Y-%m-%d").to_string(),"defaultMeetingDate":"2026-10-26","coverage":["PEP PepsiCo","CPB Campbell's","GIS General Mills"],"rules":"Plan a client discussion using one supported deterministic method: bond, buyback or acquisition. Reject unsupported entities/methods; no implicit proxy substitution. Brief question/criteria/constraints <=300 chars each, all complete. Preserve explicit client instructions; record missing market terms as illustrative or missing. fundingNeed is USDm net cash for bond only; if unspecified choose500 as visibly proposed illustration, not inferred fact. Existing work: preserve EXACT current question,audience,meetingDate,criteria,constraints,target and fundingNeed unless the director explicitly changes them. Keep the same issuer/method/target; a changed target needs a new assignment, do not silently retain the old target. scenarioChanges contains FULL validated params of only explicitly requested changes (at most2), otherwise empty. New work: scenarioChanges may adapt proposed defaultParams to explicitly requested terms; generate FULL numeric params for each changed base/alternative. If no explicit terms, keep demo defaults. Bond tenors whole years; spread and fees bps, coupon percent. A free-form request does not authorize replacing reported source facts. Summarize a client-led storyline with source requirements, peers and the sourced bank proposition."}),plan_schema()).await?;
     agent::event(s, run, "director_plan", plan.clone())?;
     if plan["supported"] != true || plan["kind"] == "unsupported" {
         return Ok(
             json!({"clarification":plan["message"],"state":"needs_clarification","noMaterialsClaimed":true}),
         );
     }
+    if plan["scenarioChanges"]
+        .as_array()
+        .is_none_or(|v| v.len() > 2)
+    {
+        return Err(bad(
+            "Propose at most two explicit scenario changes per turn",
+        ));
+    }
+    let is_follow_up = existing.is_some();
     let mut room = if let Some(mut r) = existing {
-        if plan["issuer"] != r["mandate"]["issuer"] || plan["kind"] != r["mandate"]["kind"] {
+        if plan["issuer"] != r["mandate"]["issuer"]
+            || plan["kind"] != r["mandate"]["kind"]
+            || plan["target"] != r["mandate"]["target"]
+        {
             return Err(bad(
-                "This turn changes client or financial method. Start a new assignment so previous work remains comparable.",
+                "This turn changes client, acquisition target or financial method. Start a new assignment so previous work remains comparable.",
             ));
         }
-        if plan["fundingNeed"].is_number()
-            && plan["fundingNeed"].as_f64() != r["mandate"]["fundingNeed"].as_f64()
-        {
+        let need_changed = plan["fundingNeed"].is_number()
+            && plan["fundingNeed"].as_f64() != r["mandate"]["fundingNeed"].as_f64();
+        let brief_changed = [
+            "question",
+            "audience",
+            "meetingDate",
+            "criteria",
+            "constraints",
+        ]
+        .iter()
+        .any(|key| plan[key] != r["mandate"][key]);
+        if need_changed || brief_changed {
             let d = &r["mandate"];
-            let change = json!({"expectedRevision":r["revision"],"question":plan["question"],"audience":d["audience"],"meetingDate":d["meetingDate"],"criteria":d["criteria"],"constraints":d["constraints"],"owner":d["decisionOwner"],"fundingNeed":plan["fundingNeed"],"fundingRequirementConfirmed":true});
+            let change = json!({"expectedRevision":r["revision"],"question":plan["question"],"audience":plan["audience"],"meetingDate":plan["meetingDate"],"criteria":plan["criteria"],"constraints":plan["constraints"],"owner":d["decisionOwner"],"fundingNeed":plan["fundingNeed"],"fundingRequirementConfirmed":true});
             r = engagement::update_brief(
                 State(s.clone()),
                 Path(r["id"].as_str().unwrap().into()),
@@ -364,6 +385,14 @@ async fn execute(
         return Err(ApiError(StatusCode::CONFLICT,"The workroom changed during drafting. Generated output was not applied; current work is preserved.".into()));
     }
     let affected = draft.slides.iter().map(|p| json!(p.id)).collect::<Vec<_>>();
+    if is_follow_up {
+        current["messages"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!({"role":"banker","text":b.prompt,"at":now()}));
+    }
+    current["storylinePlan"] = plan["storyline"].clone();
+    current["lastDirectorRunId"] = json!(run);
     current["draft"] = json!(draft);
     current["scene"] = materials::compile(&draft, &current)?;
     current["modelPort"] = json!({"state":"executed","provider":"codex_local","model":std::env::var("BANKING_STUDIO_CODEX_MODEL").unwrap_or("gpt-6.1-sol".into()),"runId":run,"contextBoundary":"Public-data financial context; deterministic tool outputs own numeric figures"});

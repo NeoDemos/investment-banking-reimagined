@@ -1,12 +1,12 @@
 # Client decision workroom
 
-23 October 2026. This is the current local MVP, above the [MCP/evidence foundation](MCP_ARCHITECTURE.md). It implements a preparation and review job around a client decision. The owner has deferred external model, source and voice connections. Structured deterministic execution is functional; arbitrary conversational interpretation remains a next-phase port.
+23 October 2026. This is the current local MVP, above the [MCP/evidence foundation](MCP_ARCHITECTURE.md). It implements a preparation and review job around a client decision. The owner subsequently expanded the scope to a real director-led local agent and public ingestion. The [local Codex adapter](LOCAL_AGENT.md) now performs bounded planning and composition using the laptop’s saved login; public SEC/Treasury refresh feeds retained pool versions. Licensed feeds, remote API/voice adapters and bank integration remain separate.
 
 ## The product boundary
 
 The main object is an engagement: what the CFO must decide, decision owner, meeting, criteria, constraints, explicit funding requirement where relevant, accountable work items and acceptance criteria. Its output is a qualified discussion argument and reviewable materials. A chat message, a calculation and a slide are different records.
 
-The primary route is **Decision → Work plan → Scenarios → Materials → Evidence → Review**. A discussion rail captures free-form instructions without pretending to execute them. The banker can approve an illustrative plan, amend the brief, change structured assumptions, recompute one action, choose a conditional preference, edit page composition and inspect exact evidence. New client intent does not require manual entry of reported financials. Model-driven planning and narrative generation are explicitly deferred.
+The primary route is **Director assignment → Storyline → dynamic client frames → discussion/review**. Decision, work-plan, scenario and evidence editors are secondary inspection surfaces. The discussion rail can request another actual local agent turn. The banker can approve an illustrative plan, amend the brief, change structured assumptions, recompute one action, choose a conditional preference, edit page composition and inspect exact evidence. New client intent does not require manual entry of reported financials. The agent proposes brief/term changes and narrative; typed validation and deterministic calculation remain authoritative. See [the broader client-work catalog](CLIENT_WORK_CATALOG.md) for implemented and future modelling modules.
 
 The public archive supports annual US GAAP statements for PEP, CPB and GIS and a dated Treasury par curve. Equity prices, credit spreads and deal terms are visible assumptions. The two action cases and status quo serve one comparable decision. Acquisition stresses belong to the relevant funding action, rather than masquerading as separate management choices. Full underwriting, forecasts, DCF/LBO, merger accounting and institutional transaction coverage are excluded.
 
@@ -21,8 +21,8 @@ flowchart LR
   M --> F[Deterministic Rust financial methods]
   F --> L[Exact figure dependencies]
   E --> C[Bounded context packet]
-  C --> P[Deferred model decision port]
-  P -.next phase.-> H
+  C --> P[Local Codex planning/composition]
+  P --> H
   H --> D[Semantic client document]
   L --> D
   D --> G[Brand scene compiler]
@@ -34,6 +34,7 @@ One Rust process embeds the built React/TypeScript frontend and uses SQLite. The
 
 | Module | Responsibility |
 |---|---|
+| `director.rs`, `pool.rs` | Bounded local model orchestration, actual run stages and append-only public source ingestion receipts |
 | `engagement.rs` | Typed briefs, accountable tasks, comparable actions/stresses, funding amendments, conditional advice, review dispositions and frozen copies |
 | `providers.rs`, `connectors.rs`, `evidence.rs` | Explicit connection states, normalized public evidence, original units/periods and bounded retrieval |
 | `mcp.rs` | Real SDK discovery, tools/resources and scoped state |
@@ -63,4 +64,4 @@ Revision-scoped session buffers preserve unsaved public-prototype advice, scenar
 
 Five fresh GPT-6.1 Sol reviews apply a client-facing banker lens and retain their raw findings. These models are not qualified bankers and their scores are not human outcomes. [The evaluation protocol](CLIENT_WORKFLOW_EVALUATION.md) defines accepted-quality paired tasks, all-staff active minutes, elapsed time, failed-quality retention and predefined discussion-question coverage. No real paired observations exist. Neither 10× productivity nor 5× client impact has been established.
 
-The next phase replaces the deferred model decision port with an approved, independently evaluated orchestrator using these same typed tools and state transitions. It must demonstrate genuine brief interpretation, tool selection, missing-data clarification and page-feedback execution, plus refusal/cancellation/injection tests. One permitted data provider requires authenticated schema/sample/rights reconciliation before activation. Voice, editable Office adapters and managed native shells follow. Bank acceptance depends on actual bank controls, contracts and operating evidence; this local code does not establish it.
+The current bounded orchestrator has demonstrated actual brief interpretation, validated financial work and generated composition; it is not unrestricted autonomous underwriting. Before wider adoption, extend qualified task evaluations, cancellation/refusal/injection tests, model/provider selection and authenticated controls. One permitted data provider requires authenticated schema/sample/rights reconciliation before activation. Voice, editable Office adapters and managed native shells follow. Bank acceptance depends on actual bank controls, contracts and operating evidence; this local code does not establish it.

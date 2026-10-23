@@ -13,10 +13,16 @@ if '--version' in sys.argv: print('explicit-fake-cli');sys.exit()
 s=sys.stdin.read();d=json.loads(s.split('\\n\\n',1)[1])
 if d['stage']=='plan':
  p={'supported':'UNSUPPORTED' not in d['instruction'],'message':'Unsupported method requires clarification.','kind':'bond','issuer':'PEP','target':None,'question':'How should PepsiCo raise the required net funding for this public demonstration?','audience':'CFO and treasury','meetingDate':'2026-10-26','criteria':'Net cash sufficiency, maturity fit and downside resilience.','constraints':'Illustrative terms only; current execution remains unconfirmed.','fundingNeed':500,'storyline':[{'title':'Client funding question','purpose':'Compare the choices with public evidence.'}],'scenarioChanges':[]}
+ if d.get('current',{}).get('brief'):
+  current=d['current']['brief']
+  for k in ['kind','issuer','target','question','audience','meetingDate','criteria','constraints','fundingNeed']:p[k]=current.get(k)
+ if 'CRITERIA' in d['instruction']:p['criteria']='Prioritize a short refinancing horizon and preserve cash flexibility.'
+ if 'TARGET' in d['instruction']:p['target']='GIS'
  print(json.dumps(p))
 else:
  dct=d['existingDocument'];dct['slides'][0]['title']='Agent-proposed client funding discussion'
  text='123 fabricated numeric claim' if 'INVALID' in d['instruction'] else 'Proposed synthesis: prioritize funding certainty if the funding need is firm; revisit tenor if flexibility and refinancing capacity outweigh that certainty.'
+ dct['slides']=[p for p in dct['slides'] if p['id']!='agent-synthesis']
  dct['slides'].insert(1,{'id':'agent-synthesis','title':'Proposed synthesis for banker challenge','layout':'full','blocks':[{'type':'text','text':text,'analysisId':None,'symbol':None}]})
  print(json.dumps(dct))
 ''');fixture.chmod(0o700)
@@ -61,6 +67,15 @@ else:
    assert any(p['id']=='agent-synthesis' for p in r['draft']['slides']) and r['mandate']['decisionState']=='unrecorded'
    assert req(path+'/copies')['copies']==[] and req(path+'/evaluations')['observations']==[]
    checks.append('Explicit fake CLI exercises plan→MCP pool retrieval→deterministic same-net funding→typed source-bound story; no banker acceptance inferred')
+   result=assignment('CRITERIA: change the client priorities explicitly and update the story.',roomId=rid,expectedRevision=r['revision'])
+   assert result['status']=='completed',result
+   r=req('/api/agent/rooms/'+rid)
+   assert r['mandate']['criteria']=='Prioritize a short refinancing horizon and preserve cash flexibility.'
+   assert r['contextPacket']['decisionBrief']['criteria']==r['mandate']['criteria']
+   assert any(m['role']=='banker' and m['text'].startswith('CRITERIA:') for m in r['messages'])
+   old=copy.deepcopy(r);result=assignment('TARGET: this request deliberately changes the target and must be rejected.',roomId=rid,expectedRevision=r['revision'])
+   assert result['status']=='failed' and req('/api/agent/rooms/'+rid)==old
+   checks.append('An existing-turn client-priority change persists into brief/context/conversation; target substitution is rejected without modifying the room')
    old=copy.deepcopy(r);result=assignment('INVALID: rewrite this client narrative with a deliberately invalid numeric prose claim.',roomId=rid,expectedRevision=r['revision'])
    assert result['status']=='failed' and result['result']['savedWorkPreserved'];assert req('/api/agent/rooms/'+rid)==old
    req('/api/director/assignments',{'prompt':'Try a stale instruction against an existing client workroom.','roomId':rid,'expectedRevision':0},409)

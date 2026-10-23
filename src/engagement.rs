@@ -564,6 +564,7 @@ pub async fn revise(
         }
         r["mandate"]["decisionState"]=json!("review_required");r["mandate"]["preferredOption"]=Value::Null;
         sync_client_document(&mut r)?;
+        if !r["draft"].is_null() {let symbols=r["sources"].as_object().unwrap().keys().filter_map(|k|k.strip_prefix("sec:").map(str::to_string)).collect::<Vec<_>>();r["contextPacket"]=evidence::packet(&r,r["mandate"]["question"].as_str().unwrap(),&symbols,24000)?;}
         affected.extend(advice_pages(&r));affected.sort_by(|a,b|a.as_str().cmp(&b.as_str()));affected.dedup();
         reopen_reviews(&mut r,&affected,b.expected_revision+1,"Active economics changed; the prior correction or advice requires a fresh check");
         for task in r["workItems"].as_array_mut().unwrap(){if task["id"]=="review" && !["blocked","deferred"].contains(&task["status"].as_str().unwrap_or("")){task["status"]=json!("ready");}}
@@ -731,6 +732,20 @@ pub async fn update_brief(
             }
         }
         sync_client_document(&mut r)?;
+        if !r["draft"].is_null() {
+            let symbols = r["sources"]
+                .as_object()
+                .unwrap()
+                .keys()
+                .filter_map(|k| k.strip_prefix("sec:").map(str::to_string))
+                .collect::<Vec<_>>();
+            r["contextPacket"] = evidence::packet(
+                &r,
+                r["mandate"]["question"].as_str().unwrap(),
+                &symbols,
+                24000,
+            )?;
+        }
         affected.extend(advice_pages(&r));
         affected.sort_by(|a, b| a.as_str().cmp(&b.as_str()));
         affected.dedup();

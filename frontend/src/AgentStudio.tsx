@@ -599,8 +599,13 @@ export function BlockView({ block: b, room }: { block: Block; room: Room }) {
             <span
               className={c.provenance?.mode === "cached" ? "cache-label" : ""}
             >
-              {sourceLabel(c.provenance?.mode)} ·{" "}
-              {c.provenance?.retrievedAt?.slice(0, 10) ||
+              {c.claims || c.rows
+                ? "Public reference"
+                : sourceLabel(c.provenance?.mode)}{" "}
+              ·{" "}
+              {c.reviewedAt ||
+                c.retrievedAt?.slice(0, 10) ||
+                c.provenance?.retrievedAt?.slice(0, 10) ||
                 c.provenance?.original?.retrievedAt?.slice(0, 10) ||
                 "snapshot"}
             </span>

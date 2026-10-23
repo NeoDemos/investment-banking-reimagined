@@ -2,7 +2,7 @@
 
 Research: **23 October 2026**. Public product pages, provider documentation, MCP specification and official SDK/package sources were inspected. No paid product account, vendor demonstration, licensed response or competitor private implementation was inspected. Product descriptions establish what vendors advertise; they do not establish accuracy, performance or their internal architecture. The implementation is independent. No proprietary code, customer documents or vendor datasets are copied.
 
-The owner’s revised instruction defers model/data API connections to the next phase. This phase implements the source/tool/context/document architecture and a usable local blueprint path, without requiring credentials or claiming autonomous inference.
+The original architecture phase deferred model/data connections. The owner’s subsequent director-led steering is implemented in the [local agent and public pool](LOCAL_AGENT.md): actual local Codex planning/composition and fixed public ingestion. The foundation below and its researched boundaries remain relevant; remote/provider/API entitlements and bank acceptance are still separate.
 
 ## What the comparable products actually show
 

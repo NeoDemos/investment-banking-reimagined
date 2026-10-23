@@ -1,3 +1,5 @@
+> Current local scope is M13/#53 and M14/#54 below: five independent banker-lens gauntlets, then director-led actual local Codex planning/composition over the public data pool. Earlier UI/blueprint estimates and evidence are historical foundations, not the current primary product or a cumulative actual-hours record. #48 qualified owner/banker review remains open.
+
 # Accelerated Monday MVP track
 
 Scope authorized 22 October 2026. Target demonstration: Monday **26 October 2026**, personal Mac, public information only. This supplements the [original 37-task plan](TASK_REGISTER.md); it does not mark its bank controls or full valuation acceptance work complete.
@@ -50,3 +52,24 @@ Historical M11 (#51) implemented a custom model/tool loop and hit a live quota l
 | Bank-assessment candidate | 3–6 favorable / 6–12+ conditional months in original plan | Task-specific register | Actual control owners and requirements, permitted models/retention, data rights, security testing and bank acceptance decision. |
 
 For future execution, assign bounded implementation/research slices to the requested Opus lead and smaller workers, with one owner retaining financial and product decisions. Subscription allowances are shared usage limits, not guaranteed delivered hours or a runtime API licence. No new subagent/model throughput measurement has been made in this MVP; do not derive a month estimate from token counts alone.
+
+## Current director-led acceptance — M13 / #53 and M14 / #54
+
+The owner requested five fresh independent GPT-6.1 Sol banker-lens reviews, then sharpened the product into director instruction → client storyline → pooled public reporting/rates → deterministic financial model → generated narrative/charts/frames → another turn. [Five reports and responses](../reviews/GAUNTLET.md), [the work catalog](../CLIENT_WORK_CATALOG.md), [local agent contract](../LOCAL_AGENT.md) and [current demo](../MONDAY_DEMO.md) define this scope. Model reviews are defect discovery, not qualified banker/value validation.
+
+| Task | Window | Prospective owner h low/base/high | Completion definition |
+|---|---|---:|---|
+| M13 client brief, accountable work plan and scoped recalculation | 23–24 Oct | 6 / 10 / 16 | Persisted decision, criteria, comparable actions/status quo and controlled financial changes |
+| M13 lineage, complete advice and exact review | 23–25 Oct | 8 / 12 / 20 | Exact input dependencies, complete conditions, manual-block gates and immutable review/history |
+| M13 five independent review rounds and corrections | 23–25 Oct | 3 / 5 / 9 | Five raw GPT-6.1 Sol reports, substantive fixes and retained unresolved objections |
+| M13 history, evaluation and regression evidence | 24–25 Oct | 4 / 7 / 12 | Bounded hot reads, exact historical retrieval and complete quality-failure-aware evaluation export |
+| M13 package, technical demonstration and docs | 25–26 Oct | 2 / 3 / 6 | Running latest local app and honest handoff; human walkthrough remains #48 |
+| M14 local account and bounded agent stages | 23–24 Oct | 3 / 5 / 8 | Actual saved-login Codex inference, typed plan/composition, invalid/stale refusal |
+| M14 public pool and ingestion slice | 23–24 Oct | 3 / 5 / 9 | Retained versions, SEC/Treasury fetch jobs, explicit errors and pending document extraction |
+| M14 director-first storyline and bound frames | 24–25 Oct | 3 / 5 / 8 | Natural-language assignment primary, financial work integral, client/peer/Rabobank argument and dynamic pages |
+| M14 banking work catalog and public references | 23–25 Oct | 2 / 3 / 5 | Client-facing jobs mapped to models/evidence; sector lookup and implemented/future coverage explicit |
+| M14 live rehearsal, targeted fifth-review follow-up and handoff | 25–26 Oct | 3 / 6 / 10 | Real assignment/next turn, page-fit and boundary verification; no human gains invented |
+
+M13 totals23/37/63h; M14 totals14/24/40h. These are prospective owner-effort ranges with overlap, not elapsed execution, guaranteed subscription throughput or additive delivered-hours claims. Finance specialist review adds2–4h. The structured JSON includes each subtask's target date and estimate; GitHub issues#53/#54 have matching project dates, fields and native dependencies. The current bank/full-valuation programme is not completed by these demo tasks.
+
+The local CLI route has actual execution evidence and does not require a new API key on this signed-in Mac. Separate remote/Claude/API acceptance #51 and voice #46 remain future work. Wider company/EU report ingestion, EUR rates, equity/index data, full IPO/DCF/LBO models and editable Office/native shells are explicitly later modules. Rebaseline their task estimates against the demonstrated interfaces and actual provider/control requirements rather than infer completion from a polished example.
