@@ -1,5 +1,6 @@
 mod agent;
 mod connectors;
+mod director;
 mod engagement;
 mod evaluation;
 mod evidence;
@@ -7,6 +8,7 @@ mod finance;
 mod lineage;
 mod materials;
 mod mcp;
+mod pool;
 mod providers;
 mod workbook;
 mod workflow;
@@ -760,6 +762,7 @@ async fn main() {
         let db = Connection::open_in_memory().unwrap();
         agent::init(&db).unwrap();
         evidence::init(&db, &data).unwrap();
+        pool::init(&db, &data).unwrap();
         let app = Arc::new(AppState {
             db: Mutex::new(db),
             data,
@@ -839,6 +842,7 @@ async fn main() {
     agent::init(&db).expect("Agent database migration");
     engagement::init(&db).expect("Client workroom migration");
     evidence::init(&db, &data).expect("Canonical public evidence index");
+    pool::init(&db, &data).expect("Public data pool");
     let claude_available = mcp::external_enabled()
         && std::process::Command::new(std::env::var("CLAUDE_BIN").unwrap_or("claude".into()))
             .arg("--version")
@@ -893,6 +897,11 @@ async fn main() {
             get(workspace::get_snapshot),
         )
         .route("/api/architecture", get(mcp::architecture))
+        .route("/api/director/status", get(director::status))
+        .route("/api/director/assignments", post(director::start))
+        .route("/api/data-pool", get(pool::list))
+        .route("/api/data-pool/refresh", post(pool::refresh))
+        .route("/api/data-pool/reports", post(pool::register))
         .route("/api/client-work", post(engagement::create))
         .route("/api/client-work/{id}/prepare", post(engagement::prepare))
         .route("/api/client-work/{id}/scenario", post(engagement::revise))

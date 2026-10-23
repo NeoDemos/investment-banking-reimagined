@@ -28,8 +28,8 @@ pub struct Draft {
 }
 
 pub fn validate_draft(d: &Draft, room: &Value) -> Result<(), String> {
-    if d.title.is_empty() || d.title.len() > 180 || !(2..=12).contains(&d.slides.len()) {
-        return Err("Use a title and 2–12 pages".into());
+    if d.title.is_empty() || d.title.len() > 180 || !(2..=16).contains(&d.slides.len()) {
+        return Err("Use a title and 2–16 pages".into());
     }
     let mut ids = std::collections::HashSet::new();
     let mut has_sources = false;
@@ -86,6 +86,21 @@ pub fn validate_draft(d: &Draft, room: &Value) -> Result<(), String> {
                     let symbol = b.symbol.as_deref().ok_or("Company required")?;
                     if room["sources"].get(format!("sec:{symbol}")).is_none() {
                         return Err("Retrieve company before using facts".into());
+                    }
+                }
+                "sector_benchmark" => {
+                    if room["sources"]["sector:US"]["rows"].is_null() {
+                        return Err("A retained sector reference is required".into());
+                    }
+                }
+                "peer_position" => {
+                    if room["peerPosition"].as_array().is_none_or(|a| a.is_empty()) {
+                        return Err("Retrieve peer evidence before using this frame".into());
+                    }
+                }
+                "bank_proposition" => {
+                    if room["sources"]["bank:rabobank"]["claims"].is_null() {
+                        return Err("A sourced bank proposition is required".into());
                     }
                 }
                 "sources" => has_sources = true,
@@ -163,6 +178,9 @@ pub fn compile(d: &Draft, room: &Value) -> Result<Value, ApiError> {
     let snapshot=&a["sourceSnapshot"]["curve"];if !snapshot.is_null(){let cid=format!("curve:USD:{}",snapshot["date"].as_str().unwrap_or("unknown"));citations.push(cid.clone());index.entry(cid).or_insert(json!({"date":snapshot["date"],"sourceUrl":snapshot["sourceUrl"],"basis":"Treasury par curve; not issuer spread"}));}
    }
    if let Some(symbol)=&b.symbol {let c=&room["sources"][format!("sec:{symbol}")];for(k,f)in c["facts"].as_object().into_iter().flat_map(|f|f.iter()){let ev=evidence::id(symbol,k,f);citations.push(ev.clone());index.entry(ev.clone()).or_insert(json!({"entity":symbol,"metric":k,"periodEnd":f["periodEnd"],"filed":f["filed"],"unit":f["unit"],"sourceUrl":f["sourceUrl"],"tag":f["tag"]}));bindings.push(json!({"kind":"evidence","id":ev,"path":format!("sources/sec:{symbol}/facts/{k}")}));}}
+   if b.r#type=="peer_position" {for peer in room["peerPosition"].as_array().into_iter().flatten(){let symbol=peer["symbol"].as_str().unwrap();let c=&room["sources"][format!("sec:{symbol}")];for(k,f)in c["facts"].as_object().unwrap(){let id=evidence::id(symbol,k,f);citations.push(id.clone());index.entry(id.clone()).or_insert(json!({"entity":symbol,"metric":k,"periodEnd":f["periodEnd"],"sourceUrl":f["sourceUrl"],"tag":f["tag"]}));bindings.push(json!({"kind":"evidence","id":id,"path":format!("sources/sec:{symbol}/facts/{k}")}));}}}
+   if b.r#type=="bank_proposition" {for (n,claim) in room["sources"]["bank:rabobank"]["claims"].as_array().into_iter().flatten().enumerate(){let id=format!("bank:rabobank:claim:{n}");citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":claim["sourceUrl"],"basis":"Public bank description; client-specific relevance requires review"}));bindings.push(json!({"kind":"public_bank_proposition","id":id,"path":format!("sources/bank:rabobank/claims/{n}")}));}}
+   if b.r#type=="sector_benchmark" {let id="sector:US:ev-ebitda".to_string();citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":room["sources"]["sector:US"]["sourceUrl"],"basis":room["sources"]["sector:US"]["definition"]}));bindings.push(json!({"kind":"sector_reference","id":id,"path":"sources/sector:US/rows"}));}
    let mut problems=vec![];if n>2&&["facts","assumptions","workings","sources"].contains(&b.r#type.as_str()){problems.push("Dense data block in a multi-row layout; split the page if it does not fit.")}
    for problem in problems {quality.push(json!({"severity":"review","pageId":page.id,"frameId":fid,"message":problem}));}
    json!({"id":fid,"kind":b.r#type,"blockIndex":i,"bounds":{"x":x,"y":y,"width":w,"height":h},"bindings":bindings,"citationIds":citations})

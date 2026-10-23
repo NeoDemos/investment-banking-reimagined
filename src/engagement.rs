@@ -25,9 +25,6 @@ pub fn init(db: &Connection) -> Result<(), ApiError> {
             .filter(|h| h.get("draft").is_some())
             .cloned()
             .collect();
-        if full.is_empty() {
-            continue;
-        }
         for snapshot in full {
             tx.execute(
                 "INSERT OR IGNORE INTO client_revisions VALUES(?,?,?)",
@@ -36,9 +33,50 @@ pub fn init(db: &Connection) -> Result<(), ApiError> {
             .map_err(internal)?;
         }
         workflow::compact_history(&mut r);
+        if !r["draft"].is_null()
+            && r["mandate"]["documentContract"] != "client-decision/2"
+            && r["documentUpgrade"].is_null()
+        {
+            let revision = r["revision"].as_i64().unwrap();
+            let mut original = r.clone();
+            original.as_object_mut().unwrap().remove("history");
+            tx.execute(
+                "INSERT OR IGNORE INTO client_revisions VALUES(?,?,?)",
+                params![id, revision, original.to_string()],
+            )
+            .map_err(internal)?;
+            let mut upgraded = r.clone();
+            match sync_client_document(&mut upgraded) {
+                Ok(()) => {
+                    upgraded["mandate"]["decisionState"] = json!("review_required");
+                    upgraded["mandate"]["preferredOption"] = Value::Null;
+                    upgraded["documentUpgrade"] = json!({"state":"migrated","fromRevision":revision,"contract":"client-decision/2","reviewRequired":true});
+                    let affected = advice_pages(&upgraded);
+                    reopen_reviews(
+                        &mut upgraded,
+                        &affected,
+                        revision + 1,
+                        "Document contract upgrade requires review of the complete client argument",
+                    );
+                    upgraded["changeLog"].as_array_mut().unwrap().push(json!({"at":now(),"revision":revision+1,"type":"document_contract_upgrade","affectedPages":affected,"narrativeReviewRequired":true}));
+                    r = upgraded;
+                }
+                Err(error) => {
+                    r["documentUpgrade"] = json!({"state":"requires_repreparation","reason":error.1,"fromRevision":revision,"reviewRequired":true});
+                }
+            }
+            r = workflow::revised(r, revision, "document_contract_upgrade");
+            let snapshot = r["history"].as_array().unwrap().last().unwrap().clone();
+            tx.execute(
+                "INSERT INTO client_revisions VALUES(?,?,?)",
+                params![id, revision + 1, snapshot.to_string()],
+            )
+            .map_err(internal)?;
+            workflow::compact_history(&mut r);
+        }
         tx.execute(
-            "UPDATE agent_rooms SET payload=? WHERE id=?",
-            params![r.to_string(), id],
+            "UPDATE agent_rooms SET revision=?,payload=? WHERE id=?",
+            params![r["revision"].as_i64(), r.to_string(), id],
         )
         .map_err(internal)?;
     }
@@ -260,6 +298,8 @@ pub struct Prepare {
     alternative: Params,
     rationale: String,
     acknowledge_illustrative: bool,
+    #[serde(default)]
+    size_to_funding: bool,
 }
 async fn tool(
     s: &App,
@@ -347,6 +387,8 @@ pub async fn prepare(
     }
     text(&b.rationale, 20, 1800, "Assumption rationale")?;
     let kind = r["mandate"]["kind"].as_str().unwrap().to_string();
+    let instruction_led = r["mandate"]["instructionLed"] == true;
+    let funding_need = r["mandate"]["fundingNeed"].as_f64();
     let issuer = r["mandate"]["issuer"].as_str().unwrap().to_string();
     let target = r["mandate"]["target"].as_str().map(str::to_string);
     finance::validate(&kind, &b.base).map_err(bad)?;
@@ -380,8 +422,20 @@ pub async fn prepare(
             tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":t})).await?;
             symbols.push(t.clone());
         }
+        if instruction_led {for (symbol,_,_) in connectors::CATALOG {if !symbols.iter().any(|s|s==symbol){tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":symbol})).await?;symbols.push(symbol.into());}}}
         tool(&s,&run,&session,"fetch_treasury_curve",json!({})).await?;
-        for (which,params) in [("base",&b.base),("alternative",&b.alternative)] {
+        for (which,original_params) in [("base",&b.base),("alternative",&b.alternative)] {
+            let mut sized_params=original_params.clone();
+            if b.size_to_funding {
+                if kind != "bond" {return Err(bad("Only bond plans can be sized to net funding"));}
+                let need=funding_need.ok_or_else(||bad("Record the client's net funding requirement"))?;
+                let snapshot=session.server.snapshot().await;let curve=&snapshot["sources"]["treasury:USD"];
+                let data=json!({"curve":curve});let y=finance::treasury(&data,sized_params["tenor"])+sized_params["spread"]/100.;
+                let net=finance::bond_price(sized_params["coupon"],y,sized_params["tenor"])/100.-sized_params["fees"]/10000.;
+                if net<=0.{return Err(bad("Assumed terms cannot generate positive net cash"));}
+                sized_params.insert("amount".into(),need/net);finance::validate(&kind,&sized_params).map_err(bad)?;
+            }
+            let params=&sized_params;
             tool(&s,&run,&session,"calculate_finance",json!({"analysisId":format!("{which}_case"),"kind":kind,"issuer":issuer,"target":target,"params":params,"rationale":b.rationale})).await?;
             if kind == "acquisition" {
                 let mut stress = params.clone(); stress.insert("synergies".into(),0.);
@@ -409,6 +463,20 @@ pub async fn prepare(
         }
         tool(&s,&run,&session,"compose_materials",document).await?;
         let mut r=session.server.snapshot().await;
+        if instruction_led {
+            r["sources"]["bank:rabobank"]=pool::bank_profile();
+            r["sources"]["sector:US"]=pool::sector_reference();
+            let peers:Vec<Value>=symbols.iter().map(|symbol| {
+                let c=&r["sources"][format!("sec:{symbol}")];let f=&c["facts"];let value=|k:&str|f[k]["value"].as_f64().unwrap()/1e6;
+                let ebitda=value("operatingIncome")+value("da");
+                json!({"symbol":symbol,"name":c["name"],"periodEnd":c["periodEnd"],"revenue":value("revenue"),"netDebt":value("debt")-value("cash"),"ebitdaProxy":ebitda,"netLeverage":if ebitda>0.{Some((value("debt")-value("cash"))/ebitda)}else{None},"poolReceiptId":c["poolReceiptId"],"basis":"Reported debt less cash / operating-income plus D&A proxy. Annual periods differ; no live trading multiples."})
+            }).collect();
+            r["peerPosition"]=json!(peers);
+            let pages=r["draft"]["slides"].as_array_mut().unwrap();let at=pages.len()-1;
+            pages.insert(at,json!({"id":"peer-position","title":"Place the client in its reported peer context","layout":"full","blocks":[{"type":"peer_position"}]}));
+            pages.insert(at+1,json!({"id":"bank-proposition","title":"Make the bank's relevance specific to this client","layout":"full","blocks":[{"type":"bank_proposition"}]}));
+            sync_client_document(&mut r)?;
+        }
         r["mandate"]["status"]=json!("review");r["executionMode"]=json!("local_structured_workflow");r["modelPort"]=json!({"state":"deferred"});
         for (aid,label) in [("base_case",option_name(&kind,"base")),("alternative_case",option_name(&kind,"alternative")),("downside_case","Primary action · no-synergy stress"),("downside_alternative","Alternative action · no-synergy stress")] {
             if !r["analyses"][aid].is_null(){r["analyses"][aid]["displayName"]=json!(label);lineage::attach(&mut r,aid)?;}

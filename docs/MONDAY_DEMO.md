@@ -1,22 +1,26 @@
-# Monday demonstration — local MCP-backed workspace
+# Monday demonstration — director to client story
 
-The owner explicitly deferred model, voice and live data connections. **No API key is required.** Show the working architecture and interaction with the dated public archive. Use the personal Mac, `Start Demo.command` and `http://localhost:4173`, at least 1280×800. The `.app` is an unsigned browser launcher, not a managed native webview.
+Use the personal Mac and public information only. Double-click `Start Demo.command`; open **http://localhost:4173** at 1280×800 or larger. Codex must be installed/signed in and have available allowance. The launcher enables the local Codex agent while keeping separate remote API adapters disabled. No key is required for a working existing Codex login.
 
-| Time | Action | What it demonstrates |
+| Time | Action | What the audience should see |
 |---|---|---|
-| 0–1 min | Open Data connections. | Ready local archive and explicitly planned/deferred source contracts; no claim of a licensed live feed. |
-| 1–2 min | Explore the Financing discussion blueprint for PepsiCo. | Actual MCP discovery/calls retrieve the archive, run Rust finance, build bounded context and compile five pages. The narrative/terms are labelled examples, not AI inference. |
-| 2–3 min | Inspect execution, Sources and Context. | Source units, periods, filing dates/tags and citation identities remain attached. The context packet selects data rather than sending a whole database. |
-| 3–5 min | Browse materials. Inspect Analysis if needed. | Figures resolve to the calculated model; source data and assumed transaction terms are distinct. The canvas consumes compiled scene frames. |
-| 5–6 min | Change a permitted page composition, edit a headline and move a page earlier. | A new document/scene revision preserves analytical/source records and stable page IDs. Stale edits are rejected. |
-| 6–7 min | Use Review together to collect page comments, then Save review brief. | Feedback is tied to page identities and retained as a pending instruction. Model execution is next phase; do not claim the draft was automatically rewritten. |
-| 7–8 min | Open Materials library; explore another blueprint. | Capital returns produces four pages; acquisition seven. Source/calc objects and document shape vary with the workflow. |
-| Optional | Inspect Architecture. | Actual discovered MCP schemas/resources, provider contracts, context and document boundaries, and the deferred model port. |
+| 0–1 min | New client work; read the debt-capital-markets assignment. | A director's client question, not a form for punching reported accounts. Explain client purpose, net cash needed, alternatives, peer context and why this adviser. |
+| 1–3+ min | Prepare the client story, with public-source fetch enabled. | Actual local model planning; public ingestion receipts; deterministic financial work; a second model stage creates the narrative and frame composition. Model/network time varies. |
+| During preparation | Inspect Data pool if useful. | Retained versions, original/normalized values, units/periods/tags and explicit fetch success/failure. A failed SEC refresh leaves a dated archive, not a false live-data badge. |
+| 3–5 min | Open the prepared Storyline, then individual frames. | The client's decision, proposed synthesis, peer context, comparative financing economics, refinancing tradeoffs and sourced Rabobank proposition. Charts and figures resolve to the stored financial model. |
+| 5–6 min | Open Decision and a key number's evidence drawer. | Comparable net proceeds, funding gap, coupon/yield/fees/tenor and balance-sheet effect, with exact dependencies. Separate a proposed narrative from a banker's conditional view. |
+| 6–8+ min | Discussion: ask to increase the alternative spread and explain the changed tradeoff. | A new validated financial result and another model-composed turn. Sources/old results are preserved. Review of changed advice remains required. |
+| 8–9 min | Materials → review this page. Inspect history/review state. | Page-specific feedback, actual correction links and explicit review dispositions. The agent does not self-approve a banker review. |
+| 9–10 min | Evaluation. | Zero actual paired human observations unless real observations have been entered. Five model reviews found defects; 10× productivity and 5× impact are hypotheses, not measured results. |
 
-A free-form banker brief can be saved now without pretending the system interpreted it. To show the full executable path without external inference, select a local blueprint. Company selection identifies data; users are not punching reported financial values into an analysis form.
+Suggested assignment: “Prepare a client pitch for PepsiCo's CFO about raising USD500m net through a bond. Compare a five-year issue with a three-year issue and doing nothing. Explain funding cost, refinancing risk and balance-sheet position against Campbell's and General Mills. Include what makes Rabobank relevant. Use public reporting and illustrative market terms, with questions for the meeting.”
 
-The archive is deliberately dated. Annual US GAAP is not LTM/forecast/consensus; EBITDA is an operating-income-plus-D&A proxy. Stock prices, issuer credit spreads, deal shares and transaction terms are explicit illustration assumptions. Bond pricing uses a Treasury par reference and flat YTM; acquisition outputs exclude PPA, costs and timing. Qualified financial review is still required. See the in-app methodology/resource contract.
+Suggested next turn: “Increase the alternative structure's assumed spread to 175 basis points, preserving its other terms. Recompute only that action and revise the story to explain the changed economics and refinancing tradeoff. Keep the original results.” The agent must use the validated full scenario parameters; generated prose cannot alter financial values.
 
-The actual public SVG wordmark and locally supplied Myriad website fonts support the identity study. Fonts are not redistributed; PDF-custom font pixel parity and official bank approval are not claimed. Inspect every page before presenting. Current JSON/CSV are inspection exports; editable PowerPoint, richer Office export, live voice, licensed feeds and managed native deployment remain later work.
+Keep a previously generated public-data example available for a network/quota failure. Label it as a prior actual run. The expandable structured brief/local workflow is a separate model-free fallback, explicitly presented as such. Do not call a saved instruction or curated blueprint autonomous drafting.
 
-[Research](PEER_ARCHITECTURE_RESEARCH.md) · [Current architecture and phase plan](MCP_ARCHITECTURE.md) · [Bank programme](BANK_ACCEPTANCE.md).
+The current models are regular semiannual USD bond economics, a simplified buyback and a pre-PPA acquisition funding illustration. Stock prices/spreads/deal terms are assumptions; annual accounts are not LTM, consensus or current market quotes. Peer EBITDA is operating income plus reported D&A, not adjusted or covenant EBITDA. Sector multiples are broad dated lookup references, not a target-specific valuation. The public Rabobank description supports a proposed relevance argument; verified mandate credentials and bank approval are absent.
+
+General annual-report PDF extraction, European company mappings, full IPO/LBO/DCF, editable PowerPoint/advanced XLSX, live voice, multi-user authority and bank deployment remain future modules. The app's inspection grid and scenario editors are secondary to the director-led story. The `.app` is a local unsigned browser launcher; proprietary fonts are not redistributed and PDF font/pixel parity is not claimed.
+
+[Work catalog](CLIENT_WORK_CATALOG.md) · [Local agent](LOCAL_AGENT.md) · [Architecture](CLIENT_WORKROOM_ARCHITECTURE.md) · [Financial methods](FINANCIAL_METHODS.md) · [Evaluation](CLIENT_WORKFLOW_EVALUATION.md).

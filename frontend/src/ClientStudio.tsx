@@ -1,4 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  DirectorDesk,
+  ClientStoryline,
+  DirectorProgress,
+  useDirector,
+} from "./DirectorDesk";
+import { DataPool } from "./DataPool";
 import {
   ArrowRight,
   Check,
@@ -826,7 +833,10 @@ function Decision({
                     <strong>{o.name}</strong>
                     <span>
                       Synergies {format(a.params.synergies, "USDm")} · all other
-                      terms follow the primary action
+                      terms follow{" "}
+                      {room.options.find(
+                        (option: J) => option.id === o.actionId,
+                      )?.name || "its matching action"}
                     </span>
                     <button
                       className="figure-button"
@@ -970,25 +980,42 @@ export default function ClientStudio() {
     "",
   );
   const [proof, setProof] = useState<J | null>(null);
+  const navigationGeneration = useRef(0);
+  const intendedHash = useRef(location.hash);
   const refresh = async () => {
     const r = await api<J>("/api/agent/rooms");
     setRooms(r.rooms);
     return r.rooms;
   };
   const navigate = (v: string, r = room) => {
+    navigationGeneration.current += 1;
+    setProof(null);
     setView(v);
-    if (r) location.hash = `client/${r.id}/${v}`;
-    else location.hash = v === "home" ? "" : v;
+    const hash = r ? `#client/${r.id}/${v}` : v === "home" ? "" : `#${v}`;
+    intendedHash.current = hash;
+    location.hash = hash;
     setError("");
   };
-  const open = async (id: string, v = "decision") => {
+  const open = async (id: string, v = "storyline") => {
+    const generation = ++navigationGeneration.current;
+    const startedHash = location.hash;
+    setProof(null);
     try {
       const r = await api<J>(`/api/agent/rooms/${id}`);
+      if (
+        generation !== navigationGeneration.current ||
+        location.hash !== startedHash
+      )
+        return;
       setRoom(r);
       setPage(0);
       navigate(v, r);
     } catch (e) {
-      setError(String(e));
+      if (
+        generation === navigationGeneration.current &&
+        location.hash === startedHash
+      )
+        setError(String(e));
     }
   };
   useEffect(() => {
@@ -1003,7 +1030,9 @@ export default function ClientStudio() {
         );
         if (hash) await open(hash[1], hash[2] || "decision");
         else if (
-          ["sources", "evaluation", "system"].includes(location.hash.slice(1))
+          ["sources", "pool", "evaluation", "system"].includes(
+            location.hash.slice(1),
+          )
         )
           setView(location.hash.slice(1));
         setReady(true);
@@ -1017,18 +1046,26 @@ export default function ClientStudio() {
     let cancelled = false;
     const follow = async () => {
       const wanted = location.hash;
+      if (wanted !== intendedHash.current) {
+        navigationGeneration.current += 1;
+        intendedHash.current = wanted;
+      }
+      const generation = navigationGeneration.current;
+      setProof(null);
       const match = wanted.match(/^#(?:client|workroom)\/([^/]+)(?:\/(\w+))?/);
       if (!match) {
         setRoom(null);
         setPage(0);
         setView(
-          ["sources", "evaluation", "system"].includes(wanted.slice(1))
+          ["sources", "pool", "evaluation", "system"].includes(wanted.slice(1))
             ? wanted.slice(1)
             : "home",
         );
         return;
       }
       const next = [
+        "storyline",
+        "pool",
         "decision",
         "plan",
         "scenarios",
@@ -1049,13 +1086,23 @@ export default function ClientStudio() {
         const full = await api<J>(
           `/api/agent/rooms/${encodeURIComponent(match[1])}`,
         );
-        if (cancelled || location.hash !== wanted) return;
+        if (
+          cancelled ||
+          location.hash !== wanted ||
+          generation !== navigationGeneration.current
+        )
+          return;
         setRoom(full);
         setPage(0);
         setView(next);
         setError("");
       } catch (e) {
-        if (!cancelled) setError(String(e));
+        if (
+          !cancelled &&
+          location.hash === wanted &&
+          generation === navigationGeneration.current
+        )
+          setError(String(e));
       }
     };
     window.addEventListener("hashchange", follow);
@@ -1088,6 +1135,7 @@ export default function ClientStudio() {
         return r;
       }
       setRoom(r);
+      setProof(null);
       if (next && location.hash === startedHash) navigate(next, r);
       setNotice("Saved to this workroom.");
       return r;
@@ -1097,7 +1145,12 @@ export default function ClientStudio() {
       setBusy(false);
     }
   };
+  const director = useDirector((id) => {
+    void refresh();
+    void open(id, "storyline");
+  });
   const headerViews: Record<string, string> = {
+    storyline: "Storyline",
     decision: "Decision",
     plan: "Work plan",
     scenarios: "Scenarios",
@@ -1121,11 +1174,10 @@ export default function ClientStudio() {
         </div>
         <button
           className="primary-action"
-          disabled={busy}
+          disabled={busy || director.running}
           onClick={() => {
             setRoom(null);
-            setView("home");
-            location.hash = "";
+            navigate("home", null);
           }}
         >
           <Plus size={16} /> New client work
@@ -1137,7 +1189,7 @@ export default function ClientStudio() {
             .map((r) => (
               <button
                 key={r.id}
-                disabled={busy}
+                disabled={busy || director.running}
                 className={room?.id === r.id ? "selected" : ""}
                 onClick={() => open(r.id)}
               >
@@ -1157,8 +1209,8 @@ export default function ClientStudio() {
           )}
         </nav>
         <div className="client-sidebar-bottom">
-          <button onClick={() => navigate("sources")}>
-            <Database size={15} /> Data sources
+          <button onClick={() => navigate("pool")}>
+            <Database size={15} /> Data pool
           </button>
           <button onClick={() => navigate("evaluation")}>
             <Layers3 size={15} /> Evaluation
@@ -1169,7 +1221,7 @@ export default function ClientStudio() {
           <p>
             Independent public-data prototype
             <br />
-            External APIs and models deferred
+            Public data · local Codex agent
           </p>
         </div>
       </aside>
@@ -1188,7 +1240,7 @@ export default function ClientStudio() {
             )}
           </div>
           <div>
-            <span className="archive-badge">Dated public archive</span>
+            <span className="archive-badge">Public source snapshots</span>
             {room && (
               <>
                 <button
@@ -1261,10 +1313,20 @@ export default function ClientStudio() {
         >
           <div className="client-pane">
             {view === "home" ? (
-              <BriefForm
-                busy={busy}
-                onCreate={(v) => void action("/api/client-work", v, "plan")}
+              <DirectorDesk
+                onOpen={(id) => {
+                  void refresh();
+                  void open(id, "storyline");
+                }}
+                advanced={
+                  <BriefForm
+                    busy={busy}
+                    onCreate={(v) => void action("/api/client-work", v, "plan")}
+                  />
+                }
               />
+            ) : view === "pool" ? (
+              <DataPool />
             ) : view === "sources" || view === "system" ? (
               <PlatformWorkspace
                 view={view === "sources" ? "connections" : "architecture"}
@@ -1296,12 +1358,21 @@ export default function ClientStudio() {
                   className="primary-action"
                   onClick={() => {
                     setRoom(null);
-                    setView("home");
+                    navigate("home", null);
                   }}
                 >
                   Create client brief
                 </button>
               </div>
+            ) : view === "storyline" ? (
+              <ClientStoryline
+                room={room}
+                onFrame={(n) => {
+                  setPage(n);
+                  navigate("materials");
+                }}
+                onView={navigate}
+              />
             ) : view === "plan" ? (
               <Plan
                 key={room.id}
@@ -1364,10 +1435,14 @@ export default function ClientStudio() {
                       <div>
                         <h3>{c.name || "USD Treasury par curve"}</h3>
                         <p>
-                          Frozen public archive ·{" "}
-                          {c.periodEnd
-                            ? `annual period ended ${c.periodEnd}`
-                            : `curve dated ${c.date}`}
+                          Public source snapshot ·{" "}
+                          {c.claims
+                            ? `proposition reviewed ${c.reviewedAt}`
+                            : c.rows
+                              ? `lookup retrieved ${c.retrievedAt?.slice(0, 10)}`
+                              : c.periodEnd
+                                ? `annual period ended ${c.periodEnd}`
+                                : `curve dated ${c.date}`}
                         </p>
                       </div>
                     </div>
@@ -1415,6 +1490,41 @@ export default function ClientStudio() {
                           ),
                         )}
                       </div>
+                    ) : c.claims ? (
+                      <div>
+                        {c.claims.map((claim: J) => (
+                          <p key={claim.title}>
+                            <strong>{claim.title}</strong> · {claim.text}{" "}
+                            <a
+                              href={claim.sourceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Public source
+                            </a>
+                            <br />
+                            <small>{claim.application}</small>
+                          </p>
+                        ))}
+                      </div>
+                    ) : c.rows ? (
+                      <div>
+                        <p>
+                          {c.definition} {c.valuationDate}
+                        </p>
+                        {c.rows.map((row: J) => (
+                          <p key={row.industry}>
+                            {row.industry}: {row.positiveEbitdaEvEbitda}×
+                            EV/EBITDA (positive EBITDA firms);{" "}
+                            {row.allFirmsEvEbitda}× (all firms) · {row.firms}{" "}
+                            firms.
+                          </p>
+                        ))}
+                        <a href={c.sourceUrl} target="_blank" rel="noreferrer">
+                          Source table
+                        </a>
+                        <p>{c.use}</p>
+                      </div>
                     ) : (
                       <p>
                         {c.points
@@ -1461,13 +1571,13 @@ export default function ClientStudio() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  void action("/api/agent/briefs", {
+                  void director.start({
                     roomId: room.id,
                     expectedRevision: room.revision,
                     prompt,
-                  }).then((r) => {
-                    if (r) clearPrompt();
+                    refreshPublic: false,
                   });
+                  clearPrompt();
                 }}
               >
                 <textarea
@@ -1477,16 +1587,23 @@ export default function ClientStudio() {
                   placeholder="Capture a client question or page instruction…"
                 />
                 <small>
-                  Saved for the next model-enabled phase. Change economics
-                  directly in Scenarios now.
+                  Ask for a storyline change, a financial sensitivity or a page
+                  revision. The local agent uses this workroom’s pinned data and
+                  validated calculation tools.
                 </small>
                 <button
                   className="primary-action"
-                  disabled={busy || !prompt.trim()}
+                  disabled={
+                    busy || director.running || prompt.trim().length < 20
+                  }
                 >
-                  Save instruction <ArrowRight size={14} />
+                  {director.running
+                    ? "Preparing the next turn…"
+                    : "Ask the team"}{" "}
+                  <ArrowRight size={14} />
                 </button>
               </form>
+              <DirectorProgress run={director.run} error={director.error} />
             </aside>
           )}
         </div>

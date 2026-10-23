@@ -57,6 +57,7 @@ export function useRevisionDraft<T>(
       try {
         sessionStorage.removeItem(key);
       } catch {}
+      setEntry({ key, value: fallback.current, dirty: false });
     },
   ];
 }

@@ -48,6 +48,33 @@ impl FinancialSource for Archive {
         Box::pin(async { Ok(evidence::archive_curve(&self.data)) })
     }
 }
+struct PoolSource {
+    app: App,
+}
+impl FinancialSource for PoolSource {
+    fn descriptor(&self) -> Descriptor {
+        Descriptor {
+            id: "public-archive",
+            name: "Versioned public data pool",
+            state: "ready",
+            mode: "ingestion receipts → canonical evidence → MCP",
+            capabilities: vec![
+                "annual company facts",
+                "Treasury par curve",
+                "retained source versions",
+            ],
+            url: None,
+            as_of: None,
+            rights: "Public sources and dated archive. No licensed market data or executable quotes.",
+        }
+    }
+    fn company<'a>(&'a self, symbol: &'a str) -> SourceFuture<'a> {
+        Box::pin(async move { pool::company(&self.app, symbol) })
+    }
+    fn curve(&self) -> SourceFuture<'_> {
+        Box::pin(async { pool::curve(&self.app) })
+    }
+}
 struct Deferred {
     descriptor: Descriptor,
 }
@@ -79,6 +106,11 @@ pub struct Registry {
     sources: Vec<Box<dyn FinancialSource>>,
 }
 impl Registry {
+    pub fn with_pool(app: App) -> Self {
+        let mut r = Self::new(app.data.clone());
+        r.sources[0] = Box::new(PoolSource { app });
+        r
+    }
     pub fn new(data: Value) -> Self {
         let mut sources: Vec<Box<dyn FinancialSource>> = vec![Box::new(Archive { data })];
         for (id, name, mode, url, caps) in [

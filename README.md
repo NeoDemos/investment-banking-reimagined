@@ -1,67 +1,61 @@
 # Investment Banking Reimagined
 
-A local React/TypeScript financial workspace backed by Rust and SQLite:
+A local client-work application: **director instruction → agent plan → public data pool → MCP financial tools → stored model → dynamic client story → page review and another turn**.
 
-**Source adapters → canonical evidence → MCP tools/resources → bounded context → financial workflow → versioned document and dynamic slides.**
+React/TypeScript presents the work; Rust and SQLite own financial calculations, evidence, document revisions and review copies. The current agent uses the laptop's authenticated **Codex CLI**, with bounded structured planning and composition requests. The app never reads or copies Codex credentials. A successful local account-authenticated planning/composition rehearsal has run; account access and quota still govern subsequent requests. The retained separate API/Claude adapters are disabled by default.
 
-The owner’s 23 October instruction defers model, voice and live data connections. This phase implements the architecture and a working public-archive path. It requires **no API key or model subscription**. Natural-language briefs are saved for the next model-enabled phase; curated local blueprints exercise the real MCP/evidence/finance/slide pipeline without claiming autonomous reasoning.
+## Run on this Mac
 
-## Run
-
-On this Mac, double-click **Start Demo.command**, then open **http://localhost:4173**. The compiled release embeds the React build. No Node, Python or Rust runtime is needed to run it. `dist/Banking Studio.app` is an unsigned local Apple Silicon browser launcher, not a native webview or managed enterprise package.
+Double-click **Start Demo.command**, or:
 
 ```sh
 npm ci
 npm run build
-cargo build --release
-./target/release/banking-studio --open
+~/.cargo/bin/cargo build --release
+BANKING_STUDIO_LOCAL_AGENT=1 BANKING_STUDIO_EXTERNAL_CONNECTIONS=0 ./target/release/banking-studio --open
 ```
 
-The user-local Rust toolchain is also available at `~/.cargo/bin/cargo`. Source-launcher data lives in `.local/studio.sqlite`; the `.app` uses `~/Library/Application Support/Banking Studio Demo`. The web server binds only to loopback. `scripts/package-mac.sh` updates the local launcher.
+Open **http://localhost:4173**. Runtime is one release binary with the built React UI embedded; no Node/Python development server is required. Codex must be installed and signed in for agent execution (`codex login status`). The independent structured workflow still works without a model. Source-launcher state lives in `.local/studio.sqlite`; the unsigned `dist/Banking Studio.app` browser launcher uses `~/Library/Application Support/Banking Studio Demo`. It is not a managed native webview or a Windows installer. `scripts/package-mac.sh` updates the local package.
 
-## Explore the application
+## What to try
 
-- **Data connections:** ready local SEC/Treasury archive; explicit deferred/planned refresh and provider-native MCP contracts for FactSet, S&P/Kensho and Daloopa. Planned contracts cannot retrieve data. Actual licences, authentication and schemas remain unverified.
-- **Local blueprints:** financing, capital returns and hypothetical acquisition examples retrieve archive observations through the official MCP SDK, calculate in Rust, assemble a context packet and compile different document shapes. Companies are selected from the supported universe; reported financial data is not typed into a form. All transaction terms remain visible illustrative assumptions.
-- **Evidence and context:** original and normalized values, units/scales, fiscal periods, filing dates, tags, accessions and citation identities. Context selection is bounded and explicitly lists omitted observations. The archive uses keyword search, not claimed semantic retrieval.
-- **Dynamic materials:** a typed semantic document compiles into branded frames, geometry, data bindings and a citation index. Change page composition, reorder pages or directly edit a headline/narrative. Validation and optimistic revisions preserve financial records and source snapshots. Current frame lineage is analysis/fact-level; full per-number derived dependency tracing is further work.
-- **Materials library and review:** reopen artifacts with their workrooms, inspect execution, record page-specific feedback and save a follow-up brief. Model execution of that feedback is deferred. JSON and CSV are inspection exports; editable PowerPoint and agent-aware XLSX are future adapters.
+1. Start with the natural-language **director assignment**, using a debt-capital-markets, capital-returns or M&A example. The structured brief editor is secondary, under an expandable inspection option.
+2. Ask the team to prepare the client story. The local agent proposes the brief/storyline. Optional fixed public SEC/Treasury adapters fetch and normalize source observations; failed attempts stay visible and the dated pool remains available.
+3. Open **Storyline** to browse the client argument as linked frames. Materials combine agent-authored narrative/headlines with charts and figures resolved from stored deterministic models. Relevant annual peer context and the sourced Rabobank proposition come from the same retained data layer.
+4. Inspect **Data pool**, **Evidence**, **Scenarios** and exact key-number traces. Changing assumptions creates a new model; originals remain intact. A confirmed funding amendment changes gap dependencies without silently resizing an issue.
+5. Use **Discussion** for a further agent turn, or record page-specific review issues and authored edits. Review copies require explicit local prerequisites, current advice, review declarations and issue dispositions. These are self-attested prototype controls, not authenticated banker authority.
+6. **Evaluation** starts empty. It records actual entered paired observations against exact copies, including quality failures, review and rework. Five independent GPT-6.1 Sol reviews are defect-finding evidence; neither 10× staff productivity nor 5× client impact has been established.
 
-The public archive covers annual SEC US GAAP financials for PEP, CPB and GIS, plus a dated USD Treasury par curve. It is not live market data, LTM/consensus or an institutional transaction dataset. Scenario share prices, issuer spreads and deal terms are assumptions. Financial methods and limitations are documented in [the MCP methodology resource](docs/FINANCIAL_METHODS.md).
+## Coverage and boundaries
 
-## Actual MCP, not a renamed tool list
+Executable financial methods are regular semiannual USD bond economics/net funding, simplified full-period buybacks and simplified acquisition earnings/leverage with two funding actions and matching zero-synergy stresses. Company coverage is annual US GAAP for PEP, CPB and GIS; the rate reference is a dated Treasury par curve. Current issuer spreads, equity prices, fees and deal terms remain explicit illustrative inputs. No full IPO, DCF, LBO, merger accounting, fairness opinion or executable underwriting is implied.
 
-The [official Rust SDK](https://github.com/modelcontextprotocol/rust-sdk), `rmcp 3.7.0`, supplies client/server discovery, tool calls and resources. The host uses a JSON-RPC duplex transport inside the application, avoiding extra daemons. The same public-archive server can run over stdio:
+The public pool retains normalized versions, original values/units, periods, filing dates/tags/accessions and ingestion receipts. A small dated Damodaran/NYU Stern industry reference supplies broad sector context, not current company/transaction comps. Annual-report URL registration is an intake boundary; general PDF/table extraction and European taxonomy mapping are not implemented. Wider company discovery, European rates and equity/index adapters are planned in the [work catalog](docs/CLIENT_WORK_CATALOG.md).
+
+The agent proposes the story and validated scenario terms. Rust computes authoritative figures; typed financial blocks bind charts/tables to those values. The host uses the official `rmcp 3.7.0` SDK for actual discovery, tools/resources and JSON-RPC duplex messages. MCP transports capabilities; it does not replace the database, financial semantics, context selection or document engine. The public server also runs independently over stdio:
 
 ```sh
 ./target/release/banking-studio --mcp
 ```
 
-Stdio mode uses a fresh in-memory public workspace, does not open the app database or start HTTP, and exposes no model credentials, arbitrary files or arbitrary URL fetches. Its SDK negotiates current MCP discovery and supported legacy initialization. The app’s architecture screen obtains the actual tool catalog through its running MCP client/server.
+## Evidence and design
 
-MCP does not replace data storage, financial semantics, context selection, model orchestration or rendering. Provider-native MCP and API-to-MCP adapters are alternative ways to supply the same evidence contract. Public provider descriptions are not entitlement or bank-approval evidence.
-
-## Architecture, evidence and research
-
-- [Deep peer/product/MCP research and explicit implementation decisions](docs/PEER_ARCHITECTURE_RESEARCH.md)
-- [Current module boundaries and phase plan](docs/MCP_ARCHITECTURE.md)
-- [Monday demonstration without external connections](docs/MONDAY_DEMO.md)
-- [Financial methods](docs/FINANCIAL_METHODS.md)
-- [Current MCP verification](docs/mcp-verification.json)
-- [Original market research](docs/MARKET_RESEARCH.md), [data/platform options](docs/MVP_DATA_AND_PLATFORM.md) and [bank acceptance gates](docs/BANK_ACCEPTANCE.md)
-- [GitHub Project](https://github.com/users/NeoDemos/projects/3) and [parent issue #1](https://github.com/NeoDemos/investment-banking-reimagined/issues/1)
+- [Monday demo](docs/MONDAY_DEMO.md) · [client-work catalog and source research](docs/CLIENT_WORK_CATALOG.md)
+- [Client architecture](docs/CLIENT_WORKROOM_ARCHITECTURE.md) · [local agent contract](docs/LOCAL_AGENT.md) · [MCP foundation](docs/MCP_ARCHITECTURE.md)
+- [Five gauntlet reports and response ledger](docs/reviews/GAUNTLET.md) · [measurement protocol](docs/CLIENT_WORKFLOW_EVALUATION.md)
+- [Peer architecture research](docs/PEER_ARCHITECTURE_RESEARCH.md) · [financial methods](docs/FINANCIAL_METHODS.md) · [bank acceptance programme](docs/BANK_ACCEPTANCE.md)
+- [GitHub Project](https://github.com/users/NeoDemos/projects/3) · [original programme #1](https://github.com/NeoDemos/investment-banking-reimagined/issues/1)
 
 ```sh
 npm run check
 cargo test
+python3 scripts/verify_client_workflow.py
+python3 scripts/verify_client_controls.py
+python3 scripts/verify_director.py
 python3 scripts/verify_mcp_architecture.py
 python3 scripts/verify_demo.py
 ```
 
-The current integration test exercises the actual binary, SDK protocol boundary, standalone MCP stdio and local financial/document workflows with external connections disabled and no model calls. Historical mock-model evidence in `docs/agent-verification.json` describes the prior phase; it is not current live-inference acceptance. Its `verify_agent.py` rehearsal is explicitly opt-in for the later model-port phase. The legacy deterministic API remains for existing local state; it is not the primary workflow.
+Contract suites use isolated temporary databases and no external calls. `verify_director.py` uses an explicit fake CLI to test invalid/unsupported output and state preservation; actual Codex execution is separately recorded as live rehearsal evidence. Historical `verify_agent.py` belongs to the earlier optional API adapter and is not part of these checks.
 
-## Design and scope
-
-The canvas uses the actual public investor-site SVG wordmark, a 4:3 brand grammar and local Myriad website fonts. Proprietary fonts are excluded from the repo and app bundle; other machines need authorized fonts or use the installed/open-source fallback. Website `MyriadW01` differs from PDF-custom `MyriadforRabobank`; exact PDF typography or pixel parity is not claimed. This is an independent public-reference study, without bank affiliation or approval.
-
-This local single-user prototype does not establish bank/ZDR acceptance, maker/checker controls, confidential processing, complete valuation/underwriting coverage or managed native distribution. The original bank/full-product programme remains separate. Next-phase model/remote data adapters are disabled by default; owner/developer activation of retained experimental adapter code is not an acceptance claim. No confidential or licensed provider content belongs in this public repository. The project is independent of the NeoDemos product.
+The identity study uses the actual public investor-site SVG and locally supplied Myriad website fonts. Proprietary fonts are excluded from Git and public distribution. Website Myriad differs from PDF-custom MyriadforRabobank; pixel-perfect PDF parity or official bank approval is not claimed. This is an independent, single-user, external **public-data** demonstration. Confidential data, bank integration, ZDR acceptance, authenticated maker/checker, signing/managed native distribution and bank compliance remain separate work. This project is independent of the NeoDemos product.

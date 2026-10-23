@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
+export BANKING_STUDIO_LOCAL_AGENT=1
+export BANKING_STUDIO_EXTERNAL_CONNECTIONS=0
 project_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
 cd "$project_dir"
 if [[ ! -x target/release/banking-studio ]]; then

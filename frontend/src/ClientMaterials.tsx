@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -7,6 +7,7 @@ import {
   X,
 } from "lucide-react";
 import { Page } from "./AgentStudio";
+import { useRevisionDraft } from "./useRevisionDraft";
 type J = Record<string, any>;
 export function ClientMaterials({
   room,
@@ -25,14 +26,24 @@ export function ClientMaterials({
   onReview: () => void;
   onPlan: () => void;
 }) {
-  const [edit, setEdit] = useState(false),
-    [title, setTitle] = useState(""),
-    [prose, setProse] = useState<Record<number, string>>({});
   const stage = useRef<HTMLDivElement>(null);
   const slide = room.draft?.slides[page];
-  useEffect(() => {
-    setEdit(false);
-  }, [page, room.id]);
+  const [buffer, setBuffer, clearBuffer] = useRevisionDraft(
+    `materials:${room.id}:${slide?.id || "none"}`,
+    room.revision,
+    {
+      open: false,
+      title: slide?.title || "",
+      prose: Object.fromEntries(
+        (slide?.blocks || []).map((b: J, i: number) => [i, b.text || ""]),
+      ) as Record<number, string>,
+    },
+  );
+  const { open: edit, title, prose } = buffer;
+  const setEdit = (open: boolean) => setBuffer((old) => ({ ...old, open }));
+  const setTitle = (title: string) => setBuffer((old) => ({ ...old, title }));
+  const setProse = (prose: Record<number, string>) =>
+    setBuffer((old) => ({ ...old, prose }));
   useEffect(() => {
     const move = (e: KeyboardEvent) => {
       if (document.fullscreenElement !== stage.current) return;
@@ -95,6 +106,13 @@ export function ClientMaterials({
           </button>
         </div>
       </div>
+      {room.documentUpgrade?.state === "requires_repreparation" && (
+        <p className="materials-warning">
+          This older document needs preparation under the current client-story
+          contract: {room.documentUpgrade.reason}. Its original revision and
+          copies remain preserved.
+        </p>
+      )}
       {room.mandate.decisionState === "review_required" && (
         <p className="materials-warning">
           Economics or brief changed. The prior banker view is invalidated;
@@ -141,15 +159,7 @@ export function ClientMaterials({
         <button
           className="quiet-action"
           disabled={busy}
-          onClick={() => {
-            setTitle(slide.title);
-            setProse(
-              Object.fromEntries(
-                slide.blocks.map((b: J, i: number) => [i, b.text || ""]),
-              ),
-            );
-            setEdit(!edit);
-          }}
+          onClick={() => setEdit(!edit)}
         >
           Edit authored text
         </button>
@@ -168,7 +178,7 @@ export function ClientMaterials({
               expectedRevision: room.revision,
               draft: d,
             }).then((r) => {
-              if (r) setEdit(false);
+              if (r) clearBuffer();
             });
           }}
         >
@@ -196,9 +206,11 @@ export function ClientMaterials({
             ) : null,
           )}
           <p>
-            Financial figures remain bound. Change terms in Scenarios. The
-            client-decision block reads your saved brief and conditional view;
-            update those in Decision / Work plan.
+            Unsaved text stays with this page and revision while you inspect
+            evidence. Cancel discards this page buffer. Financial figures remain
+            bound. Change terms in Scenarios. The client-decision block reads
+            your saved brief and conditional view; update those in Decision /
+            Work plan.
           </p>
           <div className="review-buttons">
             <button className="primary-action" disabled={busy}>
@@ -207,7 +219,7 @@ export function ClientMaterials({
             <button
               type="button"
               className="quiet-action"
-              onClick={() => setEdit(false)}
+              onClick={clearBuffer}
             >
               Cancel
             </button>

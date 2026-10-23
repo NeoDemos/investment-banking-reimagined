@@ -20,6 +20,8 @@ cat > "$app/Contents/MacOS/Banking Studio" <<'LAUNCHER'
 #!/bin/bash
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
+export BANKING_STUDIO_LOCAL_AGENT=1
+export BANKING_STUDIO_EXTERNAL_CONNECTIONS=0
 export BANKING_STUDIO_DATA_DIR="$HOME/Library/Application Support/Banking Studio Demo"
 export BANKING_STUDIO_BRAND_DIR="$BANKING_STUDIO_DATA_DIR/brand"
 mkdir -p "$BANKING_STUDIO_DATA_DIR"

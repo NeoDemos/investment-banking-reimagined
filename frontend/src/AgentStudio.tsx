@@ -159,6 +159,123 @@ function Table({ rows }: { rows: J[] }) {
 export function BlockView({ block: b, room }: { block: Block; room: Room }) {
   const a = b.analysisId ? room.analyses[b.analysisId] : null;
   const m = a?.model;
+  if (b.type === "sector_benchmark") {
+    const s = (room as any).sources["sector:US"];
+    return (
+      <div className="bound-peer-position">
+        <h3>Broad US industry context</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Industry</th>
+              <th>Firms</th>
+              <th>
+                EV / EBITDA
+                <br />
+                positive EBITDA firms
+              </th>
+              <th>
+                EV / EBITDA
+                <br />
+                all firms
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {s.rows.map((x: any) => (
+              <tr key={x.industry}>
+                <th>{x.industry}</th>
+                <td>{x.firms}</td>
+                <td>{format(x.positiveEbitdaEvEbitda, "x")}</td>
+                <td>{format(x.allFirmsEvEbitda, "x")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p>{s.definition}</p>
+        <p>
+          {s.valuationDate}. {s.use}
+        </p>
+        <a
+          className="source-line"
+          href={s.sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Damodaran / NYU Stern · lookup retrieved {s.retrievedAt.slice(0, 10)}
+        </a>
+      </div>
+    );
+  }
+  if (b.type === "peer_position") {
+    const r = room as any;
+    return (
+      <div className="bound-peer-position">
+        <p>
+          Reported annual financials · USDm. Compare definitions and fiscal
+          periods before drawing conclusions.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Company / period</th>
+              <th>Revenue</th>
+              <th>Net debt</th>
+              <th>EBITDA proxy</th>
+              <th>Net leverage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {r.peerPosition.map((p: any) => (
+              <tr key={p.symbol}>
+                <th>
+                  {p.name}
+                  <small>{p.periodEnd}</small>
+                </th>
+                <td>{format(p.revenue, "USDm")}</td>
+                <td>{format(p.netDebt, "USDm")}</td>
+                <td>{format(p.ebitdaProxy, "USDm")}</td>
+                <td>
+                  {p.netLeverage == null
+                    ? "Not meaningful"
+                    : format(p.netLeverage, "x")}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p>
+          EBITDA proxy = reported operating income + D&A. Net debt = reported
+          debt − cash. Leverage = net debt / proxy EBITDA. This is balance-sheet
+          context, not a trading-multiple or credit-rating comparison.
+        </p>
+      </div>
+    );
+  }
+  if (b.type === "bank_proposition") {
+    const profile = (room as any).sources["bank:rabobank"];
+    return (
+      <div className="bound-bank-proposition">
+        {profile.claims.map((c: any, i: number) => (
+          <section key={c.title}>
+            <small>0{i + 1}</small>
+            <div>
+              <h3>{c.title}</h3>
+              <p>{c.text}</p>
+              <p className="bank-application">{c.application}</p>
+              <a href={c.sourceUrl} target="_blank" rel="noreferrer">
+                Public source ↗
+              </a>
+            </div>
+          </section>
+        ))}
+        <footer>
+          Independent public-reference study. Bank/client approval, mandate
+          credentials and proposed relevance remain unverified.
+        </footer>
+      </div>
+    );
+  }
   if (
     ["client_decision", "client_view", "client_conditions"].includes(b.type)
   ) {
@@ -471,9 +588,13 @@ export function BlockView({ block: b, room }: { block: Block; room: Room }) {
           <div key={id}>
             <strong>{c.name || "U.S. Treasury"}</strong>
             <span>
-              {c.periodEnd
-                ? `Annual accounts · period ended ${c.periodEnd}`
-                : `USD par curve · ${c.date}`}
+              {c.rows
+                ? "Sector benchmark · " + c.retrievedAt?.slice(0, 10)
+                : c.claims
+                  ? "Public bank proposition · reviewed " + c.reviewedAt
+                  : c.periodEnd
+                    ? `Annual accounts · period ended ${c.periodEnd}`
+                    : `USD par curve · ${c.date}`}
             </span>
             <span
               className={c.provenance?.mode === "cached" ? "cache-label" : ""}

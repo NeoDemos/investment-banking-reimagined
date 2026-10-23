@@ -93,7 +93,7 @@ pub fn catalog() -> Vec<Tool> {
 impl BankingServer {
     pub fn new(app: App, room: Value, live: bool) -> Self {
         Self {
-            providers: Arc::new(providers::Registry::new(app.data.clone())),
+            providers: Arc::new(providers::Registry::with_pool(app.clone())),
             app,
             stage: Arc::new(tokio::sync::Mutex::new(room)),
             live,
@@ -318,7 +318,7 @@ pub async fn architecture(State(s): State<App>) -> ApiResult {
     let session = Session::new(s.clone(), json!({"sources":{},"analyses":{}}), false).await?;
     let tools = session.tools().await?;
     Ok(Json(
-        json!({"phase":"Architecture and local public archive","mcp":{"sdk":"Official Rust SDK rmcp 3.7.0 / Apache-2.0","protocol":"SDK negotiated MCP; current and legacy discovery supported","transport":"JSON-RPC over in-process duplex; standalone stdio via --mcp","tools":tools,"resources":session.server.resource_list()},"providers":session.server.providers.descriptors(),"models":{"state":if external_enabled(){"optional owner-enabled adapter"}else{"deferred"},"note":"Model and voice APIs are next-phase work. Local blueprints exercise the same tools without inference."},"layers":["Source adapters","Canonical evidence and lineage","MCP tools and resources","Bounded context selection","Workflow and model port","Semantic document and scene compiler","React canvas and review"],"brand":materials::brand()}),
+        json!({"phase":"Architecture and local public archive","mcp":{"sdk":"Official Rust SDK rmcp 3.7.0 / Apache-2.0","protocol":"SDK negotiated MCP; current and legacy discovery supported","transport":"JSON-RPC over in-process duplex; standalone stdio via --mcp","tools":tools,"resources":session.server.resource_list()},"providers":session.server.providers.descriptors(),"models":{"state":if director::enabled(){"local Codex agent enabled"}else if external_enabled(){"optional owner-enabled adapter"}else{"deferred"},"note":"The director workflow can use the laptop’s authenticated Codex CLI when explicitly enabled. Remote API/voice adapters remain separate. Structured local blueprints still run without inference."},"layers":["Source adapters","Canonical evidence and lineage","MCP tools and resources","Bounded context selection","Workflow and model port","Semantic document and scene compiler","React canvas and review"],"brand":materials::brand()}),
     ))
 }
 
@@ -331,6 +331,7 @@ mod tests {
         let db = Connection::open_in_memory().unwrap();
         agent::init(&db).unwrap();
         evidence::init(&db, &data).unwrap();
+        pool::init(&db, &data).unwrap();
         Arc::new(AppState {
             db: Mutex::new(db),
             data,
