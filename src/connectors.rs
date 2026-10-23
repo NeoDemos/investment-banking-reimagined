@@ -42,7 +42,7 @@ fn fallback(s: &App, id: &str, reason: &str, embedded: Value) -> Value {
     p["provenance"] = json!({"id":id,"sha256":hash,"mode":"cached","refreshError":reason,"original":original,"attemptedAt":now()});
     p
 }
-async fn fetch(s: &App, url: &str) -> Result<Vec<u8>, String> {
+pub async fn fetch(s: &App, url: &str) -> Result<Vec<u8>, String> {
     let ua=std::env::var("SEC_USER_AGENT").unwrap_or("InvestmentBankingReimagined public research github.com/NeoDemos/investment-banking-reimagined".into());
     let r = s
         .client
@@ -54,7 +54,11 @@ async fn fetch(s: &App, url: &str) -> Result<Vec<u8>, String> {
         .await
         .map_err(|_| "Public source could not be reached".to_string())?;
     if !r.status().is_success() {
-        return Err(format!("Public source HTTP {}", r.status()));
+        return Err(if r.status().as_u16() == 403 {
+            "Public source HTTP 403 Forbidden: access was refused; this does not mean the equity ticker is unknown. Use a retained filing or a reviewed issuer-report connector.".into()
+        } else {
+            format!("Public source HTTP {}", r.status())
+        });
     }
     if r.content_length().unwrap_or(0) > 20_000_000 {
         return Err("Source exceeds connector size limit".into());

@@ -1,0 +1,458 @@
+{
+  "asOf": "2026-10-23T14:02:06.414001+00:00",
+  "scope": "Local public-data prototype; actual native model/data access separated from synthetic contracts and human/bank acceptance",
+  "binarySha256": "3c1d8b9c0f49a963b632b2c6612a949e28ed8f5fa29c0a72dd2db784d595c0b8",
+  "automated": {
+    "rustTestsPassed": 33,
+    "integrationCheckGroupsPassed": 81,
+    "suites": {
+      "verify_capital_models": {
+        "checksPassed": 8,
+        "checks": [
+          "IPO: independent offer-equity/share-price, new-share ownership and fee/net-proceeds bridge",
+          "ipo: every headline metric resolves to inspectable financial lineage",
+          "ipo: scoped recalculation preserves source/prior/other-action snapshots and rejects stale or invalid edits",
+          "LBO: closed-form debt amortization and independently discounted sponsor cash flows reconcile to the annual schedule",
+          "lbo: every headline metric resolves to inspectable financial lineage",
+          "LBO: unfunded operating gaps suppress IRR/MOIC instead of assuming an unrequested financing cure",
+          "lbo: scoped recalculation preserves source/prior/other-action snapshots and rejects stale or invalid edits",
+          "IPO and LBO models, schedules, lineage, amendments and materials survive process restart unchanged"
+        ],
+        "externalCalls": 0,
+        "scope": "Hypothetical deterministic models; no underwriting, human acceptance or productivity claim"
+      },
+      "verify_director": {
+        "checksPassed": 8,
+        "checks": [
+          "Only fixed public connectors can fetch; report registration is explicit pending extraction and cannot silently promote source facts",
+          "Saved multi-source/profile settings, High CLI arguments, restored run metadata and cancellation are exercised against an isolated real server",
+          "Unchecked bank, sector and EUR references are excluded from the new workroom and model context",
+          "Unsupported model plan asks for clarification without claiming a model or materials",
+          "Explicit fake CLI exercises plan\u2192MCP pool retrieval\u2192deterministic same-net funding\u2192typed source-bound story; no banker acceptance inferred",
+          "An existing-turn client-priority change persists into brief/context/conversation; target substitution is rejected without modifying the room",
+          "Invalid generated financial prose cannot overwrite current work; stale agent turns reject before execution",
+          "Older document contract migrates once as a new review-required revision; complete advice retained, old document/source/model snapshots preserved and restart is idempotent"
+        ],
+        "externalCalls": 0,
+        "model": "explicit fake CLI for contract failures only",
+        "realInferenceOrHumanValueEstablished": false
+      },
+      "verify_mcp_architecture": {
+        "asOf": "2026-10-23",
+        "checksPassed": 11,
+        "checks": [
+          "Architecture is discovered from the real MCP server and planned providers are explicit",
+          "Model invocation is deferred without requesting a key",
+          "Free-form briefs persist honestly without fake generated materials; stale captures fail",
+          "Lightweight room summaries do not download analytical/source/history payloads",
+          "Three genuine local MCP workflows generate different page counts with canonical source/context/financial bindings",
+          "Scoped document edits/reordering recompile scenes without changing financial data",
+          "Stale and partially invalid edit batches cannot overwrite a saved artifact",
+          "Invalid financial bindings are rejected at the document boundary",
+          "Unsupported entities and invalid financial workflow scope fail explicitly",
+          "Restart preserves exact document, scene and bounded context snapshots",
+          "Standalone SDK stdio supports legacy MCP initialization, tool discovery/call, structured observations and citation resource read; arbitrary files are rejected"
+        ],
+        "localWorkflowLatencyMs": {
+          "bondMs": 7.6,
+          "buybackMs": 9.71,
+          "acquisitionMs": 16.02
+        },
+        "externalConnections": "Deferred; proxy points to a closed port during tests",
+        "modelCalls": 0,
+        "blueprintPageCounts": {
+          "bond": 5,
+          "buyback": 4,
+          "acquisition": 7
+        },
+        "notClaimed": [
+          "Autonomous natural-language drafting",
+          "Live provider entitlements or model/API integration",
+          "Bank acceptance",
+          "General pixel-perfect typesetting"
+        ]
+      },
+      "verify_client_controls": {
+        "checksPassed": 5,
+        "checks": [
+          "Blocked local material/evidence/review tasks prevent freezing across later commits; explicit clearance permits it while commercial gate stays blocked",
+          "Changed advice reopens a deferred story issue; an unchanged source deferral remains scoped and preserved",
+          "Confirmed USD500m\u2192600m amendment creates new exact-gap lineages without resizing or changing archived models/sources/copies; deliberate sizing affects only one action",
+          "Working-sheet and displayed net-proceeds formulas agree on all conversions; derived debt exposes exact tags, components, units, period and accession with honestly labelled source destinations",
+          "Stable bounded pagination retrieves all 101 observations including the oldest quality failure and all 53 copies; concurrent inserts stay outside a fixed snapshot; invalid cursors rejected"
+        ],
+        "externalCalls": 0,
+        "syntheticDataOnly": true,
+        "humanProductivityOrClientImpactEstablished": false
+      },
+      "verify_demo": {
+        "checksPassed": 28,
+        "checks": [
+          "Compiled React assets serve without a frontend development server",
+          "Three seeded financial cases",
+          "Offline capabilities honestly reported",
+          "CSRF, Origin and Host boundaries reject invalid requests",
+          "Public observations respect the as-of date",
+          "bond Excel formula caches equal every Rust working",
+          "buyback Excel formula caches equal every Rust working",
+          "acquisition Excel formula caches equal every Rust working",
+          "Bond PV independently recomputed",
+          "Buyback EPS independently recomputed including opportunity cost",
+          "Acquisition EPS independently recomputed",
+          "Background revision actually completes",
+          "Review changes assumptions and recalculates",
+          "Unrecognized requests remain visible and pending",
+          "Historical calculations remain immutable",
+          "Freeze applies to exact version; editing creates a new draft",
+          "Invalid assumptions preserve the prior version",
+          "Deferred external connections fail explicitly",
+          "Existing financial cases migrate into a connected engagement",
+          "New engagement owns three independent analysis records",
+          "Structured rich text persists as a material revision",
+          "Stale material saves cannot overwrite current work",
+          "Document validation rejects scripts and cross-engagement analysis links",
+          "Recalculation updates the project analysis while preserving written narrative",
+          "Review copy preserves exact narrative and old financial versions",
+          "Draft workflow binds current calculations into a new editable revision",
+          "Unsupported client is not silently priced with PepsiCo data",
+          "Engagement, draft revision and exact review copy survive process restart"
+        ],
+        "measurement": {
+          "machine": "local Apple Silicon Mac; not representative of managed bank hardware",
+          "process": "release Rust backend only; browser excluded",
+          "startupMs": 666.0,
+          "backendRssMiB": 12.3,
+          "briefGetMedianMs": 0.24,
+          "briefGetP95Ms": 0.36,
+          "binaryMiB": 12.25
+        },
+        "notTested": [
+          "Live model, transcription and voice: deferred by owner instruction",
+          "Live quote/provider integration: deferred by owner instruction",
+          "Managed Windows/macOS deployment",
+          "Bank acceptance"
+        ]
+      },
+      "verify_client_workflow": {
+        "checksPassed": 13,
+        "checks": [
+          "bond: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+          "bond: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+          "bond: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+          "bond: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+          "buyback: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+          "buyback: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+          "buyback: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+          "buyback: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+          "acquisition: isolated synthetic observation contract tests suppress failed-quality/zero-baseline ratios and pin the exact copy; no human result inferred",
+          "acquisition: advice/document/brief/economic edits reopen relevant checks; stale correction links rejected; unrelated verification preserved",
+          "acquisition: key-number lineage, review issue/correction/verification, immutable complete copy, accountable task and amended brief",
+          "acquisition: client brief, confirmed plan, two alternatives, immutable scoped recalculation, invalid/stale protection",
+          "Exact client state and observations survive restart; legacy full histories migrate transactionally to immutable on-demand revisions"
+        ],
+        "externalCalls": 0,
+        "notEstablished": [
+          "10x productivity",
+          "5x client impact",
+          "Autonomous model drafting",
+          "Bank acceptance"
+        ]
+      },
+      "verify_contextual_workflow": {
+        "checksPassed": 8,
+        "checks": [
+          "Discovery persists tailored narrative questions and mandatory bond evidence needs without creating a workroom or claiming materials; missing direction is rejected",
+          "Bond context uses actual MCP retrieval, pins dated issue/rating references and benchmark history, computes the timing delta, and never substitutes historical issuance spreads for current spreads",
+          "Contextual client frames retain source bindings/citations and explicit current-market gaps",
+          "buyback: relevant equity/peer/sector evidence feeds the price-dependent Rust model with observation provenance; issuer-credit sources stay excluded",
+          "acquisition: relevant equity/peer/sector evidence feeds the price-dependent Rust model with observation provenance; issuer-credit sources stay excluded",
+          "An explicit scenario price is preserved despite an available quote; observed market values do not silently replace banker instructions",
+          "An issuer-only selection cannot silently substitute deselected SEC financials for an unsupported issuer-report mapping",
+          "Guided direction, request-specific context, market-based model inputs and rendered frames survive process restart"
+        ],
+        "externalCalls": 0,
+        "model": "Explicit fake CLI; market data fixtures are synthetic",
+        "realInferenceOrBankerValueEstablished": false
+      }
+    }
+  },
+  "actualCases": [
+    {
+      "case": "intake",
+      "runId": "5f91f51e-be10-4a22-b7c0-9f263f03ce02",
+      "status": "completed",
+      "connection": {
+        "effort": "high",
+        "id": "codex_high",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local"
+      },
+      "state": "awaiting_direction",
+      "startedAt": "2026-10-23T13:38:31.108921+00:00",
+      "finishedAt": "2026-10-23T13:39:27.635276+00:00",
+      "enabledSources": [
+        "sec",
+        "sector",
+        "issuer_reports",
+        "treasury",
+        "bund",
+        "bank",
+        "credit",
+        "equity"
+      ],
+      "sourceFetches": [],
+      "questionIds": [
+        "funding_purpose",
+        "desired_client_message",
+        "bank_positioning"
+      ],
+      "noMaterialsClaimed": true
+    },
+    {
+      "case": "draft",
+      "runId": "8d64be07-d57c-454f-a67f-09756b9141fe",
+      "status": "completed",
+      "connection": {
+        "effort": "high",
+        "id": "codex_high",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local"
+      },
+      "state": "draft_ready",
+      "startedAt": "2026-10-23T13:41:23.220041+00:00",
+      "finishedAt": "2026-10-23T13:44:14.126548+00:00",
+      "enabledSources": [
+        "sec",
+        "issuer_reports",
+        "treasury",
+        "bank",
+        "credit"
+      ],
+      "sourceFetches": [
+        {
+          "source": "sec:AAPL",
+          "state": "failed",
+          "error": "Public source HTTP 403 Forbidden: access was refused; this does not mean the equity ticker is unknown. Use a retained filing or a reviewed issuer-report connector."
+        },
+        {
+          "source": "issuer:apple",
+          "state": "ingested",
+          "error": null
+        },
+        {
+          "source": "treasury:USD",
+          "state": "ingested",
+          "error": null
+        },
+        {
+          "source": "rates:USD:history",
+          "state": "ingested",
+          "error": null
+        },
+        {
+          "source": "credit:AAPL",
+          "state": "failed",
+          "error": "Public source HTTP 403 Forbidden: access was refused; this does not mean the equity ticker is unknown. Use a retained filing or a reviewed issuer-report connector."
+        }
+      ],
+      "roomId": "7c1092b2-afe0-4012-b0a7-133ebe54ecfe",
+      "revision": 5,
+      "frames": 14,
+      "kind": "bond",
+      "direction": {
+        "bank_positioning": "Market intelligence and execution preparation",
+        "desired_client_message": "Present a balanced issue-now versus wait decision",
+        "funding_purpose": "An illustrative USD500m net refinancing of upcoming debt maturities. Use public evidence and keep current issuer spreads and any rating affirmation gap explicit."
+      },
+      "researchSourceKeys": [
+        "credit:AAPL",
+        "rates:USD:history"
+      ],
+      "coverage": [
+        {
+          "id": "company",
+          "status": "available"
+        },
+        {
+          "id": "rates",
+          "status": "available"
+        },
+        {
+          "id": "rate_history",
+          "status": "available"
+        },
+        {
+          "id": "credit_metrics",
+          "status": "partial"
+        },
+        {
+          "id": "ratings",
+          "status": "dated"
+        },
+        {
+          "id": "debt_terms",
+          "status": "dated"
+        },
+        {
+          "id": "issuer_spreads",
+          "status": "missing"
+        },
+        {
+          "id": "bank",
+          "status": "partial"
+        }
+      ]
+    },
+    {
+      "case": "equity",
+      "runId": "6e395e60-4a98-4e28-a24e-082e7e56e9c1",
+      "status": "completed",
+      "connection": {
+        "effort": "high",
+        "id": "codex_high",
+        "model": "gpt-6.1-sol",
+        "provider": "codex_local"
+      },
+      "state": "draft_ready",
+      "startedAt": "2026-10-23T13:46:01.749356+00:00",
+      "finishedAt": "2026-10-23T13:48:34.067951+00:00",
+      "enabledSources": [
+        "sec",
+        "sector",
+        "issuer_reports",
+        "treasury",
+        "bank",
+        "equity"
+      ],
+      "sourceFetches": [
+        {
+          "source": "sec:GIS",
+          "state": "failed",
+          "error": "Public source HTTP 403 Forbidden: access was refused; this does not mean the equity ticker is unknown. Use a retained filing or a reviewed issuer-report connector."
+        },
+        {
+          "source": "treasury:USD",
+          "state": "ingested",
+          "error": null
+        },
+        {
+          "source": "equity:GIS",
+          "state": "ingested",
+          "error": null
+        },
+        {
+          "source": "equity:PEP",
+          "state": "ingested",
+          "error": null
+        },
+        {
+          "source": "equity:CPB",
+          "state": "ingested",
+          "error": null
+        },
+        {
+          "source": "sector:US",
+          "state": "ingested",
+          "error": null
+        }
+      ],
+      "roomId": "30f318a6-33d9-427f-a911-f0a94eb19bfb",
+      "revision": 5,
+      "frames": 14,
+      "kind": "buyback",
+      "direction": {},
+      "researchSourceKeys": [
+        "equity:CPB",
+        "equity:GIS",
+        "equity:PEP"
+      ],
+      "coverage": [
+        {
+          "id": "company",
+          "status": "available"
+        },
+        {
+          "id": "equity",
+          "status": "available"
+        },
+        {
+          "id": "rates",
+          "status": "available"
+        },
+        {
+          "id": "peers",
+          "status": "partial"
+        },
+        {
+          "id": "sector",
+          "status": "dated"
+        },
+        {
+          "id": "credit_metrics",
+          "status": "partial"
+        },
+        {
+          "id": "bank",
+          "status": "partial"
+        }
+      ],
+      "observedPriceFeedsPrimaryAndAlternative": true,
+      "sourceObservationBoundInModelSnapshotAndLineage": true,
+      "providerPricesAndDerivedOutputsOmitted": true
+    }
+  ],
+  "independentLiveEquityCheck": {
+    "checks": [
+      {
+        "option": "base",
+        "independentEpsReconciles": true,
+        "observedPriceInputAndProvenanceMatch": true
+      },
+      {
+        "option": "alternative",
+        "independentEpsReconciles": true,
+        "observedPriceInputAndProvenanceMatch": true
+      }
+    ],
+    "providerValuesOmitted": true
+  },
+  "browser": {
+    "viewport": [
+      1280,
+      800
+    ],
+    "activityBarHeightPx": [
+      46,
+      48
+    ],
+    "primaryNavigationTabs": 5,
+    "sourceCheckboxOptions": 8,
+    "sourcePopoverTop": 124.4453125,
+    "sourcePopoverBottom": 604.4453125,
+    "sourcePopoverFitsViewport": true,
+    "multiSelectionAndEscapeVerified": true,
+    "pendingQuestionsRestoreAfterReload": true,
+    "actualQuestionsAnsweredThroughUI": true,
+    "bondFramesWithoutOverflow": 14,
+    "equityFramesWithoutOverflow": 14,
+    "defectsFoundAndFixed": [
+      "Shared run-summary styles enlarged the status area; isolated director styles restore a compact bar",
+      "Source dropdown extended below the viewport; it now chooses direction and available height",
+      "Market baseline could replace explicit price intent; a typed flag and provenance checks preserve explicit prices",
+      "Deselected SEC could have been reused through a different company-reporting label; unsupported issuer-only mappings now clarify before modelling"
+    ]
+  },
+  "currentDataGaps": [
+    "Current issuer secondary bond prices/yields/spreads and new-issue concession",
+    "Current agency affirmation and complete current outstanding-debt inventory",
+    "Verified interest expense and rating-agency adjustments for coverage analysis",
+    "Wider company financial mappings, forecasts, consensus and institutional deal comparables",
+    "Enterprise/redistribution rights for public delayed display observations"
+  ],
+  "notEstablished": [
+    "Qualified banker acceptance",
+    "10x productivity or5x client impact",
+    "Bank/production acceptance",
+    "Current issuer TRACE quote entitlement"
+  ]
+}

@@ -2,7 +2,7 @@
 
 # MCP-backed financial workspace — 23 October 2026
 
-The current owner instruction is **architecture first; external API/model/data connections later**. This replaces the previous assumption that live model access had to unblock the present demonstration. No key is requested for this phase. [Peer research and sources](PEER_ARCHITECTURE_RESEARCH.md) records the product patterns studied and separates evidence from our design inferences.
+The M12 foundation used **architecture first; external API/model/data connections later**. Subsequent M14–M16 owner requests activate local subscription-backed agents, guided client direction and fixed public-data ingestion. Licensed feeds, remote API keys and bank integration remain separate. No new key is required for the working local Codex route. [Peer research and sources](PEER_ARCHITECTURE_RESEARCH.md) records the product patterns studied and separates evidence from our design inferences.
 
 ## Implemented boundaries
 
@@ -93,3 +93,7 @@ No successful live provider/model behavior or bank acceptance is claimed in this
 **Trade-off:** This introduces more structure than a direct function dispatcher while avoiding a distributed local system. Deterministic calculation and immutable evidence are authoritative; model output is a proposal. The local blueprint is an explicit executor for this phase, not a substitute for later model acceptance. SQLite/FTS5 serves the bounded archive; a larger licensed corpus may justify different retrieval infrastructure after measurement.
 
 **Consequences and follow-up:** Protocol overhead and shared-process failure remain measurable concerns; tenant authorization, multi-user concurrency and provider entitlements need their own design before deployment. The current artifact contract supports future export but does not by itself deliver editable Office files. [M12 #52](https://github.com/NeoDemos/investment-banking-reimagined/issues/52) records implemented acceptance; model-port #51 and API/voice #46 are deferred, and owner review #48 remains open.
+
+## M16: request-specific market context
+
+The current catalog has nine tools. `fetch_market_context` accepts no arbitrary URL or query: it reads the host-validated workroom evidence plan and pins normalized market/credit records and gaps from the public pool. The context packet includes that summary; observed price baselines retain their source records in financial lineage. Public network ingestion occurs through separate fixed adapters. [Guided workflow and source contracts](GUIDED_EVIDENCE_WORKFLOW.md) describe the actual implemented coverage and missing current issuer-level inputs.

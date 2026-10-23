@@ -433,6 +433,8 @@ pub async fn prepare(
         json!([])
     };
     let outcome = async {
+        if instruction_led {if use_bank {r["sources"]["bank:rabobank"]=pool::bank_profile();}if use_sector {r["sources"]["sector:US"]=pool::latest(&s,"sector:US")?;}}
+        let r_peers=r["selectedPeerSymbols"].clone();let contextual=r["researchPlan"].is_object();let use_market_prices=r["useMarketPrices"]==true;
         let session = mcp::Session::new(s.clone(), r, false).await?;
         agent::event(&s,&run,"mcp_discovery",json!({"tools":session.tools().await?,"mode":"local_structured_workflow","models":"deferred"}))?;
         tool(&s,&run,&session,"company_catalog",json!({})).await?;
@@ -442,10 +444,17 @@ pub async fn prepare(
             tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":t})).await?;
             symbols.push(t.clone());
         }
-        if instruction_led && issuer!="AAPL" {for (symbol,_,_) in connectors::CATALOG {if symbol!="AAPL" && symbols.len()<3 && !symbols.iter().any(|s|s==symbol){tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":symbol})).await?;symbols.push(symbol.into());}}}
+        let peers=if r_peers.is_array(){r_peers.as_array().unwrap().iter().filter_map(Value::as_str).map(str::to_string).collect::<Vec<_>>()}else if issuer!="AAPL"{connectors::CATALOG.iter().filter(|c|c.0!="AAPL").map(|c|c.0.to_string()).collect()}else{vec![]};
+        if instruction_led {for symbol in peers {if symbols.len()<3&&!symbols.contains(&symbol){tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":symbol})).await?;symbols.push(symbol);}}}
         if use_treasury {tool(&s,&run,&session,"fetch_treasury_curve",json!({})).await?;}
+        if contextual {tool(&s,&run,&session,"fetch_market_context",json!({})).await?;}
         for (which,original_params) in [("base",&b.base),("alternative",&b.alternative)] {
             let mut sized_params=original_params.clone();
+            if contextual && use_market_prices && ["buyback","acquisition"].contains(&kind.as_str()) {
+                let symbol=if kind=="buyback" {issuer.as_str()}else{target.as_deref().unwrap()};
+                let snapshot=session.server.snapshot().await;let quote=&snapshot["research"]["sources"][format!("equity:{symbol}")];
+                if let Some(price)=quote["price"].as_f64().filter(|_|research::quote_is_recent(quote)) {sized_params.insert(if kind=="buyback"{"sharePrice"}else{"targetPrice"}.into(),price);finance::validate(&kind,&sized_params).map_err(bad)?;}
+            }
             if b.size_to_funding {
                 if kind != "bond" {return Err(bad("Only bond plans can be sized to net funding"));}
                 let need=funding_need.ok_or_else(||bad("Record the client's net funding requirement"))?;
@@ -493,6 +502,7 @@ pub async fn prepare(
                 json!({"symbol":symbol,"name":c["name"],"periodEnd":c["periodEnd"],"revenue":value("revenue"),"netDebt":value("debt")-value("cash"),"ebitdaProxy":ebitda,"netLeverage":if ebitda>0.{Some((value("debt")-value("cash"))/ebitda)}else{None},"poolReceiptId":c["poolReceiptId"],"basis":"Reported debt less cash / operating-income plus D&A proxy. Annual periods differ; no live trading multiples."})
             }).collect();
             r["peerPosition"]=json!(peers);
+            if contextual {let needs=r["researchPlan"]["needs"].as_array().unwrap().iter().filter_map(Value::as_str).map(str::to_string).collect::<Vec<_>>();let enabled=r["researchPlan"]["enabledSources"].as_array().unwrap().iter().filter_map(Value::as_str).map(str::to_string).collect::<Vec<_>>();research::assemble(&s,&mut r,&needs,&enabled)?;}
             let pages=r["draft"]["slides"].as_array_mut().unwrap();let at=pages.len()-1;
             pages.insert(at,json!({"id":"peer-position","title":"Place the client in its reported peer context","layout":"full","blocks":[{"type":"peer_position"}]}));
             if use_bank {pages.insert(at+1,json!({"id":"bank-proposition","title":"Make the bank's relevance specific to this client","layout":"full","blocks":[{"type":"bank_proposition"}]}));}

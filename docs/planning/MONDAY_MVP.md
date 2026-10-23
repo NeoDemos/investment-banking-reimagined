@@ -77,3 +77,7 @@ The local CLI route has actual execution evidence and does not require a new API
 ## M15 — observable drafting and capital models
 
 [Issue #55](https://github.com/NeoDemos/investment-banking-reimagined/issues/55) is the current technical correction track. Target 23 October 2026; prospective effort 8 / 12 / 16 developer hours (1–2 focused days), not recorded runtime or model allowance. The structured register assigns the same-day horizon to every subtask. Scope: persistent feedback/cancellation, selected live public sources, Codex High / Claude Opus Medium profiles, inspectable IPO/LBO models and actual multi-prompt/coaching validation. The narrow Apple report and German reference-rate adapters are now implemented; general report extraction and full underwriting remain future work. Claude's actual readiness hit its weekly quota. Qualified banker evaluation remains #48.
+
+## M16 — guided direction, compact layout and contextual data
+
+[Issue #56](https://github.com/NeoDemos/investment-banking-reimagined/issues/56) is the current technical correction track. Target 23 October; prospective effort 8 / 14 / 24 developer hours, roughly 1–3 focused days, not observed runtime or model allowance. Four dated subtasks cover layout 1/2/4h, briefing 1/3/5h, contextual data/MCP 3/5/8h and verification 3/4/7h. The structured register and GitHub project retain those horizons. Public delayed records remain local; issuer-level current quote access, wider financial mappings and qualified banker acceptance are separate gates.

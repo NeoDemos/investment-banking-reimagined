@@ -55,7 +55,32 @@ pub fn init(db: &Connection, data: &Value) -> Result<(), ApiError> {
         &sector_reference(),
         "public_reference",
     )?;
+    retain(
+        db,
+        "credit:AAPL",
+        "issuer_credit_reference",
+        &research::reference(),
+        "public_reference",
+    )?;
     Ok(())
+}
+pub fn optional_latest(s: &App, key: &str) -> Result<Option<Value>, ApiError> {
+    use rusqlite::OptionalExtension;
+    let row: Option<(String, String)> =
+        s.db.lock()
+            .unwrap()
+            .query_row(
+                "SELECT id,payload FROM public_pool WHERE source_key=? ORDER BY rowid DESC LIMIT 1",
+                [key],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )
+            .optional()
+            .map_err(internal)?;
+    Ok(row.map(|(id, p)| {
+        let mut v = parse(p);
+        v["poolReceiptId"] = json!(id);
+        v
+    }))
 }
 pub fn latest(s: &App, key: &str) -> Result<Value, ApiError> {
     let (id, payload): (String, String) =
@@ -110,7 +135,21 @@ pub struct Ingest {
     source: String,
 }
 pub async fn refresh(State(s): State<App>, Json(b): Json<Ingest>) -> ApiResult {
-    if !["treasury:USD", "bund:EUR", "issuer:apple", "sector:US"].contains(&b.source.as_str())
+    if ![
+        "treasury:USD",
+        "bund:EUR",
+        "issuer:apple",
+        "sector:US",
+        "rates:USD:history",
+        "credit:AAPL",
+    ]
+    .contains(&b.source.as_str())
+        && !b.source.strip_prefix("equity:").is_some_and(|v| {
+            !v.is_empty()
+                && v.len() <= 10
+                && v.chars()
+                    .all(|c| c.is_ascii_uppercase() || c == '.' || c == '-')
+        })
         && !connectors::CATALOG
             .iter()
             .any(|c| b.source == format!("sec:{}", c.0))
@@ -128,7 +167,12 @@ pub async fn refresh(State(s): State<App>, Json(b): Json<Ingest>) -> ApiResult {
             params![id, job.to_string()],
         )
         .map_err(internal)?;
-    let result = if b.source == "treasury:USD" {
+    let result = if b.source.starts_with("equity:")
+        || b.source == "rates:USD:history"
+        || b.source == "credit:AAPL"
+    {
+        research::fetch(&s, &b.source).await
+    } else if b.source == "treasury:USD" {
         connectors::curve(&s, false).await
     } else if b.source == "bund:EUR" {
         connectors::bund(&s).await
@@ -151,6 +195,12 @@ pub async fn refresh(State(s): State<App>, Json(b): Json<Ingest>) -> ApiResult {
                 },
                 if b.source == "treasury:USD" || b.source == "bund:EUR" {
                     "rate_curve"
+                } else if b.source.starts_with("equity:") {
+                    "equity_observation"
+                } else if b.source == "rates:USD:history" {
+                    "rate_history"
+                } else if b.source == "credit:AAPL" {
+                    "issuer_credit_reference"
                 } else if b.source == "sector:US" {
                     "sector_reference"
                 } else {

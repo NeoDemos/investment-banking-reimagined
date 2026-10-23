@@ -12,6 +12,7 @@ mod mcp;
 mod model_connection;
 mod pool;
 mod providers;
+mod research;
 mod workbook;
 mod workflow;
 mod workspace;

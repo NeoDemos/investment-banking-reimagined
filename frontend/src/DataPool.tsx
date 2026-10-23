@@ -80,6 +80,9 @@ export function DataPool() {
             </p>
             <code>{r.id.slice(0, 22)}…</code>
             {r.source.startsWith("sec:") ||
+            r.source.startsWith("equity:") ||
+            r.source.startsWith("credit:") ||
+            r.source === "rates:USD:history" ||
             ["treasury:USD", "bund:EUR", "sector:US"].includes(r.source) ? (
               <button
                 className="quiet-action"

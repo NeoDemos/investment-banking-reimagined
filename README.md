@@ -2,6 +2,8 @@
 
 A local client-work application: **director instruction → agent plan → public data pool → MCP financial tools → stored model → dynamic client story → page review and another turn**.
 
+The primary flow first asks tailored questions about the client objective and adviser positioning, then assembles the evidence needed for that financial job. Source connections are selected through a checkbox dropdown; a compact activity bar and evidence panel keep the workspace clear.
+
 React/TypeScript presents the work; Rust and SQLite own financial calculations, evidence, document revisions and review copies. The current agent uses the laptop's authenticated **Codex CLI**, with bounded structured planning and composition requests. The app never reads or copies Codex credentials. A successful local account-authenticated planning/composition rehearsal has run; account access and quota still govern subsequent requests. The default profile is Codex gpt-6.1-sol on High; Claude Code Opus on Medium is selectable through its local login. Separate API-key adapters remain disabled. Claude is signed in here but its actual readiness request hit the weekly limit.
 
 ## Run on this Mac
@@ -28,7 +30,7 @@ Open **http://localhost:4173**. Runtime is one release binary with the built Rea
 
 ## Coverage and boundaries
 
-Executable financial methods are regular semiannual USD bond economics/net funding, simplified full-period buybacks and simplified acquisition earnings/leverage with two funding actions and matching zero-synergy stresses. The engine also runs a bounded illustrative IPO equity/share/proceeds bridge and a single-tranche LBO debt/cash schedule with sponsor IRR/MOIC. Company coverage is PEP, CPB, GIS and AAPL; the Apple issuer-report adapter and Treasury/Bundesbank yields have live public connections. Current issuer spreads, equity prices, fees and deal terms remain explicit illustrative inputs. Full IPO underwriting, forecast DCF, multi-tranche/integrated LBO, merger accounting, fairness opinions and executable underwriting remain outside scope.
+Executable financial methods are regular semiannual USD bond economics/net funding, simplified full-period buybacks and simplified acquisition earnings/leverage with two funding actions and matching zero-synergy stresses. The engine also runs a bounded illustrative IPO equity/share/proceeds bridge and a single-tranche LBO debt/cash schedule with sponsor IRR/MOIC. Company coverage is PEP, CPB, GIS and AAPL; the Apple issuer-report adapter and Treasury/Bundesbank yields have live public connections. Current issuer spreads, fees and deal terms remain explicit illustrative inputs. Recent public delayed equity observations can anchor proposed buyback/M&A price baselines with source lineage; explicit banker price assumptions are preserved. Full IPO underwriting, forecast DCF, multi-tranche/integrated LBO, merger accounting, fairness opinions and executable underwriting remain outside scope.
 
 The public pool retains normalized versions, original values/units, periods, filing dates/tags/accessions and ingestion receipts. A small dated Damodaran/NYU Stern industry reference supplies broad sector context, not current company/transaction comps. Annual-report URL registration is an intake boundary; general PDF/table extraction and European taxonomy mapping are not implemented. Wider company discovery, European company reporting and equity/index adapters are planned in the [work catalog](docs/CLIENT_WORK_CATALOG.md).
 
@@ -42,6 +44,7 @@ The agent proposes the story and validated scenario terms. Rust computes authori
 
 - [Monday demo](docs/MONDAY_DEMO.md) · [client-work catalog and source research](docs/CLIENT_WORK_CATALOG.md)
 - [Client architecture](docs/CLIENT_WORKROOM_ARCHITECTURE.md) · [local agent contract](docs/LOCAL_AGENT.md) · [MCP foundation](docs/MCP_ARCHITECTURE.md)
+- [Guided client direction and task-specific evidence](docs/GUIDED_EVIDENCE_WORKFLOW.md) · [executed verification](docs/GUIDED_EVIDENCE_VERIFICATION.md)
 - [Director reliability, live prompt and model verification](docs/DIRECTOR_RELIABILITY_VERIFICATION.md)
 - [Five gauntlet reports and response ledger](docs/reviews/GAUNTLET.md) · [measurement protocol](docs/CLIENT_WORKFLOW_EVALUATION.md)
 - [Peer architecture research](docs/PEER_ARCHITECTURE_RESEARCH.md) · [financial methods](docs/FINANCIAL_METHODS.md) · [bank acceptance programme](docs/BANK_ACCEPTANCE.md)
@@ -54,6 +57,7 @@ python3 scripts/verify_client_workflow.py
 python3 scripts/verify_client_controls.py
 python3 scripts/verify_director.py
 python3 scripts/verify_capital_models.py
+python3 scripts/verify_contextual_workflow.py
 python3 scripts/verify_mcp_architecture.py
 python3 scripts/verify_demo.py
 ```

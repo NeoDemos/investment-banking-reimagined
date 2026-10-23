@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { api, setToken } from "./api";
+import { ResearchBlock } from "./ResearchEvidence";
 import { format, INPUTS } from "./types";
 import "./agent.css";
 import {
@@ -157,6 +158,15 @@ function Table({ rows }: { rows: J[] }) {
   );
 }
 export function BlockView({ block: b, room }: { block: Block; room: Room }) {
+  if (
+    [
+      "research_summary",
+      "rate_history",
+      "credit_context",
+      "equity_context",
+    ].includes(b.type)
+  )
+    return <ResearchBlock type={b.type} room={room} />;
   const a = b.analysisId ? room.analyses[b.analysisId] : null;
   const m = a?.model;
   if (b.type === "market_context") {

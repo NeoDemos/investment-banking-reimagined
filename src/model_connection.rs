@@ -15,6 +15,8 @@ pub fn sources() -> Value {
      {"id":"treasury","name":"U.S. Treasury yields","description":"Live daily USD par-yield curve."},
      {"id":"bund","name":"Bundesbank German yields","description":"Live 2/5/10-year German Federal reference securities; separate EUR context."},
      {"id":"sector","name":"NYU Stern industry multiples","description":"Public, dated US sector lookup; valuation context, not current company quotes."},
+     {"id":"credit","name":"Issuer credit disclosures","description":"Dated public issuance terms and ratings; current secondary spreads remain a separate evidence requirement."},
+     {"id":"equity","name":"Delayed equity market data","description":"Public Cboe delayed price observations. Local prototype only; current access and reuse rights remain explicit."},
      {"id":"bank","name":"Rabobank public proposition","description":"Public bank capability references; no private credentials or mandate claims."}
     ])
 }
@@ -31,7 +33,8 @@ pub fn load(s: &App) -> Settings {
             |r| r.get(0),
         )
         .ok();
-    raw.and_then(|r| serde_json::from_str(&r).ok())
+    let mut c = raw
+        .and_then(|r| serde_json::from_str::<Settings>(&r).ok())
         .unwrap_or(Settings {
             model_profile: "codex_high".into(),
             source_ids: vec![
@@ -41,8 +44,46 @@ pub fn load(s: &App) -> Settings {
                 "bund".into(),
                 "sector".into(),
                 "bank".into(),
+                "credit".into(),
+                "equity".into(),
             ],
-        })
+        });
+    db.execute_batch(
+        "CREATE TABLE IF NOT EXISTS director_source_schema(version INTEGER PRIMARY KEY);",
+    )
+    .unwrap();
+    let migrated: bool = db
+        .query_row(
+            "SELECT EXISTS(SELECT 1 FROM director_source_schema WHERE version=2)",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    if !migrated {
+        if c.source_ids.len() == 6
+            && [
+                "sec",
+                "issuer_reports",
+                "treasury",
+                "bund",
+                "sector",
+                "bank",
+            ]
+            .iter()
+            .all(|id| c.source_ids.iter().any(|v| v == id))
+        {
+            c.source_ids
+                .extend(["credit".to_string(), "equity".to_string()]);
+            db.execute(
+                "INSERT OR REPLACE INTO director_settings VALUES(1,?)",
+                [serde_json::to_string(&c).unwrap()],
+            )
+            .unwrap();
+        }
+        db.execute("INSERT OR IGNORE INTO director_source_schema VALUES(2)", [])
+            .unwrap();
+    }
+    c
 }
 pub fn validate(c: &Settings) -> Result<(), ApiError> {
     if !["codex_high", "claude_opus_medium"].contains(&c.model_profile.as_str()) {

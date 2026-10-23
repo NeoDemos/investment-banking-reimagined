@@ -23,7 +23,7 @@ def main():
    raise AssertionError('Server did not start')
   proc,token=boot()
   try:
-   a=req('/api/architecture');assert a['models']['state']=='deferred' and len(a['mcp']['tools'])==8;assert [p['state'] for p in a['providers']]==['ready','deferred','planned','planned','planned'];checks.append('Architecture is discovered from the real MCP server and planned providers are explicit')
+   a=req('/api/architecture');assert a['models']['state']=='deferred' and len(a['mcp']['tools'])==9;assert [p['state'] for p in a['providers']]==['ready','deferred','planned','planned','planned'];checks.append('Architecture is discovered from the real MCP server and planned providers are explicit')
    req('/api/agent/runs',{'roomId':None,'expectedRevision':None,'prompt':'prepare a draft','provider':'openai','allowCached':True},409);checks.append('Model invocation is deferred without requesting a key')
    b=req('/api/agent/briefs',{'roomId':None,'expectedRevision':None,'prompt':'Assess financing alternatives for the CFO'});assert b['draft'] is None and b['modelPort']['state']=='deferred';assert b['revision']==1;req('/api/agent/briefs',{'roomId':b['id'],'expectedRevision':0,'prompt':'stale'},409);checks.append('Free-form briefs persist honestly without fake generated materials; stale captures fail')
    rooms=[]
@@ -67,7 +67,7 @@ def main():
    assert select.select([stdio.stdout],[],[],10)[0],'MCP stdio response timed out';line=stdio.stdout.readline();return json.loads(line)
   try:
    send({'jsonrpc':'2.0','id':1,'method':'initialize','params':{'protocolVersion':'2025-11-25','capabilities':{},'clientInfo':{'name':'banking-protocol-test','version':'1'}}});init=response();assert init['result']['protocolVersion']=='2025-11-25'
-   send({'jsonrpc':'2.0','method':'notifications/initialized'});send({'jsonrpc':'2.0','id':2,'method':'tools/list','params':{}});assert len(response()['result']['tools'])==8
+   send({'jsonrpc':'2.0','method':'notifications/initialized'});send({'jsonrpc':'2.0','id':2,'method':'tools/list','params':{}});assert len(response()['result']['tools'])==9
    send({'jsonrpc':'2.0','id':3,'method':'tools/call','params':{'name':'fetch_company_facts','arguments':{'symbol':'PEP'}}});c=response()['result'];assert c['isError'] is False and c['structuredContent']['provenance']['mode']=='archive'
    eid=c['structuredContent']['facts']['revenue']['evidenceId'];send({'jsonrpc':'2.0','id':4,'method':'resources/read','params':{'uri':'banking://evidence/'+eid}});record=json.loads(response()['result']['contents'][0]['text']);assert record['id']==eid and record['normalized']['unit']=='USDm'
    send({'jsonrpc':'2.0','id':5,'method':'resources/read','params':{'uri':'file:///etc/passwd'}});assert 'error' in response()

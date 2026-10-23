@@ -7,8 +7,12 @@ import {
   Sparkles,
   X,
   RefreshCw,
+  ChevronDown,
+  XCircle,
+  LoaderCircle,
 } from "lucide-react";
 import { api } from "./api";
+import { EvidenceCoverage } from "./ResearchEvidence";
 type J = Record<string, any>;
 const examples = [
   [
@@ -139,6 +143,14 @@ export function useDirector(onReady: (id: string) => void) {
     run,
     error,
     start,
+    continueDirection: (answers: J) =>
+      start({
+        prompt: run?.result.prompt,
+        intakeId: run?.runId,
+        directionAnswers: answers,
+        refreshPublic: true,
+        useRecommendedSources: true,
+      }),
     cancel,
     dismiss: () => {
       setRun(null);
@@ -153,12 +165,14 @@ export function DirectorProgress({
   onCancel,
   onDismiss,
   onRetry,
+  onAnswer,
 }: {
   run: J | null;
   error: string;
   onCancel?: () => void;
   onDismiss?: () => void;
   onRetry?: (prompt: string) => void;
+  onAnswer?: () => void;
 }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -166,131 +180,144 @@ export function DirectorProgress({
     return () => clearInterval(t);
   }, []);
   if (!run && !error) return null;
-  const active = run && ["running", "starting"].includes(run.status),
-    r = run?.result || {},
-    elapsed = Math.max(
-      0,
-      Math.floor(
-        (now -
-          Date.parse(
-            r.startedAt || run?.createdAt || new Date().toISOString(),
-          )) /
-          1000,
-      ),
-    );
+  const r = run?.result || {},
+    active = ["running", "starting"].includes(run?.status),
+    awaiting = r.state === "awaiting_direction";
+  const elapsed = Math.max(
+    0,
+    Math.floor(
+      (now -
+        Date.parse(r.startedAt || run?.createdAt || new Date().toISOString())) /
+        1000,
+    ),
+  );
+  const failures = (run?.events || []).filter(
+    (e: J) => e.type === "public_ingestion" && e.data.state === "failed",
+  );
+  const title = active
+    ? r.stage || "Working on your assignment"
+    : awaiting
+      ? "A few questions before drafting"
+      : r.clarification
+        ? "Your input is needed"
+        : run?.status === "failed"
+          ? "Assignment stopped"
+          : run?.status === "cancelled"
+            ? "Assignment cancelled"
+            : "Client materials ready";
   return (
     <section
-      className={`director-progress ${r.clarification ? "needs-clarification" : ""}`}
+      className={`director-progress run-bar ${error || r.clarification ? "attention" : ""}`}
       role="status"
       aria-live="polite"
     >
-      <div>
-        <Sparkles size={17} />
-        <strong>
-          {r.clarification
-            ? "Your input is needed"
-            : run?.status === "failed"
-              ? "Assignment stopped"
-              : active
-                ? r.stage
-                : run?.status === "cancelled"
-                  ? "Assignment cancelled"
-                  : r.message || "Client materials ready"}
-        </strong>
-        {active && (
-          <span>
-            {Math.floor(elapsed / 60)}m {elapsed % 60}s
-          </span>
+      <div className="director-run-summary">
+        {active ? (
+          <LoaderCircle size={15} className="spin" />
+        ) : (
+          <Sparkles size={15} />
         )}
-        {active && onCancel && (
-          <button type="button" onClick={onCancel}>
-            Cancel
+        <strong title={title}>{title}</strong>
+        <span className="run-meta">
+          {active
+            ? `${Math.floor(elapsed / 60)}m ${elapsed % 60}s`
+            : failures.length
+              ? `${failures.length} source access issue${failures.length > 1 ? "s" : ""}`
+              : r.connection
+                ? `${r.connection.model} · ${r.connection.effort}`
+                : ""}
+        </span>
+        {awaiting && onAnswer && (
+          <button onClick={onAnswer}>
+            Answer questions <ArrowRight size={12} />
           </button>
         )}
+        {r.roomId && !active && (
+          <a href={`#client/${r.roomId}/storyline`}>Open work</a>
+        )}
+        <details className="run-activity">
+          <summary>
+            Activity <ChevronDown size={12} />
+          </summary>
+          <div className="run-activity-panel">
+            <h3>Assignment activity</h3>
+            <p>
+              {r.connection
+                ? `${r.connection.model} · ${r.connection.effort} effort. `
+                : ""}
+              {r.heartbeatAt
+                ? `Heartbeat ${new Date(r.heartbeatAt).toLocaleTimeString()}.`
+                : ""}
+            </p>
+            <ol>
+              {(run?.events || [])
+                .filter((e: J) =>
+                  [
+                    "director_plan",
+                    "public_ingestion",
+                    "financial_work_stored",
+                    "model_started",
+                    "model_completed",
+                    "client_materials_generated",
+                  ].includes(e.type),
+                )
+                .map((e: J, i: number) => (
+                  <li
+                    key={i}
+                    className={
+                      e.type === "public_ingestion" && e.data.state === "failed"
+                        ? "activity-failed"
+                        : ""
+                    }
+                  >
+                    {e.type === "public_ingestion" &&
+                    e.data.state === "failed" ? (
+                      <XCircle size={13} />
+                    ) : e.type === "model_started" ? (
+                      <LoaderCircle size={13} />
+                    ) : (
+                      <Check size={13} />
+                    )}
+                    <span>
+                      {e.type === "director_plan"
+                        ? "Client story and evidence plan prepared"
+                        : e.type === "public_ingestion"
+                          ? `${e.data.source}: ${e.data.state}${e.data.error ? " — " + e.data.error : ""}`
+                          : e.type === "model_started"
+                            ? `${e.data.connection.model} · ${e.data.connection.effort}: started`
+                            : e.type === "model_completed"
+                              ? "Model response received"
+                              : e.type === "financial_work_stored"
+                                ? "Financial models and source versions saved"
+                                : "Client materials generated"}
+                    </span>
+                  </li>
+                ))}
+            </ol>
+            {failures.length > 0 && (
+              <p>
+                Access failures are not unknown tickers. Inspect the retained
+                source versions and dates before relying on the draft.
+              </p>
+            )}
+            {!active && !awaiting && r.prompt && onRetry && (
+              <button onClick={() => onRetry(r.prompt)}>
+                Retry with current connections
+              </button>
+            )}
+          </div>
+        </details>
+        {active && onCancel && <button onClick={onCancel}>Cancel</button>}
         {!active && onDismiss && (
-          <button
-            type="button"
-            aria-label="Dismiss assignment feedback"
-            onClick={onDismiss}
-          >
-            <X size={14} />
+          <button aria-label="Dismiss assignment feedback" onClick={onDismiss}>
+            <X size={13} />
           </button>
         )}
       </div>
-      {r.clarification && (
-        <p className="clarification-message">{r.clarification}</p>
-      )}
-      {error && <p role="alert">{error}</p>}
-      {!active &&
-        run?.events?.some(
-          (e: J) => e.type === "public_ingestion" && e.data.state === "failed",
-        ) && (
-          <p>
-            Some selected sources could not refresh. Inspect the activity
-            receipts and retained source dates before using the draft.
-          </p>
-        )}
-      {active && (
-        <p>
-          {r.connection
-            ? `${r.connection.model} · ${r.connection.effort} effort. `
-            : ""}
-          The assignment is active. Planning and drafting may take several
-          minutes.{" "}
-          {r.heartbeatAt
-            ? "Last model heartbeat " +
-              new Date(r.heartbeatAt).toLocaleTimeString() +
-              "."
-            : ""}{" "}
-          You can inspect saved work while it runs.
+      {(error || r.clarification) && (
+        <p role="alert" className="run-error">
+          {error || r.clarification}
         </p>
-      )}
-      <details open={!!active}>
-        <summary>Assignment activity and source receipts</summary>
-        <ol>
-          {(run?.events || [])
-            .filter((e: J) =>
-              [
-                "director_plan",
-                "public_ingestion",
-                "financial_work_stored",
-                "model_started",
-                "model_completed",
-                "client_materials_generated",
-              ].includes(e.type),
-            )
-            .map((e: J, i: number) => (
-              <li key={i}>
-                <Check size={12} />
-                {e.type === "director_plan"
-                  ? e.data.supported
-                    ? "Client story and modelling plan prepared"
-                    : "Clarification identified"
-                  : e.type === "public_ingestion"
-                    ? `${e.data.source}: ${e.data.state}${e.data.error ? " — " + e.data.error : ""}`
-                    : e.type === "model_started"
-                      ? `${e.data.connection.model} · ${e.data.connection.effort}: started`
-                      : e.type === "model_completed"
-                        ? "Model response received"
-                        : e.type === "financial_work_stored"
-                          ? "Financial model and source versions stored"
-                          : "Presentation frames generated"}
-              </li>
-            ))}
-        </ol>
-      </details>
-      {r.roomId && (
-        <a href={`#client/${r.roomId}/storyline`}>Open saved client work →</a>
-      )}
-      {!active && r.prompt && onRetry && (
-        <button
-          type="button"
-          className="quiet-action"
-          onClick={() => onRetry(r.prompt)}
-        >
-          Run this assignment with the current connections{" "}
-          <ArrowRight size={13} />
-        </button>
       )}
     </section>
   );
@@ -305,11 +332,24 @@ export function ConnectionPicker({
   busy: boolean;
 }) {
   const c = status.settings;
-  if (!c) return <p>Checking local model connections…</p>;
+  const ref = useRef<HTMLDetailsElement>(null);
+  const [menuPlacement, setMenuPlacement] = useState({
+    up: false,
+    height: 480,
+  });
+  useEffect(() => {
+    const close = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        ref.current.open = false;
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+  if (!c) return <small>Checking local model connections…</small>;
   return (
-    <div className="connection-picker">
-      <label>
-        Model connection
+    <div className="connection-picker compact-connections">
+      <label className="model-select">
+        <span>Model</span>
         <select
           aria-label="Model connection"
           value={c.modelProfile}
@@ -319,37 +359,177 @@ export function ConnectionPicker({
           {(status.profiles || []).map((p: J) => (
             <option key={p.id} value={p.id}>
               {p.name}
-              {p.authenticated ? " · signed in" : " · sign-in not verified"}
+              {p.authenticated ? "" : " · check sign-in"}
             </option>
           ))}
         </select>
       </label>
-      <fieldset>
-        <legend>Public data sources — select all that apply</legend>
-        {status.sources.map((s: J) => (
-          <label key={s.id}>
-            <input
-              type="checkbox"
-              aria-label={s.name}
-              checked={c.sourceIds.includes(s.id)}
-              disabled={busy}
-              onChange={(e) =>
-                onChange({
-                  ...c,
-                  sourceIds: e.target.checked
-                    ? [...c.sourceIds, s.id]
-                    : c.sourceIds.filter((v: string) => v !== s.id),
-                })
-              }
-            />
-            <span>
-              <strong>{s.name}</strong>
-              <small>{s.description}</small>
-            </span>
-          </label>
-        ))}
-      </fieldset>
+      <details
+        className="source-menu"
+        ref={ref}
+        onToggle={() => {
+          if (ref.current?.open) {
+            const box = ref.current.getBoundingClientRect(),
+              paneTop =
+                ref.current.closest(".client-pane")?.getBoundingClientRect()
+                  .top || 0,
+              below = window.innerHeight - box.bottom - 16,
+              above = box.top - Math.max(paneTop, 8) - 16,
+              up = below < 320 && above > below;
+            setMenuPlacement({
+              up,
+              height: Math.max(120, Math.min(480, up ? above : below)),
+            });
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape" && ref.current) ref.current.open = false;
+        }}
+      >
+        <summary aria-label="Select available data sources">
+          <Database size={14} /> Sources{" "}
+          <span>{c.sourceIds.length} enabled</span>
+          <ChevronDown size={13} />
+        </summary>
+        <fieldset
+          className="source-options"
+          style={{
+            top: menuPlacement.up ? "auto" : "calc(100% + 9px)",
+            bottom: menuPlacement.up ? "calc(100% + 9px)" : "auto",
+            maxHeight: menuPlacement.height,
+          }}
+        >
+          <legend>Available data connections</legend>
+          <p>The agent selects the relevant sources for each assignment.</p>
+          {status.sources.map((source: J) => (
+            <label key={source.id}>
+              <input
+                type="checkbox"
+                aria-label={source.name}
+                checked={c.sourceIds.includes(source.id)}
+                disabled={busy}
+                onChange={(e) =>
+                  onChange({
+                    ...c,
+                    sourceIds: e.target.checked
+                      ? [...c.sourceIds, source.id]
+                      : c.sourceIds.filter((v: string) => v !== source.id),
+                  })
+                }
+              />
+              <span>
+                <strong>{source.name}</strong>
+                <small>{source.description}</small>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+      </details>
     </div>
+  );
+}
+function ClientBriefing({
+  run,
+  onContinue,
+  busy,
+}: {
+  run: J;
+  onContinue: (answers: J) => void;
+  busy: boolean;
+}) {
+  const questions = run.result.questions || [],
+    [index, setIndex] = useState(0),
+    [answers, setAnswers] = useState<J>({});
+  const q = questions[index];
+  if (!q) return null;
+  const answer = answers[q.id] || "";
+  return (
+    <section className="client-briefing director-desk">
+      <span className="client-eyebrow">
+        LET’S SHAPE THE CLIENT CONVERSATION
+      </span>
+      <h1>Before we build the story.</h1>
+      <p className="client-lead">
+        The team has identified the financial work. Your direction will shape
+        the argument and the bank’s positioning.
+      </p>
+      <details className="briefing-assignment">
+        <summary>Your assignment</summary>
+        <small>YOUR ASSIGNMENT</small>
+        <p>{run.result.prompt}</p>
+      </details>
+      <div className="briefing-step">
+        <span>
+          Question {index + 1} of {questions.length}
+        </span>
+        <div>
+          {questions.map((_: J, i: number) => (
+            <i key={i} className={i <= index ? "active" : ""} />
+          ))}
+        </div>
+      </div>
+      <h2>{q.question}</h2>
+      <div className="briefing-options">
+        {(q.options || []).map((option: string) => (
+          <button
+            type="button"
+            key={option}
+            aria-pressed={answer === option}
+            onClick={() => setAnswers({ ...answers, [q.id]: option })}
+          >
+            {option}
+            <ArrowRight size={14} />
+          </button>
+        ))}
+      </div>
+      <textarea
+        aria-label="Client direction answer"
+        value={answer}
+        onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+        placeholder="Choose a suggestion or explain it in your own words…"
+        maxLength={2000}
+      />
+      <div className="briefing-actions">
+        <button
+          type="button"
+          disabled={index === 0 || busy}
+          onClick={() => setIndex(index - 1)}
+        >
+          Back
+        </button>
+        <button
+          type="button"
+          className="primary-action"
+          disabled={busy || answer.trim().length < 2}
+          onClick={() =>
+            index < questions.length - 1
+              ? setIndex(index + 1)
+              : onContinue(answers)
+          }
+        >
+          {index < questions.length - 1
+            ? "Next question"
+            : "Build the client story"}
+          <ArrowRight size={14} />
+        </button>
+      </div>
+      <details className="briefing-plan">
+        <summary>Proposed evidence and storyline</summary>
+        <p>
+          {(run.result.evidenceNeeds || [])
+            .map((v: string) => v.replaceAll("_", " "))
+            .join(" · ")}
+        </p>
+        <ol>
+          {(run.result.proposedPlan || []).map((p: J, i: number) => (
+            <li key={i}>
+              <strong>{p.title}</strong>
+              <p>{p.purpose}</p>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </section>
   );
 }
 export function DirectorDesk({
@@ -379,6 +559,15 @@ export function DirectorDesk({
       setError(String(e));
     }
   };
+  if (agent.run?.result.state === "awaiting_direction")
+    return (
+      <ClientBriefing
+        key={agent.run.runId}
+        run={agent.run}
+        busy={agent.running}
+        onContinue={(answers) => void agent.continueDirection(answers)}
+      />
+    );
   return (
     <section className="director-desk">
       <div className="intro-line">
@@ -423,6 +612,8 @@ export function DirectorDesk({
           void agent.start({
             prompt,
             refreshPublic: refresh,
+            discoverOnly: true,
+            useRecommendedSources: true,
             modelProfile: status.settings.modelProfile,
             sourceIds: status.settings.sourceIds,
           });
@@ -456,7 +647,7 @@ export function DirectorDesk({
               onChange={(e) => setRefresh(e.target.checked)}
               disabled={agent.running}
             />
-            Fetch the selected public sources before drafting
+            Fetch relevant public evidence automatically
           </label>
           <button
             className="primary-action"
@@ -464,19 +655,21 @@ export function DirectorDesk({
           >
             {agent.running
               ? "Preparing your assignment…"
-              : "Prepare the client story"}
+              : "Plan the client story"}
             <ArrowRight size={16} />
           </button>
         </div>
       </form>
       <p className="review-provenance">
-        Live public connectors: SEC (may refuse requests), Apple issuer report,
-        Treasury, Bundesbank and sector lookup. Source dates, network failures
-        and retained versions remain explicit. Public reporting currently covers
-        Apple, PepsiCo, Campbell’s and General Mills. Prices/spreads, valuation
-        multiples and forecast inputs are illustrative assumptions. IPO and
-        single-tranche LBO are preliminary modelling modules, not underwriting
-        approval.
+        Public evidence is chosen for the assignment: company reporting, credit
+        disclosures, Treasury history, delayed equities, sector references and
+        bank capabilities. SEC access failures are distinct from ticker
+        coverage. Source dates, network failures and retained versions remain
+        explicit. Public reporting currently covers Apple, PepsiCo, Campbell’s
+        and General Mills. Delayed prices can anchor proposed buyback/M&A
+        scenarios. Credit spreads, valuation multiples and forecast inputs
+        remain explicit assumptions. IPO and single-tranche LBO are preliminary
+        modelling modules, not underwriting approval.
       </p>
       <details className="advanced-brief">
         <summary>Inspect or enter a structured brief instead</summary>
@@ -500,7 +693,29 @@ export function ClientStoryline({
       <div className="section-heading">
         <div>
           <span className="client-eyebrow">THE CLIENT STORY</span>
-          <h1>{room.mandate.question}</h1>
+          <h1>
+            {(
+              {
+                AAPL: "Apple",
+                PEP: "PepsiCo",
+                CPB: "Campbell’s",
+                GIS: "General Mills",
+              } as J
+            )[room.mandate.issuer] || room.mandate.issuer}{" "}
+            ·{" "}
+            {
+              (
+                {
+                  bond: "Debt capital markets",
+                  buyback: "Capital returns",
+                  acquisition: "M&A advice",
+                  ipo: "Potential listing",
+                  lbo: "Sponsor investment",
+                } as J
+              )[room.mandate.kind]
+            }
+          </h1>
+          <p className="story-client-question">{room.mandate.question}</p>
           <p>
             {room.mandate.audience} · {room.mandate.meetingDate} ·{" "}
             {room.modelPort?.state === "executed"
@@ -519,67 +734,90 @@ export function ClientStoryline({
           <p>{room.directorInstruction}</p>
         </details>
       )}
-      <div className="story-source-strip">
-        <Database size={16} />
-        <strong>
-          {Object.keys(room.sources).filter((k) => k.startsWith("sec:")).length}{" "}
-          company reporting snapshots
-        </strong>
-        <span>
-          + Treasury rate reference
-          {room.sources["bank:rabobank"] ? " + sourced bank proposition" : ""}
-        </span>
-        <button onClick={() => onView("pool")}>
-          Inspect the data pool
-          <ArrowRight size={12} />
-        </button>
-      </div>
-      {room.modelPort?.state === "executed" && (
-        <p className="review-provenance">
-          The agent proposed the narrative. Figures resolve to stored models and
-          evidence. No qualified banker review or executable market quotation is
-          implied.
-        </p>
-      )}
-      <div className="story-frames">
-        {(draft?.slides || room.storylinePlan || []).map((p: J, i: number) => (
-          <button
-            key={p.id || i}
-            onClick={() => (draft ? onFrame(i) : onView("plan"))}
-          >
-            <span>{String(i + 1).padStart(2, "0")}</span>
-            <div>
-              <h3>{p.title}</h3>
-              <p>
-                {p.purpose ||
-                  p.blocks
-                    .map(
-                      (b: J) =>
-                        (
-                          ({
-                            client_decision: "Client premise and decision",
-                            client_view: "Criteria and conditional advice",
-                            client_conditions: "What changes the view",
-                            peer_position:
-                              "Public reporting · comparable peer context",
-                            bank_proposition:
-                              "Why this bank · sourced proposition",
-                            decision_comparison:
-                              "Financial alternatives against the client requirement",
-                            chart: "Data-bound visualization",
-                            text: b.text,
-                            assumptions: "Transparent scenario assumptions",
-                            sources: "Evidence and limitations",
-                          }) as Record<string, string>
-                        )[b.type] || "Linked financial analysis",
-                    )
-                    .filter(Boolean)
-                    .join(" · ")}
-              </p>
-            </div>
-            <ArrowRight size={17} />
-          </button>
-        ))}
+      <div className="story-workspace-grid">
+        <div className="story-main-column">
+          <div className="story-source-strip">
+            <Database size={16} />
+            <strong>
+              {
+                Object.keys(room.sources).filter((k) => k.startsWith("sec:"))
+                  .length
+              }{" "}
+              company reporting snapshots
+            </strong>
+            <span>
+              {room.sources["treasury:USD"] ? " · Treasury rate reference" : ""}
+              {room.sources["bank:rabobank"]
+                ? " + sourced bank proposition"
+                : ""}
+            </span>
+            <button onClick={() => onView("pool")}>
+              Inspect the data pool
+              <ArrowRight size={12} />
+            </button>
+          </div>
+          {room.modelPort?.state === "executed" && (
+            <p className="review-provenance">
+              The agent proposed the narrative. Figures resolve to stored models
+              and evidence. No qualified banker review or executable market
+              quotation is implied.
+            </p>
+          )}
+          <div className="story-frames">
+            {(draft?.slides || room.storylinePlan || []).map(
+              (p: J, i: number) => (
+                <button
+                  key={p.id || i}
+                  onClick={() => (draft ? onFrame(i) : onView("plan"))}
+                >
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3>{p.title}</h3>
+                    <p>
+                      {p.purpose ||
+                        p.blocks
+                          .map(
+                            (b: J) =>
+                              (
+                                ({
+                                  client_decision:
+                                    "Client premise and decision",
+                                  client_view:
+                                    "Criteria and conditional advice",
+                                  client_conditions: "What changes the view",
+                                  peer_position:
+                                    "Public reporting · comparable peer context",
+                                  bank_proposition:
+                                    "Why this bank · sourced proposition",
+                                  decision_comparison:
+                                    "Financial alternatives against the client requirement",
+                                  chart: "Data-bound visualization",
+                                  text: "Proposed narrative",
+                                  research_summary:
+                                    "Evidence coverage and open data needs",
+                                  credit_context:
+                                    "Credit metrics, ratings and dated issue context",
+                                  rate_history:
+                                    "Interest-rate development and timing",
+                                  equity_context:
+                                    "Delayed equity market evidence",
+                                  assumptions:
+                                    "Transparent scenario assumptions",
+                                  sources: "Evidence and limitations",
+                                }) as Record<string, string>
+                              )[b.type] || "Linked financial analysis",
+                          )
+                          .filter(Boolean)
+                          .join(" · ")}
+                    </p>
+                  </div>
+                  <ArrowRight size={17} />
+                </button>
+              ),
+            )}
+          </div>
+        </div>
+        <EvidenceCoverage room={room} onInspect={() => onView("evidence")} />
       </div>
       {!draft && (
         <button className="primary-action" onClick={() => onView("plan")}>

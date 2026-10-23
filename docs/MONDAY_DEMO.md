@@ -30,3 +30,9 @@ General annual-report PDF extraction, European company mappings, full IPO underw
 Choose Codex 6.1 Sol High or Claude Code Opus Medium, then check multiple public sources. On this laptop Claude is signed in but its weekly limit is exhausted; use Codex for a live rehearsal. Start the Apple debt, potential-listing or LBO example. Follow the real stages/heartbeats, source successes/refusals, saved model and generated frames. Reloading restores the latest assignment. Completion, clarification and failure remain visible with a link to saved work.
 
 Use **Model inspector** to inspect assumptions, formulas, source lineage and the annual LBO schedule. Change one action and recalculate, or use **Discuss this model with the agent** to challenge assumptions in natural language. Prior source/model versions remain available. IPO and LBO examples use explicitly hypothetical transactions and public listed-company proxies, not claims of an actual listing or buyout.
+
+## Guided evidence-led walkthrough (M16)
+
+Start with a director assignment, open the compact Sources dropdown if needed, and plan the client story. Answer the agent’s client-purpose, desired-takeaway and bank-positioning questions. The agent then selects relevant enabled sources and prepares calculations and materials. Keep Activity collapsed during the client walkthrough; use the Evidence panel to distinguish sourced data, dated references and missing execution inputs.
+
+The saved guided Apple example includes an evidence/gaps frame, dated issuer credit context and government rate history. The new General Mills buyback example uses retained delayed observations as proposed model-price baselines. These demonstrate the data/model/render path; current Apple secondary spreads and rating affirmation remain missing.

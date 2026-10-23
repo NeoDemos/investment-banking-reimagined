@@ -78,6 +78,11 @@ pub fn catalog() -> Vec<Tool> {
             "Select retrieved evidence and derived outputs for a bounded model context packet; no complete database dump.",
             json!({"type":"object","properties":{"task":{"type":"string","maxLength":8000},"symbols":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"string","enum":["PEP","CPB","GIS","AAPL"]}},"maxChars":{"type":"integer","minimum":4000,"maximum":48000}},"required":["task","symbols","maxChars"],"additionalProperties":false}),
         ),
+        (
+            "fetch_market_context",
+            "Retrieve the workroom's planned market/credit observations from the versioned public pool; bind dates, provenance and explicit evidence gaps. No arbitrary URL or credentials accepted.",
+            empty.clone(),
+        ),
     ] {
         v.push(
             Tool::new(name, description, schema.as_object().unwrap().clone()).with_annotations(
@@ -105,6 +110,31 @@ impl BankingServer {
     }
     async fn invoke(&self, name: &str, args: Value) -> Result<Value, ApiError> {
         match name {
+            "fetch_market_context" => {
+                if args != json!({}) {
+                    return Err(bad("Market context takes no arbitrary query or URL"));
+                }
+                let mut room = self.stage.lock().await;
+                let needs: Vec<String> = room["researchPlan"]["needs"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(Value::as_str)
+                    .map(str::to_string)
+                    .collect();
+                let enabled: Vec<String> = room["researchPlan"]["enabledSources"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(Value::as_str)
+                    .map(str::to_string)
+                    .collect();
+                if needs.is_empty() {
+                    return Err(bad("A request-specific evidence plan is required"));
+                }
+                research::assemble(&self.app, &mut room, &needs, &enabled)?;
+                Ok(room["research"].clone())
+            }
             "search_evidence" => {
                 let a: Search =
                     serde_json::from_value(args).map_err(|_| bad("Invalid evidence search"))?;
@@ -114,7 +144,26 @@ impl BankingServer {
                 let a: Context =
                     serde_json::from_value(args).map_err(|_| bad("Invalid context selection"))?;
                 let mut room = self.stage.lock().await;
-                let p = evidence::packet(&room, &a.task, &a.symbols, a.max_chars)?;
+                let has_research = room["research"].is_object();
+                let mut p = evidence::packet(
+                    &room,
+                    &a.task,
+                    &a.symbols,
+                    if has_research {
+                        a.max_chars.saturating_sub(6000).max(4000)
+                    } else {
+                        a.max_chars
+                    },
+                )?;
+                if has_research {
+                    p["limits"]["maxChars"] = json!(a.max_chars);
+                    p["researchSummary"] = json!({"requirements":room["research"]["requirements"],"creditMetrics":room["research"]["creditMetrics"],"timing":room["research"]["timing"],"clientDirection":room["clientDirection"]});
+                    if p.to_string().chars().count() > a.max_chars {
+                        return Err(bad(
+                            "Market and company context exceeds the selected budget",
+                        ));
+                    }
+                }
                 room["contextPacket"] = p.clone();
                 Ok(p)
             }
@@ -139,6 +188,31 @@ impl BankingServer {
                 let result =
                     agent::execute_tool(&self.app, name, &args, &mut room, self.allow_cached)
                         .await?;
+                if name == "calculate_finance"
+                    && room["research"].is_object()
+                    && room["useMarketPrices"] == true
+                {
+                    let aid = args["analysisId"].as_str().unwrap();
+                    let kind = args["kind"].as_str().unwrap();
+                    if ["buyback", "acquisition"].contains(&kind) {
+                        let symbol = if kind == "buyback" {
+                            args["issuer"].as_str().unwrap()
+                        } else {
+                            args["target"].as_str().unwrap()
+                        };
+                        let key = if kind == "buyback" {
+                            "sharePrice"
+                        } else {
+                            "targetPrice"
+                        };
+                        let quote = room["research"]["sources"][format!("equity:{symbol}")].clone();
+                        if quote["price"].is_number()
+                            && quote["price"] == room["analyses"][aid]["params"][key]
+                        {
+                            room["analyses"][aid]["sourceSnapshot"]["marketInputs"] = json!({(key):{"value":quote["price"],"unit":"USD/share","sourceUrl":quote["sourceUrl"],"providerTimestamp":quote["providerTimestamp"],"poolReceiptId":quote["poolReceiptId"],"classification":"Delayed public market observation used as a proposed scenario baseline; not an execution price"}});
+                        }
+                    }
+                }
                 if name == "compose_materials" {
                     let d: materials::Draft =
                         serde_json::from_value(room["draft"].clone()).map_err(internal)?;
@@ -358,7 +432,7 @@ mod tests {
         let a = Session::new(app.clone(), room(), false).await.unwrap();
         let b = Session::new(app, room(), false).await.unwrap();
         let tools = a.tools().await.unwrap();
-        assert_eq!(tools.as_array().unwrap().len(), 8);
+        assert_eq!(tools.as_array().unwrap().len(), 9);
         assert!(
             tools
                 .as_array()

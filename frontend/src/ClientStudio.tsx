@@ -6,6 +6,7 @@ import {
   useDirector,
 } from "./DirectorDesk";
 import { DataPool } from "./DataPool";
+import { ResearchInspection } from "./ResearchEvidence";
 import {
   ArrowRight,
   Check,
@@ -1323,6 +1324,7 @@ export default function ClientStudio() {
           className="primary-action"
           disabled={busy || director.running}
           onClick={() => {
+            director.dismiss();
             setRoom(null);
             navigate("home", null);
           }}
@@ -1410,25 +1412,30 @@ export default function ClientStudio() {
         </header>
         {room?.mandate && Object.keys(headerViews).includes(view) && (
           <nav className="client-tabs">
-            {Object.entries(headerViews).map(([id, title]) => (
-              <button
-                className={view === id ? "active" : ""}
-                key={id}
-                onClick={() => navigate(id)}
-              >
-                {title}
-                {id === "review" &&
-                  !!room.reviewIssues?.filter((x: J) => x.status === "open")
-                    .length && (
-                    <b>
-                      {
-                        room.reviewIssues.filter((x: J) => x.status === "open")
-                          .length
-                      }
-                    </b>
-                  )}
-              </button>
-            ))}
+            {Object.entries(headerViews)
+              .filter(
+                ([id]) => !["decision", "plan"].includes(id) || id === view,
+              )
+              .map(([id, title]) => (
+                <button
+                  className={view === id ? "active" : ""}
+                  key={id}
+                  onClick={() => navigate(id)}
+                >
+                  {title}
+                  {id === "review" &&
+                    !!room.reviewIssues?.filter((x: J) => x.status === "open")
+                      .length && (
+                      <b>
+                        {
+                          room.reviewIssues.filter(
+                            (x: J) => x.status === "open",
+                          ).length
+                        }
+                      </b>
+                    )}
+                </button>
+              ))}
             {room.draft && (
               <span>Draft · r{room.revision} · subject to banker review</span>
             )}
@@ -1460,6 +1467,10 @@ export default function ClientStudio() {
             run={director.run}
             error={director.error}
             onCancel={() => void director.cancel()}
+            onAnswer={() => {
+              setRoom(null);
+              navigate("home", null);
+            }}
             onDismiss={director.dismiss}
             onRetry={(prompt) =>
               void director.start({ prompt, refreshPublic: true })
@@ -1578,6 +1589,7 @@ export default function ClientStudio() {
               />
             ) : view === "evidence" ? (
               <div className="client-scroll">
+                <ResearchInspection room={room} />
                 <div className="section-heading">
                   <div>
                     <span className="client-eyebrow">PINNED EVIDENCE</span>
@@ -1735,7 +1747,8 @@ export default function ClientStudio() {
                       roomId: room.id,
                       expectedRevision: room.revision,
                       prompt,
-                      refreshPublic: false,
+                      refreshPublic: !room.research,
+                      useRecommendedSources: true,
                     })
                     .then((started) => {
                       if (started) clearPrompt();

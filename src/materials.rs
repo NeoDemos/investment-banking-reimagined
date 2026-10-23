@@ -88,6 +88,27 @@ pub fn validate_draft(d: &Draft, room: &Value) -> Result<(), String> {
                         return Err("Retrieve company before using facts".into());
                     }
                 }
+                "research_summary" | "rate_history" | "credit_context" | "equity_context" => {
+                    if !room["research"].is_object() {
+                        return Err(
+                            "Retrieve request-specific research before using this frame".into()
+                        );
+                    }
+                    if b.r#type == "rate_history"
+                        && !room["research"]["sources"]["rates:USD:history"]["points"].is_array()
+                    {
+                        return Err("No retained yield history for this frame".into());
+                    }
+                    if b.r#type == "equity_context"
+                        && !room["research"]["sources"]
+                            .as_object()
+                            .unwrap()
+                            .keys()
+                            .any(|k| k.starts_with("equity:"))
+                    {
+                        return Err("No retained equity observation for this frame".into());
+                    }
+                }
                 "market_context" => {
                     if room["sources"]["bund:EUR"]["points"].is_null() {
                         return Err(
@@ -189,6 +210,8 @@ pub fn compile(d: &Draft, room: &Value) -> Result<Value, ApiError> {
    if b.r#type=="bank_proposition" {for (n,claim) in room["sources"]["bank:rabobank"]["claims"].as_array().into_iter().flatten().enumerate(){let id=format!("bank:rabobank:claim:{n}");citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":claim["sourceUrl"],"basis":"Public bank description; client-specific relevance requires review"}));bindings.push(json!({"kind":"public_bank_proposition","id":id,"path":format!("sources/bank:rabobank/claims/{n}")}));}}
    if b.r#type=="sector_benchmark" {let id="sector:US:ev-ebitda".to_string();citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":room["sources"]["sector:US"]["sourceUrl"],"basis":room["sources"]["sector:US"]["definition"]}));bindings.push(json!({"kind":"sector_reference","id":id,"path":"sources/sector:US/rows"}));}
    if b.r#type=="market_context" {for (n,p) in room["sources"]["bund:EUR"]["points"].as_array().into_iter().flatten().enumerate(){let id=format!("bund:EUR:{}:{}",p["years"],p["date"]);citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":p["sourceUrl"],"date":p["date"],"series":p["series"],"currency":"EUR","basis":"German Federal reference yield; not an issuer quote or USD pricing input"}));bindings.push(json!({"kind":"market_reference","id":id,"path":format!("sources/bund:EUR/points/{n}")}));}}
+   if ["research_summary","rate_history","credit_context","equity_context"].contains(&b.r#type.as_str()) {bindings.push(json!({"kind":"request_research","path":"research","scope":"Pinned workroom revision; observations and gaps remain distinct"}));for(key,source)in room["research"]["sources"].as_object().into_iter().flat_map(|v|v.iter()){let id=format!("research:{key}:{}",source["date"].as_str().unwrap_or("undated"));citations.push(id.clone());index.insert(id,json!({"sourceUrl":source["sourceUrl"],"date":source["date"],"poolReceiptId":source["poolReceiptId"],"classification":source["classification"]}));}}
+   if ["research_summary","credit_context"].contains(&b.r#type.as_str()) {if let Some(symbol)=room["mandate"]["issuer"].as_str(){let c=&room["sources"][format!("sec:{symbol}")];for key in ["debt","cash","operatingIncome","da"] {let f=&c["facts"][key];let id=evidence::id(symbol,key,f);citations.push(id.clone());index.entry(id.clone()).or_insert(json!({"entity":symbol,"metric":key,"periodEnd":f["periodEnd"],"filed":f["filed"],"sourceUrl":f["sourceUrl"]}));bindings.push(json!({"kind":"evidence","id":id,"path":format!("sources/sec:{symbol}/facts/{key}")}));}}}
    let mut problems=vec![];if n>2&&["facts","assumptions","workings","sources"].contains(&b.r#type.as_str()){problems.push("Dense data block in a multi-row layout; split the page if it does not fit.")}
    for problem in problems {quality.push(json!({"severity":"review","pageId":page.id,"frameId":fid,"message":problem}));}
    json!({"id":fid,"kind":b.r#type,"blockIndex":i,"bounds":{"x":x,"y":y,"width":w,"height":h},"bindings":bindings,"citationIds":citations})

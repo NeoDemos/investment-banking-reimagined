@@ -11,6 +11,11 @@ fn unit(k: &str) -> &'static str {
     }
 }
 fn scenario(a: &Value, k: &str) -> Value {
+    let observed = &a["sourceSnapshot"]["marketInputs"][k];
+    if observed["value"].is_number() && observed["value"] == a["params"][k] {
+        return json!({"id":format!("market:{}:{k}",a["id"].as_str().unwrap()),"label":k,"classification":observed["classification"],"value":observed["value"],"unit":observed["unit"],"sourceUrl":observed["sourceUrl"],"observedAt":observed["providerTimestamp"],"poolReceiptId":observed["poolReceiptId"],"owner":"Proposed market-based scenario","rationale":a["assumptionRationale"],"range":"Delayed observation; current execution and permitted use require confirmation"});
+    }
+
     json!({"id":format!("assumption:{}:{k}",a["id"].as_str().unwrap()),"label":k,"classification":"illustrative assumption","value":a["params"][k],"unit":if ["ipo","lbo"].contains(&a["kind"].as_str().unwrap_or("")){match k{"evMultiple"|"entryMultiple"|"exitMultiple"|"leverage"=>"x","years"=>"years","primaryRaise"=>"USDm",_=>"%"}}else{unit(k)},"owner":"Banker-confirmed scenario","rationale":a["assumptionRationale"],"range":"Not independently assessed; use sensitivities","sourceUrl":null})
 }
 fn fact(a: &Value, symbol: &str, k: &str) -> Value {
