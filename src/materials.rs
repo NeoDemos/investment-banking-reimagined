@@ -89,11 +89,52 @@ pub fn validate_draft(d: &Draft, room: &Value) -> Result<(), String> {
                     }
                 }
                 "sources" => has_sources = true,
+                "client_decision" | "client_view" | "client_conditions" => {
+                    if room["mandate"]["question"].as_str().is_none() {
+                        return Err("A saved client decision is required".into());
+                    }
+                }
+                "decision_comparison" => {
+                    let options = room["options"]
+                        .as_array()
+                        .ok_or("Active client actions are required")?;
+                    if options.len() != 2 {
+                        return Err("Compare two active client actions".into());
+                    }
+                    for option in options {
+                        let id = option["analysisId"]
+                            .as_str()
+                            .ok_or("Active analysis required")?;
+                        if room["analyses"].get(id).is_none() {
+                            return Err("Calculate the active actions first".into());
+                        }
+                        used.insert(id.to_string());
+                    }
+                }
                 _ => return Err("Unsupported block type".into()),
             }
         }
         if chars > 1300 {
             return Err("Too much narrative on one page".into());
+        }
+    }
+    if room["mandate"]["documentContract"] == "client-decision/2" {
+        for required in [
+            "client_decision",
+            "client_view",
+            "client_conditions",
+            "decision_comparison",
+        ] {
+            if !d
+                .slides
+                .iter()
+                .flat_map(|p| &p.blocks)
+                .any(|b| b.r#type == required)
+            {
+                return Err(format!(
+                    "Client materials must retain the complete {required} section"
+                ));
+            }
         }
     }
     if !has_sources || !used.is_subset(&assumptions) {
@@ -115,6 +156,8 @@ pub fn compile(d: &Draft, room: &Value) -> Result<Value, ApiError> {
         let frames=page.blocks.iter().enumerate().map(|(i,b)|{
    let (x,y,w,h)=match(page.layout.as_str(),n){(_,1)=>(0.,0.,1.,1.),("full",_)|("cover",_) if n==2=>(0.,i as f64*0.5,1.,0.46),("split",2)=>(i as f64*0.52,0.,0.48,1.),(_,_) =>((i%2) as f64*0.52,(i/2) as f64*0.52,0.48,if n<=2{1.}else{0.46})};
    let fid=format!("{}:block:{i}",page.id);let mut bindings=vec![];let mut citations=vec![];
+   if ["client_decision","client_view","client_conditions"].contains(&b.r#type.as_str()) {bindings.push(json!({"kind":"banker_authored_decision","path":"mandate","scope":"Exact workroom revision; not a model recommendation"}));}
+   if b.r#type=="decision_comparison" {for option in room["options"].as_array().into_iter().flatten(){bindings.push(json!({"kind":"active_decision_analysis","id":option["analysisId"],"path":format!("analyses/{}/lineage",option["analysisId"].as_str().unwrap())}));}}
    if let Some(aid)=&b.analysis_id {let a=&room["analyses"][aid];bindings.push(json!({"kind":"analysis","id":aid,"path":format!("analyses/{aid}/model"),"sourceSnapshot":"pinned at calculation"}));
     for c in a["sourceSnapshot"]["companies"].as_array().into_iter().flatten(){for(k,f)in c["facts"].as_object().into_iter().flat_map(|f|f.iter()){let ev=evidence::id(c["symbol"].as_str().unwrap(),k,f);citations.push(ev.clone());index.entry(ev).or_insert(json!({"entity":c["symbol"],"metric":k,"periodEnd":f["periodEnd"],"filed":f["filed"],"unit":f["unit"],"sourceUrl":f["sourceUrl"],"tag":f["tag"]}));}}
     let snapshot=&a["sourceSnapshot"]["curve"];if !snapshot.is_null(){let cid=format!("curve:USD:{}",snapshot["date"].as_str().unwrap_or("unknown"));citations.push(cid.clone());index.entry(cid).or_insert(json!({"date":snapshot["date"],"sourceUrl":snapshot["sourceUrl"],"basis":"Treasury par curve; not issuer spread"}));}

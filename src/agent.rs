@@ -89,8 +89,11 @@ fn finish(s: &App, id: &str, status: &str, payload: Value) {
 }
 pub async fn list(State(s): State<App>) -> ApiResult {
     let db = s.db.lock().unwrap();
-    let mut q=db.prepare("SELECT id,json_extract(payload,'$.title'),revision,json_extract(payload,'$.draft'),json_extract(payload,'$.lastRunId'),json_extract(payload,'$.executionMode') FROM agent_rooms ORDER BY created_at DESC LIMIT 50").map_err(internal)?;
-    let rooms=q.query_map([],|r|{let draft:Option<String>=r.get(3)?;Ok(json!({"id":r.get::<_,String>(0)?,"title":r.get::<_,String>(1)?,"revision":r.get::<_,i64>(2)?,"draft":draft.map(parse),"lastRunId":r.get::<_,Option<String>>(4)?,"executionMode":r.get::<_,Option<String>>(5)?}))}).map_err(internal)?.collect::<Result<Vec<_>,_>>().map_err(internal)?;
+    let mut q=db.prepare("SELECT id,json_extract(payload,'$.title'),revision,json_extract(payload,'$.draft.title'),json_array_length(payload,'$.draft.slides'),json_extract(payload,'$.lastRunId'),json_extract(payload,'$.executionMode'),json_extract(payload,'$.mandate') FROM agent_rooms ORDER BY created_at DESC LIMIT 50").map_err(internal)?;
+    let rooms=q.query_map([],|r|{
+        let title:Option<String>=r.get(3)?;let count:Option<i64>=r.get(4)?;let mandate:Option<String>=r.get(7)?;
+        Ok(json!({"id":r.get::<_,String>(0)?,"title":r.get::<_,String>(1)?,"revision":r.get::<_,i64>(2)?,"draft":title.map(|title|json!({"title":title,"slides":vec![json!({});count.unwrap_or(0).max(0) as usize]})),"lastRunId":r.get::<_,Option<String>>(5)?,"executionMode":r.get::<_,Option<String>>(6)?,"mandate":mandate.map(parse)}))
+    }).map_err(internal)?.collect::<Result<Vec<_>,_>>().map_err(internal)?;
     Ok(Json(
         json!({"rooms":rooms,"localClaude":s.claude_available,"modelState":if crate::mcp::external_enabled(){"optional"}else{"deferred"},"maxSteps":MAX_STEPS}),
     ))
@@ -617,27 +620,34 @@ pub async fn edit(State(s): State<App>, Path(id): Path<String>, Json(v): Json<Va
     }
     let d: Draft = serde_json::from_value(v["draft"].clone()).map_err(|_| bad("Invalid draft"))?;
     validate_draft(&d, &room).map_err(bad)?;
+    let prior = room["draft"].clone();
     room["scene"] = crate::materials::compile(&d, &room)?;
     room["draft"] = json!(d);
-    room["revision"] = json!(expected + 1);
-    let snap = json!({"revision":expected+1,"draft":room["draft"],"sources":room["sources"],"analyses":room["analyses"],"at":now(),"type":"banker_edit"});
-    room["history"].as_array_mut().unwrap().push(snap);
-    let n =
-        s.db.lock()
+    if !room["mandate"].is_null() {
+        let affected: Vec<Value> = room["draft"]["slides"]
+            .as_array()
             .unwrap()
-            .execute(
-                "UPDATE agent_rooms SET revision=?,payload=? WHERE id=? AND revision=?",
-                params![expected + 1, room.to_string(), id, expected],
-            )
-            .map_err(internal)?;
-    if n != 1 {
-        return Err(ApiError(
-            StatusCode::CONFLICT,
-            "Draft changed. Reload before saving.".into(),
-        ));
+            .iter()
+            .filter(|p| {
+                !prior["slides"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|old| old == *p)
+            })
+            .map(|p| p["id"].clone())
+            .collect();
+        engagement::reopen_reviews(
+            &mut room,
+            &affected,
+            expected + 1,
+            "Authored page content changed",
+        );
+        room["changeLog"].as_array_mut().unwrap().push(json!({"revision":expected+1,"type":"authored_document_edit","affectedPages":affected,"narrativeReviewRequired":true,"at":now()}));
     }
-    Ok(Json(room))
+    Ok(Json(workflow::commit(&s, room, expected, "banker_edit")?))
 }
+
 pub async fn font(Path(weight): Path<String>) -> Response {
     if !["300", "400", "700"].contains(&weight.as_str()) {
         return StatusCode::NOT_FOUND.into_response();

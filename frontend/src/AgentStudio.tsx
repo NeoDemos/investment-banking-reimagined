@@ -156,13 +156,216 @@ function Table({ rows }: { rows: J[] }) {
     </div>
   );
 }
-function BlockView({ block: b, room }: { block: Block; room: Room }) {
+export function BlockView({ block: b, room }: { block: Block; room: Room }) {
   const a = b.analysisId ? room.analyses[b.analysisId] : null;
   const m = a?.model;
+  if (
+    ["client_decision", "client_view", "client_conditions"].includes(b.type)
+  ) {
+    const r = room as any,
+      d = r.mandate;
+    const needsReview = ["review_required", "unrecorded"].includes(
+      d.decisionState,
+    );
+    const chosen = needsReview
+      ? "No current choice · banker review required"
+      : d.preferredOption === "status_quo"
+        ? "Defer / status quo"
+        : d.preferredOption === "insufficient"
+          ? "Insufficient evidence to choose"
+          : r.options?.find((o: any) => o.id === d.preferredOption)?.name ||
+            "No action recorded";
+    const sections =
+      b.type === "client_decision"
+        ? [
+            ["The client question", d.question],
+            ["Conditional action", chosen],
+          ]
+        : b.type === "client_view"
+          ? [
+              ["The client’s decision criteria", d.criteria],
+              [
+                needsReview
+                  ? "Prior rationale · requires re-review"
+                  : "Banker’s conditional rationale",
+                d.recommendation || "No conditional rationale recorded.",
+              ],
+            ]
+          : [
+              [
+                "What could reverse the view?",
+                d.reversalCondition || "No reversal condition recorded.",
+              ],
+              ["Constraints and unresolved questions", d.constraints],
+            ];
+    return (
+      <div className="bound-client-decision">
+        <small>
+          BANKER-AUTHORED SUMMARIES ·{" "}
+          {needsReview ? "REVIEW REQUIRED" : "CONDITIONAL DISCUSSION VIEW"}
+        </small>
+        {sections.map(([label, value]) => (
+          <section key={label}>
+            <h3>{label}</h3>
+            <p>{value}</p>
+          </section>
+        ))}
+        <small>
+          Complete summary fields · public-data rehearsal · no market-execution
+          approval
+        </small>
+      </div>
+    );
+  }
+  if (b.type === "decision_comparison") {
+    const r = room as any,
+      opts = (r.options || []).map((o: any) => ({
+        ...o,
+        a: r.analyses[o.analysisId],
+      }));
+    if (opts.length !== 2)
+      return (
+        <p>
+          Prepare the current client alternatives before presenting the
+          comparison.
+        </p>
+      );
+    const base = opts[0].a,
+      kind = base.kind;
+    const value = (a: any, key: string) => a.lineage?.[key]?.value;
+    const rowValues = (a: any) =>
+      kind === "bond"
+        ? [
+            value(a, "netProceeds"),
+            value(a, "fundingGap"),
+            value(a, "postUseLeverage"),
+          ]
+        : kind === "buyback"
+          ? [
+              value(a, "cashReturned"),
+              value(a, "eps"),
+              value(a, "remainingCash"),
+            ]
+          : [value(a, "equity"), value(a, "eps"), value(a, "leverage")];
+    const headings =
+      kind === "bond"
+        ? ["Net proceeds", "Unfunded need", "Net leverage after use¹"]
+        : kind === "buyback"
+          ? ["Cash returned", "Illustrative EPS", "Remaining cash"]
+          : ["Equity cheque", "EPS before PPA", "Net leverage¹"];
+    const units =
+      kind === "bond"
+        ? ["USDm", "USDm", "x"]
+        : kind === "buyback"
+          ? ["USDm", "USD/share", "USDm"]
+          : ["USDm", "USD/share", "x"];
+    const baseline =
+      kind === "bond"
+        ? [0, r.mandate.fundingNeed, base.model.references.baseLeverage]
+        : kind === "buyback"
+          ? [
+              0,
+              base.model.references.baseEPS,
+              value(base, "remainingCash") + base.params.amount,
+            ]
+          : [
+              0,
+              base.model.references.baseEPS,
+              base.model.references.baseLeverage,
+            ];
+    const f = (x: any, u: string) =>
+      x == null ? "Not specified" : format(x, u);
+    return (
+      <div className="bound-decision-comparison">
+        {kind === "bond" && (
+          <p>
+            Required net funding:{" "}
+            <strong>{f(r.mandate.fundingNeed, "USDm")}</strong>. A shortfall
+            remains unfunded.
+          </p>
+        )}
+        <table>
+          <thead>
+            <tr>
+              <th>Management action</th>
+              {headings.map((x) => (
+                <th key={x}>{x}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {opts.map((o: any) => (
+              <tr key={o.id}>
+                <th>
+                  {o.name}
+                  {kind === "bond" ? (
+                    <small>
+                      {o.a.params.tenor}-year horizon ·{" "}
+                      {f(value(o.a, "yield"), "%")} illustrative yield
+                      <br />
+                      {f(value(o.a, "fees"), "USDm")} fees ·{" "}
+                      {f(value(o.a, "interest"), "USDm")} annual coupon cash
+                      cost
+                    </small>
+                  ) : kind === "acquisition" ? (
+                    <small>
+                      {o.a.params.debtPercent}% debt funding · same
+                      consideration
+                    </small>
+                  ) : (
+                    <small>Illustrative cash-funded repurchase</small>
+                  )}
+                </th>
+                {rowValues(o.a).map((x: any, i: number) => (
+                  <td key={i}>{f(x, units[i])}</td>
+                ))}
+              </tr>
+            ))}
+            <tr>
+              <th>
+                Defer / status quo
+                <small>
+                  {kind === "bond"
+                    ? "Funding requirement unresolved"
+                    : "No modeled transaction"}
+                </small>
+              </th>
+              {baseline.map((x: any, i: number) => (
+                <td key={i}>{f(x, units[i])}</td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+        {kind === "acquisition" && (
+          <div className="bound-stress-pairs">
+            {r.stresses?.map((s: any) => {
+              const a = r.analyses[s.analysisId];
+              return (
+                <p key={s.id}>
+                  <strong>{s.name}</strong>
+                  <br />
+                  EPS {f(value(a, "eps"), "USD/share")} · net leverage{" "}
+                  {f(value(a, "leverage"), "x")}. All other terms match that
+                  action.
+                </p>
+              );
+            })}
+          </div>
+        )}
+        <small>
+          ¹ EBITDA is reported operating income + D&A, not adjusted/covenant
+          EBITDA. Bond leverage assumes proceeds deployed. Historical annual
+          accounts; all deal terms illustrative. Coupon is not all-in financing
+          cost. No current quote, rating or execution assessment.
+        </small>
+      </div>
+    );
+  }
   if (b.type === "text") return <p className="draft-prose">{b.text}</p>;
   if (b.type === "metrics")
     return (
       <div className="bound-metrics">
+        {a.displayName && <h3 className="metric-case-name">{a.displayName}</h3>}
         {m.metrics.slice(0, 4).map((x: J) => (
           <div key={x.key}>
             <small>{x.label}</small>
@@ -283,14 +486,15 @@ function BlockView({ block: b, room }: { block: Block; room: Room }) {
           </div>
         ))}
         <p>
-          Illustrative analysis. All transaction terms are assumptions. Human
-          financial, editorial and legal review required before client use.
+          Illustrative analysis. All transaction terms are assumptions.
+          Qualified banker review is required; current market and execution
+          terms remain unconfirmed.
         </p>
       </div>
     );
   return null;
 }
-function Page({
+export function Page({
   slide,
   room,
   index,

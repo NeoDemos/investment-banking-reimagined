@@ -4,7 +4,7 @@ import "@fontsource/source-sans-3/latin-300.css";
 import "@fontsource/source-sans-3/latin-400.css";
 import "@fontsource/source-sans-3/latin-600.css";
 import "./styles.css";
-import App from "./AgentStudio";
+import App from "./ClientStudio";
 class WorkspaceBoundary extends Component<
   { children: ReactNode },
   { failed: boolean }

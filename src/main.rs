@@ -1,7 +1,10 @@
 mod agent;
 mod connectors;
+mod engagement;
+mod evaluation;
 mod evidence;
 mod finance;
+mod lineage;
 mod materials;
 mod mcp;
 mod providers;
@@ -834,6 +837,7 @@ async fn main() {
     }
     workspace::init(&db).expect("Engagement database migration");
     agent::init(&db).expect("Agent database migration");
+    engagement::init(&db).expect("Client workroom migration");
     evidence::init(&db, &data).expect("Canonical public evidence index");
     let claude_available = mcp::external_enabled()
         && std::process::Command::new(std::env::var("CLAUDE_BIN").unwrap_or("claude".into()))
@@ -889,6 +893,29 @@ async fn main() {
             get(workspace::get_snapshot),
         )
         .route("/api/architecture", get(mcp::architecture))
+        .route("/api/client-work", post(engagement::create))
+        .route("/api/client-work/{id}/prepare", post(engagement::prepare))
+        .route("/api/client-work/{id}/scenario", post(engagement::revise))
+        .route("/api/client-work/{id}/decision", post(engagement::decision))
+        .route(
+            "/api/client-work/{id}/brief",
+            post(engagement::update_brief),
+        )
+        .route("/api/client-work/{id}/task", post(engagement::task))
+        .route("/api/client-work/{id}/review", post(engagement::review))
+        .route(
+            "/api/client-work/{id}/copies",
+            get(engagement::copies).post(engagement::freeze),
+        )
+        .route("/api/client-work/{id}/copies/{cid}", get(engagement::copy))
+        .route(
+            "/api/client-work/{id}/evaluations",
+            get(evaluation::list).post(evaluation::record),
+        )
+        .route(
+            "/api/client-work/{id}/history/{revision}",
+            get(engagement::history),
+        )
         .route("/api/workflows/preview", post(workflow::preview))
         .route("/api/agent/rooms/{id}/patch", post(workflow::patch))
         .route("/api/agent/briefs", post(workflow::capture))

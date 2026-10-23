@@ -15,10 +15,10 @@ pub struct Brief {
     expected_revision: Option<i64>,
     prompt: String,
 }
-fn empty(title: &str) -> Value {
+pub(crate) fn empty(title: &str) -> Value {
     json!({"id":new_id(),"title":title,"revision":0,"messages":[],"sources":{},"analyses":{},"draft":null,"scene":null,"contextPacket":null,"history":[],"phase":"architecture"})
 }
-fn insert(s: &App, r: &Value) -> Result<(), ApiError> {
+pub(crate) fn insert(s: &App, r: &Value) -> Result<(), ApiError> {
     s.db.lock()
         .unwrap()
         .execute(
@@ -34,31 +34,80 @@ fn insert(s: &App, r: &Value) -> Result<(), ApiError> {
         .map_err(internal)?;
     Ok(())
 }
-pub(crate) fn commit(s: &App, mut r: Value, expected: i64, kind: &str) -> Result<Value, ApiError> {
+pub(crate) fn revised(mut r: Value, expected: i64, kind: &str) -> Value {
     r["revision"] = json!(expected + 1);
-    let snap = json!({"revision":expected+1,"draft":r["draft"],"scene":r["scene"],"sources":r["sources"],"analyses":r["analyses"],"contextPacket":r["contextPacket"],"at":now(),"type":kind});
+    if !r["mandate"].is_null() && !r["reviewState"].is_null() && kind != "discussion_copy_frozen" {
+        r["reviewCopyOutOfDate"] = json!(true);
+        for t in r["workItems"].as_array_mut().unwrap() {
+            if t["id"] == "review" {
+                t["status"] = json!("ready");
+            }
+        }
+    }
+    let snap = json!({"revision":expected+1,"id":r["id"],"title":r["title"],"reviewState":r["reviewState"],"reviewCopyOutOfDate":r["reviewCopyOutOfDate"],"draft":r["draft"],"scene":r["scene"],"sources":r["sources"],"analyses":r["analyses"],"contextPacket":r["contextPacket"],"mandate":r["mandate"],"options":r["options"],"stresses":r["stresses"],"reviewIssues":r["reviewIssues"],"workItems":r["workItems"],"changeLog":r["changeLog"],"at":now(),"type":kind});
     r["history"].as_array_mut().unwrap().push(snap);
-    let n =
-        s.db.lock()
-            .unwrap()
-            .execute(
-                "UPDATE agent_rooms SET revision=?,title=?,payload=? WHERE id=? AND revision=?",
-                params![
-                    expected + 1,
-                    r["title"].as_str(),
-                    r.to_string(),
-                    r["id"].as_str(),
-                    expected
-                ],
-            )
-            .map_err(internal)?;
+    r
+}
+pub(crate) fn commit(s: &App, r: Value, expected: i64, kind: &str) -> Result<Value, ApiError> {
+    let mut r = revised(r, expected, kind);
+    let snapshot = if r["mandate"].is_null() {
+        None
+    } else {
+        let snapshot = r["history"].as_array().unwrap().last().unwrap().clone();
+        compact_history(&mut r);
+        Some(snapshot)
+    };
+    let mut db = s.db.lock().unwrap();
+    let tx = db.transaction().map_err(internal)?;
+    let n = tx
+        .execute(
+            "UPDATE agent_rooms SET revision=?,title=?,payload=? WHERE id=? AND revision=?",
+            params![
+                expected + 1,
+                r["title"].as_str(),
+                r.to_string(),
+                r["id"].as_str(),
+                expected
+            ],
+        )
+        .map_err(internal)?;
     if n != 1 {
         return Err(ApiError(
             StatusCode::CONFLICT,
             "Workroom changed. Reload before saving.".into(),
         ));
     }
+    if let Some(snapshot) = snapshot {
+        tx.execute(
+            "INSERT INTO client_revisions VALUES(?,?,?)",
+            params![r["id"].as_str(), expected + 1, snapshot.to_string()],
+        )
+        .map_err(internal)?;
+    }
+    tx.commit().map_err(internal)?;
     Ok(r)
+}
+pub(crate) fn compact_history(r: &mut Value) {
+    let summaries: Vec<Value> = r["history"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|h| json!({"revision":h["revision"],"type":h["type"],"at":h["at"]}))
+        .collect();
+    r["history"] = json!(
+        summaries
+            .into_iter()
+            .rev()
+            .take(100)
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev()
+            .collect::<Vec<_>>()
+    );
+    r["historyCount"] = r["revision"].clone();
+    r["historyStorage"] = json!(
+        "Immutable client_revisions; last 100 summaries here, exact prior revisions load on demand"
+    );
 }
 pub async fn capture(State(s): State<App>, Json(b): Json<Brief>) -> ApiResult {
     let text = b.prompt.trim();
@@ -108,7 +157,25 @@ pub async fn patch(
     }
     let mut d: materials::Draft =
         serde_json::from_value(room["draft"].clone()).map_err(|_| bad("No material draft yet"))?;
+    let pages: Vec<Value> = b
+        .operations
+        .iter()
+        .map(|o| match o {
+            materials::Operation::SetHeadline { page_id, .. }
+            | materials::Operation::SetLayout { page_id, .. }
+            | materials::Operation::MovePage { page_id, .. } => json!(page_id),
+        })
+        .collect();
     materials::patch(&mut d, b.operations)?;
+    if !room["mandate"].is_null() {
+        engagement::reopen_reviews(
+            &mut room,
+            &pages,
+            b.expected_revision + 1,
+            "This page was edited or reordered",
+        );
+        room["changeLog"].as_array_mut().unwrap().push(json!({"revision":b.expected_revision+1,"type":"document_edit","affectedPages":pages,"narrativeReviewRequired":true,"at":now()}));
+    }
     room["scene"] = materials::compile(&d, &room)?;
     room["draft"] = json!(d);
     Ok(Json(commit(
@@ -127,7 +194,7 @@ fn linked(t: &str) -> Value {
 fn page(id: &str, title: &str, layout: &str, blocks: Vec<Value>) -> Value {
     json!({"id":id,"title":title,"layout":layout,"blocks":blocks})
 }
-fn storyboard(kind: &str, issuer: &str, target: &str) -> Value {
+pub(crate) fn storyboard(kind: &str, issuer: &str, target: &str) -> Value {
     let name = connectors::CATALOG
         .iter()
         .find(|c| c.0 == issuer)
