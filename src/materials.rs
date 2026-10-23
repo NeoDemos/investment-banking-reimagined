@@ -69,7 +69,7 @@ pub fn validate_draft(d: &Draft, room: &Value) -> Result<(), String> {
                         return Err("Narrative must be concise; numeric figures belong in bound data blocks".into());
                     }
                 }
-                "metrics" | "chart" | "workings" | "sensitivity" | "assumptions" => {
+                "metrics" | "chart" | "workings" | "sensitivity" | "assumptions" | "schedule" => {
                     let id = b
                         .analysis_id
                         .as_deref()
@@ -86,6 +86,13 @@ pub fn validate_draft(d: &Draft, room: &Value) -> Result<(), String> {
                     let symbol = b.symbol.as_deref().ok_or("Company required")?;
                     if room["sources"].get(format!("sec:{symbol}")).is_none() {
                         return Err("Retrieve company before using facts".into());
+                    }
+                }
+                "market_context" => {
+                    if room["sources"]["bund:EUR"]["points"].is_null() {
+                        return Err(
+                            "Retrieve Bundesbank data before using a market-context frame".into(),
+                        );
                     }
                 }
                 "sector_benchmark" => {
@@ -181,6 +188,7 @@ pub fn compile(d: &Draft, room: &Value) -> Result<Value, ApiError> {
    if b.r#type=="peer_position" {for peer in room["peerPosition"].as_array().into_iter().flatten(){let symbol=peer["symbol"].as_str().unwrap();let c=&room["sources"][format!("sec:{symbol}")];for(k,f)in c["facts"].as_object().unwrap(){let id=evidence::id(symbol,k,f);citations.push(id.clone());index.entry(id.clone()).or_insert(json!({"entity":symbol,"metric":k,"periodEnd":f["periodEnd"],"sourceUrl":f["sourceUrl"],"tag":f["tag"]}));bindings.push(json!({"kind":"evidence","id":id,"path":format!("sources/sec:{symbol}/facts/{k}")}));}}}
    if b.r#type=="bank_proposition" {for (n,claim) in room["sources"]["bank:rabobank"]["claims"].as_array().into_iter().flatten().enumerate(){let id=format!("bank:rabobank:claim:{n}");citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":claim["sourceUrl"],"basis":"Public bank description; client-specific relevance requires review"}));bindings.push(json!({"kind":"public_bank_proposition","id":id,"path":format!("sources/bank:rabobank/claims/{n}")}));}}
    if b.r#type=="sector_benchmark" {let id="sector:US:ev-ebitda".to_string();citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":room["sources"]["sector:US"]["sourceUrl"],"basis":room["sources"]["sector:US"]["definition"]}));bindings.push(json!({"kind":"sector_reference","id":id,"path":"sources/sector:US/rows"}));}
+   if b.r#type=="market_context" {for (n,p) in room["sources"]["bund:EUR"]["points"].as_array().into_iter().flatten().enumerate(){let id=format!("bund:EUR:{}:{}",p["years"],p["date"]);citations.push(id.clone());index.insert(id.clone(),json!({"sourceUrl":p["sourceUrl"],"date":p["date"],"series":p["series"],"currency":"EUR","basis":"German Federal reference yield; not an issuer quote or USD pricing input"}));bindings.push(json!({"kind":"market_reference","id":id,"path":format!("sources/bund:EUR/points/{n}")}));}}
    let mut problems=vec![];if n>2&&["facts","assumptions","workings","sources"].contains(&b.r#type.as_str()){problems.push("Dense data block in a multi-row layout; split the page if it does not fit.")}
    for problem in problems {quality.push(json!({"severity":"review","pageId":page.id,"frameId":fid,"message":problem}));}
    json!({"id":fid,"kind":b.r#type,"blockIndex":i,"bounds":{"x":x,"y":y,"width":w,"height":h},"bindings":bindings,"citationIds":citations})

@@ -210,6 +210,8 @@ pub(crate) fn storyboard(kind: &str, issuer: &str, target: &str) -> Value {
         match kind {
             "bond" => "Frame the financing decision",
             "buyback" => "Evaluate returning capital to shareholders",
+            "ipo" => "Assess the listing valuation and primary share issuance",
+            "lbo" => "Assess sponsor economics and the acquisition debt schedule",
             _ => "Frame the hypothetical acquisition",
         },
         "split",
@@ -243,6 +245,32 @@ pub(crate) fn storyboard(kind: &str, issuer: &str, target: &str) -> Value {
                 vec![linked("assumptions"), linked("workings")],
             ));
             slides.push(page("downside","Test the sensitivity of issue economics","split",vec![text("A Treasury par-yield reference plus an assumed spread supports an indicative discussion. Confirm issuer spread, execution window, funding needs and credit capacity before proceeding."),linked("sensitivity")]));
+        }
+        "ipo" | "lbo" => {
+            slides.push(page(
+                "financial-context",
+                "Anchor the model in public reporting",
+                "full",
+                vec![json!({"type":"facts","symbol":issuer})],
+            ));
+            slides.push(page(
+                "model-assumptions",
+                "Make valuation and financing assumptions explicit",
+                "full",
+                vec![linked("assumptions")],
+            ));
+            slides.push(page(
+                "model-workings",
+                "Reconcile the model outputs to their formulas",
+                "full",
+                vec![linked("workings")],
+            ));
+            slides.push(page(
+                "model-sensitivity",
+                "Challenge the principal valuation and return drivers",
+                "full",
+                vec![linked("sensitivity")],
+            ));
         }
         "buyback" => {
             slides.push(page(
@@ -290,7 +318,7 @@ pub(crate) fn storyboard(kind: &str, issuer: &str, target: &str) -> Value {
         "full",
         vec![json!({"type":"sources"})],
     ));
-    json!({"title":format!("{name} — {}",match kind{"bond"=>"Financing discussion","buyback"=>"Capital returns review",_=>"Hypothetical acquisition"}),"slides":slides})
+    json!({"title":format!("{name} — {}",match kind{"bond"=>"Financing discussion","buyback"=>"Capital returns review","ipo"=>"Illustrative listing","lbo"=>"Sponsor LBO scenario",_=>"Hypothetical acquisition"}),"slides":slides})
 }
 pub async fn preview(State(s): State<App>, Json(b): Json<Preview>) -> ApiResult {
     if !["bond", "buyback", "acquisition"].contains(&b.kind.as_str())

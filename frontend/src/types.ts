@@ -115,6 +115,16 @@ export const LABELS: Record<Kind, string> = {
   acquisition: "Peer acquisition",
 };
 export const INPUTS: Record<string, [string, string, number]> = {
+  evMultiple: ["Enterprise value / EBITDA", "x", 1],
+  primaryRaise: ["Gross primary proceeds", "USDm", 1],
+  offerDiscount: ["Offer valuation discount", "%", 1],
+  entryMultiple: ["Entry EV / EBITDA", "x", 1],
+  exitMultiple: ["Exit EV / EBITDA", "x", 1],
+  leverage: ["Opening debt / EBITDA", "x", 1],
+  interestRate: ["Cash interest rate", "%", 1],
+  growth: ["Annual EBITDA growth", "%", 1],
+  cashConversion: ["Post-tax/capex/WC cash before interest", "%", 1],
+  years: ["Holding period", "years", 1],
   amount: ["Transaction amount", "USDm", 50],
   tenor: ["Tenor", "years", 1],
   spread: ["Credit spread", "bps", 25],
@@ -133,19 +143,21 @@ export const number = (v: number, d = 1) =>
     minimumFractionDigits: d,
     maximumFractionDigits: d,
   });
-export const format = (v: number, u: string) =>
-  u === "USDm"
-    ? Math.abs(v) >= 1000
-      ? `$${number(v / 1000, 2)}bn`
-      : `$${number(v, 1)}m`
-    : u === "%"
-      ? `${number(v, 2)}%`
-      : u === "x"
-        ? `${number(v, 2)}x`
-        : u === "USD/share"
-          ? `$${number(v, 2)}`
-          : u === "m shares"
-            ? `${number(v, 2)}m`
-            : u === "bps"
-              ? `${number(v, 0)} bps`
-              : `${number(v, 2)}${u === "per 100" ? " / 100" : ""}`;
+export const format = (v: number | null, u: string) =>
+  v == null || !Number.isFinite(v)
+    ? "Not meaningful"
+    : u === "USDm"
+      ? Math.abs(v) >= 1000
+        ? `$${number(v / 1000, 2)}bn`
+        : `$${number(v, 1)}m`
+      : u === "%"
+        ? `${number(v, 2)}%`
+        : u === "x"
+          ? `${number(v, 2)}x`
+          : u === "USD/share"
+            ? `$${number(v, 2)}`
+            : u === "m shares"
+              ? `${number(v, 2)}m`
+              : u === "bps"
+                ? `${number(v, 0)} bps`
+                : `${number(v, 2)}${u === "per 100" ? " / 100" : ""}`;

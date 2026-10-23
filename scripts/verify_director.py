@@ -8,9 +8,13 @@ def main():
  checks=[]
  with tempfile.TemporaryDirectory(prefix='director-contract-') as tmp:
   fixture=pathlib.Path(tmp)/'fake-codex';fixture.write_text('''#!/usr/bin/env python3
-import json,sys
+import json,sys,time
+if sys.argv[1:]==['login','status']:print('explicit fake signed-in fixture');sys.exit()
+assert '--model' in sys.argv and sys.argv[sys.argv.index('--model')+1]=='gpt-6.1-sol'
+assert 'model_reasoning_effort=\"high\"' in sys.argv
 if '--version' in sys.argv: print('explicit-fake-cli');sys.exit()
 s=sys.stdin.read();d=json.loads(s.split('\\n\\n',1)[1])
+if 'SLOW' in d['instruction']:time.sleep(30)
 if d['stage']=='plan':
  p={'supported':'UNSUPPORTED' not in d['instruction'],'message':'Unsupported method requires clarification.','kind':'bond','issuer':'PEP','target':None,'question':'How should PepsiCo raise the required net funding for this public demonstration?','audience':'CFO and treasury','meetingDate':'2026-10-26','criteria':'Net cash sufficiency, maturity fit and downside resilience.','constraints':'Illustrative terms only; current execution remains unconfirmed.','fundingNeed':500,'storyline':[{'title':'Client funding question','purpose':'Compare the choices with public evidence.'}],'scenarioChanges':[]}
  if d.get('current',{}).get('brief'):
@@ -54,6 +58,25 @@ else:
    req('/api/data-pool/reports',{'url':'https://localhost/private.pdf','label':'Unsupported host document'},400)
    job=req('/api/data-pool/reports',{'url':'https://www.rabobank.com/public-annual-report.pdf','label':'Explicit synthetic public document intake fixture'});assert job['state']=='registered_for_extraction';assert req('/api/data-pool')['receipts']==pool['receipts']
    checks.append('Only fixed public connectors can fetch; report registration is explicit pending extraction and cannot silently promote source facts')
+   settings={'modelProfile':'codex_high','sourceIds':['sec','treasury']}
+   assert req('/api/director/settings',settings)==settings
+   req('/api/director/settings',{'modelProfile':'unsupported','sourceIds':['sec']},400)
+   req('/api/director/assignments',{'prompt':'Missing company source must fail before model inference.','sourceIds':['treasury']},400)
+   job=req('/api/director/assignments',{'prompt':'SLOW: cancellation must stop the local model process and keep progress persistent.','refreshPublic':False})['runId']
+   listed=req('/api/director/jobs')['jobs'][0]
+   assert listed['runId']==job and listed['status']=='running' and listed['result']['sourceIds']==settings['sourceIds']
+   assert listed['result']['connection']['model']=='gpt-6.1-sol' and listed['result']['connection']['effort']=='high'
+   req('/api/director/jobs/'+job+'/cancel',{})
+   time.sleep(5.2)
+   assert req('/api/agent/runs/'+job)['status']=='cancelled'
+   assert req('/api/director/jobs')['jobs'][0]['status']=='cancelled'
+   checks.append('Saved multi-source/profile settings, High CLI arguments, restored run metadata and cancellation are exercised against an isolated real server')
+   selected=assignment('Prepare an illustrative bond discussion using only the selected sources.')
+   sr=req('/api/agent/rooms/'+selected['result']['roomId'])
+   assert 'bank:rabobank' not in sr['sources'] and 'sector:US' not in sr['sources'] and 'bund:EUR' not in sr['sources']
+   req('/api/director/settings',{'modelProfile':'codex_high','sourceIds':['sec','issuer_reports','treasury','bund','sector','bank']})
+   checks.append('Unchecked bank, sector and EUR references are excluded from the new workroom and model context')
+
    result=assignment('UNSUPPORTED: make a fully underwritten public-company LBO for this test')
    assert result['status']=='completed' and result['result']['state']=='needs_clarification' and not result['result'].get('roomId')
    checks.append('Unsupported model plan asks for clarification without claiming a model or materials')

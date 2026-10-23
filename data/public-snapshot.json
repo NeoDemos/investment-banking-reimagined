@@ -136,7 +136,7 @@
     {
       "symbol": "CPB",
       "cik": "0000016732",
-      "name": "The Campbell’s Company",
+      "name": "The Campbell\u2019s Company",
       "fiscalYear": 2026,
       "periodEnd": "2026-08-02",
       "facts": {
@@ -368,6 +368,127 @@
           ]
         }
       }
+    },
+    {
+      "symbol": "AAPL",
+      "cik": "0000320193",
+      "name": "Apple",
+      "entityId": "sec:0000320193",
+      "fiscalYear": 2025,
+      "periodEnd": "2025-09-27",
+      "facts": {
+        "revenue": {
+          "value": 416161000000.0,
+          "unit": "USD",
+          "tag": "Total net sales",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported annual statement row in issuer-hosted2025Form10-K; report-specific mapping",
+          "periodStart": "2024-09-29",
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html"
+        },
+        "operatingIncome": {
+          "value": 133050000000.0,
+          "unit": "USD",
+          "tag": "Operating income",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported annual statement row in issuer-hosted2025Form10-K; report-specific mapping",
+          "periodStart": "2024-09-29",
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html"
+        },
+        "netIncome": {
+          "value": 112010000000.0,
+          "unit": "USD",
+          "tag": "Net income",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported annual statement row in issuer-hosted2025Form10-K; report-specific mapping",
+          "periodStart": "2024-09-29",
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html"
+        },
+        "da": {
+          "value": 11698000000.0,
+          "unit": "USD",
+          "tag": "Depreciation and amortization",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported annual statement row in issuer-hosted2025Form10-K; report-specific mapping",
+          "periodStart": "2024-09-29",
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html"
+        },
+        "cash": {
+          "value": 35934000000.0,
+          "unit": "USD",
+          "tag": "Cash and cash equivalents $",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported annual statement row in issuer-hosted2025Form10-K; report-specific mapping",
+          "periodStart": null,
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html"
+        },
+        "shares": {
+          "value": 15004697000.0,
+          "unit": "shares",
+          "tag": "Weighted-average diluted shares",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported annual statement row in issuer-hosted2025Form10-K; report-specific mapping",
+          "periodStart": "2024-09-29",
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html"
+        },
+        "reportedEPS": {
+          "value": 7.46,
+          "unit": "USD/shares",
+          "tag": "Diluted earnings per share",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported annual statement row in issuer-hosted2025Form10-K; report-specific mapping",
+          "periodStart": "2024-09-29",
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html"
+        },
+        "debt": {
+          "value": 98657000000,
+          "unit": "USD",
+          "tag": "Total term debt + commercial paper",
+          "taxonomy": "issuer-report-label",
+          "basis": "Reported term-debt carrying amount plus commercial paper; excludes leases",
+          "periodStart": null,
+          "periodEnd": "2025-09-27",
+          "filed": "2025-10-31",
+          "accession": "issuer-copy-2025-10K",
+          "sourceUrl": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html",
+          "inputs": [
+            {
+              "tag": "Total term debt",
+              "value": 90678000000,
+              "unit": "USD",
+              "taxonomy": "issuer-report-label"
+            },
+            {
+              "tag": "Commercial paper",
+              "value": 7979000000.0,
+              "unit": "USD",
+              "taxonomy": "issuer-report-label"
+            }
+          ]
+        }
+      },
+      "sourceFormat": "Dated issuer HTML annual report"
     }
   ],
   "curve": {

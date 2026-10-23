@@ -1,4 +1,5 @@
 mod agent;
+mod capital_models;
 mod connectors;
 mod director;
 mod engagement;
@@ -8,6 +9,7 @@ mod finance;
 mod lineage;
 mod materials;
 mod mcp;
+mod model_connection;
 mod pool;
 mod providers;
 mod workbook;
@@ -897,8 +899,11 @@ async fn main() {
             get(workspace::get_snapshot),
         )
         .route("/api/architecture", get(mcp::architecture))
-        .route("/api/director/status", get(director::status))
+        .route("/api/director/status", get(model_connection::status))
         .route("/api/director/assignments", post(director::start))
+        .route("/api/director/settings", post(model_connection::save))
+        .route("/api/director/jobs", get(director::jobs))
+        .route("/api/director/jobs/{id}/cancel", post(director::cancel))
         .route("/api/data-pool", get(pool::list))
         .route("/api/data-pool/refresh", post(pool::refresh))
         .route("/api/data-pool/reports", post(pool::register))

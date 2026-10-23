@@ -21,6 +21,12 @@ Keep a previously generated public-data example available for a network/quota fa
 
 The current models are regular semiannual USD bond economics, a simplified buyback and a pre-PPA acquisition funding illustration. Stock prices/spreads/deal terms are assumptions; annual accounts are not LTM, consensus or current market quotes. Peer EBITDA is operating income plus reported D&A, not adjusted or covenant EBITDA. Sector multiples are broad dated lookup references, not a target-specific valuation. The public Rabobank description supports a proposed relevance argument; verified mandate credentials and bank approval are absent.
 
-General annual-report PDF extraction, European company mappings, full IPO/LBO/DCF, editable PowerPoint/advanced XLSX, live voice, multi-user authority and bank deployment remain future modules. The app's inspection grid and scenario editors are secondary to the director-led story. The `.app` is a local unsigned browser launcher; proprietary fonts are not redistributed and PDF font/pixel parity is not claimed.
+General annual-report PDF extraction, European company mappings, full IPO underwriting/integrated LBO/DCF, editable PowerPoint/advanced XLSX, live voice, multi-user authority and bank deployment remain future modules. The app's inspection grid and scenario editors are secondary to the director-led story. The `.app` is a local unsigned browser launcher; proprietary fonts are not redistributed and PDF font/pixel parity is not claimed.
 
 [Work catalog](CLIENT_WORK_CATALOG.md) · [Local agent](LOCAL_AGENT.md) · [Architecture](CLIENT_WORKROOM_ARCHITECTURE.md) · [Financial methods](FINANCIAL_METHODS.md) · [Evaluation](CLIENT_WORKFLOW_EVALUATION.md).
+
+## Director feedback and financial inspection
+
+Choose Codex 6.1 Sol High or Claude Code Opus Medium, then check multiple public sources. On this laptop Claude is signed in but its weekly limit is exhausted; use Codex for a live rehearsal. Start the Apple debt, potential-listing or LBO example. Follow the real stages/heartbeats, source successes/refusals, saved model and generated frames. Reloading restores the latest assignment. Completion, clarification and failure remain visible with a link to saved work.
+
+Use **Model inspector** to inspect assumptions, formulas, source lineage and the annual LBO schedule. Change one action and recalculate, or use **Discuss this model with the agent** to challenge assumptions in natural language. Prior source/model versions remain available. IPO and LBO examples use explicitly hypothetical transactions and public listed-company proxies, not claims of an actual listing or buyout.

@@ -1,13 +1,16 @@
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 pub type Params = BTreeMap<String, f64>;
-pub const ENGINE: &str = "corporate-finance/0.1.1";
+pub const ENGINE: &str = "corporate-finance/0.2.0";
 pub const BOND_PRICE_FORMULA: &str = "Y (%) = Treasury par reference (%) + spread (bps)/100. N=2×tenor years; r=Y/200; C=coupon (%)/2 per 100 each half-year. Price per 100 = Σ[t=1..N] (C + redemption of 100 only at t=N)/(1+r)^t.";
 pub const BOND_NET_FORMULA: &str = "Y (%) = Treasury par reference (%) + spread (bps)/100. N=2×tenor years; r=Y/200; C=coupon (%)/2 per 100 each half-year. P = Σ[t=1..N] (C + redemption of 100 only at t=N)/(1+r)^t. Net proceeds (USDm)=notional (USDm)×P/100−notional×fees (bps)/10,000.";
 pub const BUYBACK_EPS_FORMULA: &str = "EPS = [historical common earnings (USDm) − spend (USDm) × one-year Treasury yield (%)/100 × (1 − tax (%)/100)] / [historical diluted shares (m) − spend (USDm) / execution price (USD/share)]. Full-period illustrative repurchase.";
 pub const ACQUISITION_EARNINGS_FORMULA: &str = "E (USDm)=target shares (m)×target price (USD/share)×(1+premium (%)/100). D=E×debt funding (%)/100; cash C=E−D. Debt interest I=D×[five-year Treasury (%)+spread (bps)/100]/100; lost cash income L=C×one-year Treasury (%)/100. Pro forma common earnings (USDm)=acquirer+target common earnings+(synergies−I−L)×(1−tax (%)/100). Excludes PPA, fees and integration timing.";
 pub const ACQUISITION_EPS_FORMULA: &str = "E (USDm)=target shares (m)×target price (USD/share)×(1+premium (%)/100). D=E×debt funding (%)/100; cash C=E−D. Debt interest I=D×[five-year Treasury (%)+spread (bps)/100]/100; lost cash income L=C×one-year Treasury (%)/100. EPS=[acquirer+target common earnings (USDm)+(synergies−I−L)×(1−tax (%)/100)]/acquirer diluted shares (m). No new equity issuance; excludes PPA, fees and integration timing.";
 pub fn defaults(kind: &str) -> Params {
+    if ["ipo", "lbo"].contains(&kind) {
+        return crate::capital_models::defaults(kind);
+    }
     let pairs: Vec<(&str, f64)> = match kind {
         "bond" => vec![
             ("amount", 500.),
@@ -30,6 +33,9 @@ pub fn defaults(kind: &str) -> Params {
     pairs.into_iter().map(|(k, v)| (k.to_string(), v)).collect()
 }
 pub fn validate(kind: &str, p: &Params) -> Result<(), String> {
+    if ["ipo", "lbo"].contains(&kind) {
+        return crate::capital_models::validate(kind, p);
+    }
     let d = defaults(kind);
     if !["bond", "buyback", "acquisition"].contains(&kind) {
         return Err("Unknown scenario".into());
@@ -115,6 +121,9 @@ pub fn calculate_for(
     target: &str,
 ) -> Result<Value, String> {
     validate(kind, p)?;
+    if ["ipo", "lbo"].contains(&kind) {
+        return crate::capital_models::calculate(data, kind, p, issuer);
+    }
     let required_symbols = if kind == "acquisition" {
         vec![issuer, target]
     } else {

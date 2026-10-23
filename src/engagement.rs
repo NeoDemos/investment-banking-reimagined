@@ -215,7 +215,7 @@ fn items() -> Value {
     ])
 }
 pub async fn create(State(s): State<App>, Json(b): Json<Brief>) -> ApiResult {
-    if !["bond", "buyback", "acquisition"].contains(&b.kind.as_str())
+    if !["bond", "buyback", "acquisition", "ipo", "lbo"].contains(&b.kind.as_str())
         || !connectors::CATALOG.iter().any(|c| c.0 == b.issuer)
     {
         return Err(bad("Choose a covered company and financial workflow"));
@@ -249,6 +249,8 @@ pub async fn create(State(s): State<App>, Json(b): Json<Brief>) -> ApiResult {
         match b.kind.as_str() {
             "bond" => "Funding decision",
             "buyback" => "Capital allocation",
+            "ipo" => "Listing valuation",
+            "lbo" => "Sponsor investment",
             _ => "Acquisition discussion",
         }
     ));
@@ -270,6 +272,13 @@ fn alternative(kind: &str, p: &Params) -> Params {
         "buyback" => {
             q.insert("amount".into(), p["amount"] / 2.);
         }
+        "ipo" => {
+            q.insert("evMultiple".into(), p["evMultiple"] * 0.8);
+        }
+        "lbo" => {
+            q.insert("growth".into(), 0.);
+            q.insert("exitMultiple".into(), p["exitMultiple"] * 0.8);
+        }
         _ => {
             q.insert(
                 "debtPercent".into(),
@@ -286,6 +295,8 @@ pub fn option_name(kind: &str, which: &str) -> &'static str {
         match kind {
             "bond" => "Alternative tenor",
             "buyback" => "Smaller repurchase",
+            "ipo" => "Lower valuation case",
+            "lbo" => "Operating and exit downside",
             _ => "Alternative funding mix",
         }
     }
@@ -388,6 +399,15 @@ pub async fn prepare(
     text(&b.rationale, 20, 1800, "Assumption rationale")?;
     let kind = r["mandate"]["kind"].as_str().unwrap().to_string();
     let instruction_led = r["mandate"]["instructionLed"] == true;
+    let selected = |id: &str| {
+        r["selectedSourceIds"]
+            .as_array()
+            .is_none_or(|ids| ids.iter().any(|x| x == id))
+    };
+    let use_treasury = selected("treasury");
+    let use_bank = selected("bank");
+    let use_sector = selected("sector");
+    let use_bund = selected("bund");
     let funding_need = r["mandate"]["fundingNeed"].as_f64();
     let issuer = r["mandate"]["issuer"].as_str().unwrap().to_string();
     let target = r["mandate"]["target"].as_str().map(str::to_string);
@@ -422,8 +442,8 @@ pub async fn prepare(
             tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":t})).await?;
             symbols.push(t.clone());
         }
-        if instruction_led {for (symbol,_,_) in connectors::CATALOG {if !symbols.iter().any(|s|s==symbol){tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":symbol})).await?;symbols.push(symbol.into());}}}
-        tool(&s,&run,&session,"fetch_treasury_curve",json!({})).await?;
+        if instruction_led && issuer!="AAPL" {for (symbol,_,_) in connectors::CATALOG {if symbol!="AAPL" && symbols.len()<3 && !symbols.iter().any(|s|s==symbol){tool(&s,&run,&session,"fetch_company_facts",json!({"symbol":symbol})).await?;symbols.push(symbol.into());}}}
+        if use_treasury {tool(&s,&run,&session,"fetch_treasury_curve",json!({})).await?;}
         for (which,original_params) in [("base",&b.base),("alternative",&b.alternative)] {
             let mut sized_params=original_params.clone();
             if b.size_to_funding {
@@ -464,8 +484,9 @@ pub async fn prepare(
         tool(&s,&run,&session,"compose_materials",document).await?;
         let mut r=session.server.snapshot().await;
         if instruction_led {
-            r["sources"]["bank:rabobank"]=pool::bank_profile();
-            r["sources"]["sector:US"]=pool::sector_reference();
+            if use_bank {r["sources"]["bank:rabobank"]=pool::bank_profile();if issuer=="AAPL"{r["sources"]["bank:rabobank"]["claims"][0]["application"]=json!("Technology-sector fit is not established by Rabobank's public food/agriculture positioning. Do not claim this is an Apple-specific advantage.");}}
+            if use_sector {r["sources"]["sector:US"]=pool::latest(&s,"sector:US")?;}
+            if use_bund {if let Ok(value)=pool::latest(&s,"bund:EUR"){r["sources"]["bund:EUR"]=value;}}
             let peers:Vec<Value>=symbols.iter().map(|symbol| {
                 let c=&r["sources"][format!("sec:{symbol}")];let f=&c["facts"];let value=|k:&str|f[k]["value"].as_f64().unwrap()/1e6;
                 let ebitda=value("operatingIncome")+value("da");
@@ -474,7 +495,7 @@ pub async fn prepare(
             r["peerPosition"]=json!(peers);
             let pages=r["draft"]["slides"].as_array_mut().unwrap();let at=pages.len()-1;
             pages.insert(at,json!({"id":"peer-position","title":"Place the client in its reported peer context","layout":"full","blocks":[{"type":"peer_position"}]}));
-            pages.insert(at+1,json!({"id":"bank-proposition","title":"Make the bank's relevance specific to this client","layout":"full","blocks":[{"type":"bank_proposition"}]}));
+            if use_bank {pages.insert(at+1,json!({"id":"bank-proposition","title":"Make the bank's relevance specific to this client","layout":"full","blocks":[{"type":"bank_proposition"}]}));}
             sync_client_document(&mut r)?;
         }
         r["mandate"]["status"]=json!("review");r["executionMode"]=json!("local_structured_workflow");r["modelPort"]=json!({"state":"deferred"});

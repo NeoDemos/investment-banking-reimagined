@@ -26,7 +26,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJmJw",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/40",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQSw"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M02",
@@ -46,7 +47,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJnmg",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/41",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQUg"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M03",
@@ -66,7 +68,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJpRg",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/42",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQWA"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M04",
@@ -87,7 +90,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJqlg",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/43",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQX0"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M05",
@@ -108,7 +112,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJr-w",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/44",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQaU"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M06",
@@ -129,7 +134,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJt8Q",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/45",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQb0"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M07",
@@ -153,7 +159,8 @@
       "phase": "Next phase",
       "deferredByOwner": true,
       "horizon": "1\u20133 working days after model-port acceptance and access",
-      "acceptanceGate": "Deferred; not a Monday architecture blocker"
+      "acceptanceGate": "Deferred; not a Monday architecture blocker",
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M08",
@@ -177,7 +184,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJxFQ",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/47",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQf4"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M09",
@@ -203,7 +211,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJydQ",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/48",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQh0"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M10",
@@ -225,7 +234,8 @@
         "node_id": "I_kwDOVSrbdM8AAAABZTuO-Q",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/50",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC64ec"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M11",
@@ -256,7 +266,8 @@
         "ownerHours": 20,
         "highHours": 32,
         "note": "Superseded scope; not cumulative actual runtime"
-      }
+      },
+      "currentAcceptanceBaseline": false
     },
     {
       "code": "M12",
@@ -356,7 +367,7 @@
         "M13"
       ],
       "technicalComplete": true,
-      "currentAcceptanceBaseline": true,
+      "currentAcceptanceBaseline": false,
       "estimationNote": "Prospective owner effort, not elapsed agent runtime; reuses/overlaps earlier correction foundations; do not naively sum historical estimates",
       "github": {
         "number": 54,
@@ -407,6 +418,70 @@
           "highHours": 10
         }
       ]
+    },
+    {
+      "title": "Observable director drafting, selected live sources and inspectable IPO/LBO models",
+      "start": "2026-10-23",
+      "target": "2026-10-23",
+      "lowHours": 8,
+      "ownerHours": 12,
+      "highHours": 16,
+      "dependsOn": [
+        "M14"
+      ],
+      "technicalComplete": true,
+      "currentAcceptanceBaseline": true,
+      "estimationNote": "Prospective 1\u20132 focused developer-day range, not elapsed agent runtime or subscription allowance; task slices overlap prior foundations. Human acceptance remains M09.",
+      "github": {
+        "number": 55,
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/55",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC_lPU",
+        "id": 5998076251,
+        "node_id": "I_kwDOVSrbdM8AAAABZYNhWw"
+      },
+      "subtasks": [
+        {
+          "title": "Persistent stage, heartbeat, cancel and terminal feedback",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 1,
+          "ownerHours": 2,
+          "highHours": 3
+        },
+        {
+          "title": "Multi-source selection and fixed live public adapters",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 2,
+          "ownerHours": 3,
+          "highHours": 4
+        },
+        {
+          "title": "Local Codex High / Claude Opus Medium login profiles",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 1,
+          "ownerHours": 2,
+          "highHours": 3
+        },
+        {
+          "title": "IPO and LBO calculations, lineage and model inspector",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 2,
+          "ownerHours": 3,
+          "highHours": 4
+        },
+        {
+          "title": "Actual varied prompts, coaching and independent regression checks",
+          "start": "2026-10-23",
+          "target": "2026-10-23",
+          "lowHours": 2,
+          "ownerHours": 2,
+          "highHours": 2
+        }
+      ],
+      "code": "M15"
     }
   ],
   "project": {
@@ -414,7 +489,7 @@
     "id": "PVT_kwHOD8BOsc4BoIS3",
     "phaseOption": "725ddb26",
     "authorizationOption": "321e8f88",
-    "nativeDependencies": 25
+    "nativeDependencies": 26
   },
-  "currentScope": "Director-led local Codex agent and versioned public data pool; bounded deterministic finance and dynamic client materials. Remote/provider/voice/bank integration remain separate."
+  "currentScope": "Director-led local Codex High / selectable Claude Opus Medium; persistent progress and selected public-source ingestion; deterministic bond, buyback, simplified M&A, illustrative IPO and single-tranche LBO methods; inspectable models and dynamic client frames. API keys, voice, bank integration and underwriting remain separate."
 }

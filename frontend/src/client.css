@@ -2470,3 +2470,109 @@
   flex-direction: row;
   text-align: left;
 }
+.connection-picker {
+  margin: 12px 0;
+  padding: 16px;
+  background: #f7f9fc;
+  border: 1px solid #e2e7f0;
+  border-radius: 8px;
+}
+.connection-picker > label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #3e5075;
+}
+.connection-picker select {
+  padding: 8px 12px;
+  border: 1px solid #d8deeb;
+  background: white;
+  border-radius: 6px;
+  font: inherit;
+}
+.connection-picker fieldset {
+  border: 0;
+  margin: 15px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.connection-picker legend {
+  font-size: 11px;
+  color: #74839f;
+  margin-bottom: 10px;
+}
+.connection-picker fieldset label {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 11px;
+  min-width: 0;
+}
+.connection-picker fieldset strong {
+  display: block;
+  color: #445a80;
+  font-weight: 500;
+}
+.connection-picker fieldset small {
+  display: block;
+  font-size: 9px;
+  line-height: 1.5;
+  color: #8591a7;
+  margin-top: 3px;
+}
+.client-main > .director-progress {
+  flex: none;
+  margin: 8px 24px;
+  max-height: 230px;
+  overflow: auto;
+}
+.director-progress > div > span {
+  margin-left: auto;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.director-progress button {
+  border: 1px solid #d2dced;
+  background: white;
+  border-radius: 5px;
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+.director-progress.needs-clarification {
+  background: #fff5e9;
+  border-color: #edc89a;
+}
+.director-progress .clarification-message {
+  font-size: 13px;
+  color: #735023;
+  line-height: 1.6;
+}
+.director-progress a {
+  font-size: 12px;
+  margin-right: 15px;
+}
+.model-coaching {
+  padding: 18px;
+  background: #f2f6fd;
+  border-left: 3px solid #6e8cbb;
+  margin: 16px 0;
+  color: #526888;
+  font-size: 12px;
+  line-height: 1.7;
+}
+@media (max-width: 800px) {
+  .connection-picker fieldset {
+    grid-template-columns: 1fr;
+  }
+  .connection-picker > label {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -1,8 +1,9 @@
 //! Public-only, host-pinned connectors. Failed refreshes are explicit dated fallbacks.
 use super::*;
 use sha2::{Digest, Sha256};
-pub const CATALOG: [(&str, &str, &str); 3] = [
+pub const CATALOG: [(&str, &str, &str); 4] = [
     ("PEP", "0000077476", "PepsiCo"),
+    ("AAPL", "0000320193", "Apple"),
     ("CPB", "0000016732", "The Campbell’s Company"),
     ("GIS", "0000040704", "General Mills"),
 ];
@@ -374,5 +375,150 @@ mod tests {
             .remove("OperatingIncomeLoss");
         assert!(normalize_company(&broken, "TEST", "1", "Test", "2026-10-22").is_err());
         assert!(normalize_company(&raw, "TEST", "1", "Test", "2025-01-01").is_err());
+    }
+}
+
+pub const APPLE_REPORT: &str = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/c636d8a7-8025-47d2-9b13-bcf5465343b3.html";
+pub fn normalize_apple_report(raw: &str) -> Result<Value, String> {
+    let tr = regex::Regex::new(r"(?is)<tr\b[^>]*>(.*?)</tr>").unwrap();
+    let tags = regex::Regex::new(r"<[^>]+>").unwrap();
+    let rows = tr
+        .captures_iter(raw)
+        .map(|c| {
+            tags.replace_all(&c[1], " ")
+                .replace("&nbsp;", " ")
+                .replace("&#160;", " ")
+                .replace("&#8217;", "’")
+                .split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ")
+        })
+        .collect::<Vec<_>>();
+    let find = |label: &str| -> Result<f64, String> {
+        let row = rows
+            .iter()
+            .find(|r| {
+                r.starts_with(label)
+                    && r[label.len()..]
+                        .trim_start()
+                        .chars()
+                        .next()
+                        .is_some_and(|c| c.is_ascii_digit() || c == '$' || c == '(')
+            })
+            .ok_or_else(|| format!("Missing issuer report row: {label}"))?;
+        let tail = &row[label.len()..];
+        let re = regex::Regex::new(r"-?\d[\d,]*(?:\.\d+)?").unwrap();
+        let number = re
+            .find(tail)
+            .ok_or_else(|| format!("Missing value for {label}"))?
+            .as_str()
+            .replace(',', "");
+        number.parse().map_err(|_| format!("Invalid {label}"))
+    };
+    let source = APPLE_REPORT;
+    let mut facts = serde_json::Map::new();
+    for (key, label, unit, scale, annual) in [
+        ("revenue", "Total net sales", "USD", 1e6, true),
+        ("operatingIncome", "Operating income", "USD", 1e6, true),
+        ("netIncome", "Net income", "USD", 1e6, true),
+        ("da", "Depreciation and amortization", "USD", 1e6, true),
+        ("cash", "Cash and cash equivalents $", "USD", 1e6, false),
+        (
+            "shares",
+            "Weighted-average diluted shares",
+            "shares",
+            1000.,
+            true,
+        ),
+        (
+            "reportedEPS",
+            "Diluted earnings per share",
+            "USD/shares",
+            1.,
+            true,
+        ),
+    ] {
+        facts.insert(key.into(),json!({"value":find(label)?*scale,"unit":unit,"tag":label,"taxonomy":"issuer-report-label","basis":"Reported annual statement row in issuer-hosted 2025 Form10-K; mapping is specific to this report","periodStart":if annual{Some("2024-09-29")}else{None},"periodEnd":"2025-09-27","filed":"2025-10-31","accession":"issuer-copy-2025-10K","sourceUrl":source}));
+    }
+    let term = find("Total term debt ")?;
+    let commercial = find("Commercial paper ")?;
+    let debt = term + commercial;
+    facts.insert("debt".into(),json!({"value":debt*1e6,"unit":"USD","tag":"Total term debt + commercial paper","taxonomy":"issuer-report-label","basis":"Reported carrying amount of current/noncurrent term debt plus commercial paper; excludes leases","periodStart":null,"periodEnd":"2025-09-27","filed":"2025-10-31","accession":"issuer-copy-2025-10K","sourceUrl":source,"inputs":[{"tag":"Total term debt","value":term*1e6,"unit":"USD","taxonomy":"issuer-report-label"},{"tag":"Commercial paper","value":commercial*1e6,"unit":"USD","taxonomy":"issuer-report-label"}]}));
+    Ok(
+        json!({"symbol":"AAPL","cik":"0000320193","name":"Apple","entityId":"sec:0000320193","fiscalYear":2025,"periodEnd":"2025-09-27","facts":facts,"sourceFormat":"issuer HTML annual report, not SEC companyfacts API"}),
+    )
+}
+pub async fn apple_report(s: &App) -> Result<Value, ApiError> {
+    let bytes = fetch(s, APPLE_REPORT).await.map_err(bad)?;
+    let raw = std::str::from_utf8(&bytes).map_err(|_| bad("Invalid issuer report text"))?;
+    store(s, "sec:AAPL", normalize_apple_report(raw).map_err(bad)?)
+}
+pub async fn bund(s: &App) -> Result<Value, ApiError> {
+    let mut points = vec![];
+    for (years, key) in [
+        (2, "A610.000000WT0202.A"),
+        (5, "A620.000000WT0505.A"),
+        (10, "A630.000000WT1010.A"),
+    ] {
+        let start = (chrono::Utc::now() - chrono::Duration::days(40))
+            .format("%Y-%m-%d")
+            .to_string();
+        let url = format!(
+            "https://api.statistiken.bundesbank.de/rest/data/BBSSY/D.REN.EUR.{key}?format=csv&startPeriod={start}"
+        );
+        let bytes = fetch(s, &url).await.map_err(bad)?;
+        let raw = String::from_utf8(bytes).map_err(|_| bad("Invalid Bundesbank CSV"))?;
+        let mut last = None;
+        for line in raw.lines() {
+            let cells = line.split(';').collect::<Vec<_>>();
+            if cells.len() >= 2 {
+                let date = cells[0].trim_matches('"');
+                if chrono::NaiveDate::parse_from_str(date, "%Y-%m-%d").is_ok() {
+                    if let Ok(value) = cells[1].trim_matches('"').replace(',', ".").parse::<f64>() {
+                        if value.is_finite() {
+                            last = Some(
+                                json!({"years":years,"yield":value,"date":date,"series":format!("BBSSY.D.REN.EUR.{key}"),"sourceUrl":url}),
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        points.push(
+            last.ok_or_else(|| bad("No valid Bundesbank observation in the requested window"))?,
+        );
+    }
+    store(
+        s,
+        "bund:EUR",
+        json!({"name":"German Federal securities reference yields","currency":"EUR","points":points,"sourceUrl":"https://www.bundesbank.de/en/statistics/overview-of-the-statistical-series/-/3-yields-of-current-federal-securities-914558","basis":"Separate current German2/5/10year securities, not a spot curve or issuer quote. Not substituted into USD models."}),
+    )
+}
+#[cfg(test)]
+mod issuer_report_tests {
+    use super::*;
+    #[test]
+    fn apple_mapping_distinguishes_debt_carrying_amount_from_principal() {
+        let rows = [
+            ("Total net sales", "416161"),
+            ("Operating income", "133050"),
+            ("Net income", "112010"),
+            ("Depreciation and amortization", "11698"),
+            ("Cash and cash equivalents $", "35934"),
+            ("Weighted-average diluted shares", "15004697"),
+            ("Diluted earnings per share", "7.46"),
+            ("Total term debt principal", "91281"),
+            ("Total term debt", "90678"),
+            ("Commercial paper", "7979"),
+        ];
+        let html = rows
+            .iter()
+            .map(|(k, v)| format!("<tr><td>{k}</td><td>{v}</td></tr>"))
+            .collect::<String>();
+        let c = normalize_apple_report(&html).unwrap();
+        assert_eq!(c["facts"]["debt"]["value"], 98657000000.);
+        assert_eq!(c["facts"]["shares"]["value"], 15004697000.);
+        assert_eq!(c["facts"]["revenue"]["value"], 416161000000.);
+        assert!(normalize_apple_report("<html>missing report</html>").is_err());
     }
 }

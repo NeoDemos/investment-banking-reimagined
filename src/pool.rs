@@ -1,4 +1,4 @@
-//! Append-only public data receipts. External models and licensed feeds stay deferred.
+//! Append-only public data receipts. Licensed feeds remain outside this demo.
 use super::*;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
@@ -57,7 +57,7 @@ pub fn init(db: &Connection, data: &Value) -> Result<(), ApiError> {
     )?;
     Ok(())
 }
-fn latest(s: &App, key: &str) -> Result<Value, ApiError> {
+pub fn latest(s: &App, key: &str) -> Result<Value, ApiError> {
     let (id, payload): (String, String) =
         s.db.lock()
             .unwrap()
@@ -73,7 +73,7 @@ fn latest(s: &App, key: &str) -> Result<Value, ApiError> {
 }
 pub fn company(s: &App, symbol: &str) -> Result<Value, ApiError> {
     if !connectors::CATALOG.iter().any(|c| c.0 == symbol) {
-        return Err(bad("Public pool currently covers PEP, CPB and GIS"));
+        return Err(bad("Public pool currently covers PEP, CPB, GIS and AAPL"));
     }
     let mut c = latest(s, &format!("sec:{symbol}"))?;
     let original = c.clone();
@@ -101,7 +101,7 @@ pub async fn list(State(s): State<App>) -> ApiResult {
         .collect::<Result<Vec<_>, _>>()
         .map_err(internal)?;
     Ok(Json(
-        json!({"receipts":receipts,"jobs":jobs.into_iter().map(parse).collect::<Vec<_>>(),"contracts":{"structured":"Public SEC XBRL annual facts and Treasury par rates normalize into versioned receipts; workrooms pin exact observations.","annualReports":"Public annual-report URLs can be registered for a later extraction adapter. PDF/table extraction is not implemented.","models":"External model, voice and licensed-provider connections remain deferred."}}),
+        json!({"receipts":receipts,"jobs":jobs.into_iter().map(parse).collect::<Vec<_>>(),"contracts":{"structured":"Public SEC XBRL, mapped Apple annual-report facts, Treasury and Bundesbank yields and NYU sector references normalize into versioned receipts; workrooms pin exact observations.","annualReports":"The mapped Apple annual-report HTML adapter is live. Other supported public report URLs can be registered for later extraction; generic PDF/table extraction is not implemented.","models":"Local Codex High and Claude Opus Medium login connectors are available when enabled and entitled. API keys, voice and licensed feeds remain deferred."}}),
     ))
 }
 #[derive(Deserialize)]
@@ -110,13 +110,13 @@ pub struct Ingest {
     source: String,
 }
 pub async fn refresh(State(s): State<App>, Json(b): Json<Ingest>) -> ApiResult {
-    if b.source != "treasury:USD"
+    if !["treasury:USD", "bund:EUR", "issuer:apple", "sector:US"].contains(&b.source.as_str())
         && !connectors::CATALOG
             .iter()
             .any(|c| b.source == format!("sec:{}", c.0))
     {
         return Err(bad(
-            "Only the fixed public SEC/Treasury connectors can be refreshed",
+            "Only the fixed public SEC, issuer-report, Treasury, Bundesbank and NYU connectors can be refreshed",
         ));
     }
     let id = new_id();
@@ -130,6 +130,12 @@ pub async fn refresh(State(s): State<App>, Json(b): Json<Ingest>) -> ApiResult {
         .map_err(internal)?;
     let result = if b.source == "treasury:USD" {
         connectors::curve(&s, false).await
+    } else if b.source == "bund:EUR" {
+        connectors::bund(&s).await
+    } else if b.source == "issuer:apple" {
+        connectors::apple_report(&s).await
+    } else if b.source == "sector:US" {
+        sector_live(&s).await
     } else {
         connectors::company(&s, b.source.strip_prefix("sec:").unwrap(), false).await
     };
@@ -138,9 +144,15 @@ pub async fn refresh(State(s): State<App>, Json(b): Json<Ingest>) -> ApiResult {
             let db = s.db.lock().unwrap();
             let receipt = retain(
                 &db,
-                &b.source,
-                if b.source == "treasury:USD" {
+                if b.source == "issuer:apple" {
+                    "sec:AAPL"
+                } else {
+                    &b.source
+                },
+                if b.source == "treasury:USD" || b.source == "bund:EUR" {
                     "rate_curve"
+                } else if b.source == "sector:US" {
+                    "sector_reference"
                 } else {
                     "company_facts"
                 },
@@ -211,4 +223,54 @@ pub async fn register(State(s): State<App>, Json(b): Json<Report>) -> ApiResult 
         )
         .map_err(internal)?;
     Ok(Json(job))
+}
+
+async fn sector_live(s: &App) -> Result<Value, ApiError> {
+    let mut value = sector_reference();
+    let url = value["sourceUrl"].as_str().unwrap().to_string();
+    let r = s
+        .client
+        .get(&url)
+        .timeout(Duration::from_secs(25))
+        .send()
+        .await
+        .map_err(|_| bad("Sector source unavailable"))?;
+    if !r.status().is_success() {
+        return Err(bad(format!("Sector source HTTP {}", r.status())));
+    }
+    let raw = r.text().await.map_err(internal)?;
+    if raw.len() > 3000000 {
+        return Err(bad("Sector page exceeds size bound"));
+    }
+    let rows = regex::Regex::new(r"(?is)<tr\b[^>]*>(.*?)</tr>").unwrap();
+    let cells = regex::Regex::new(r"(?is)<t[dh]\b[^>]*>(.*?)</t[dh]>").unwrap();
+    let tags = regex::Regex::new(r"<[^>]+>").unwrap();
+    let mut out = vec![];
+    for row in rows.captures_iter(&raw) {
+        let cols = cells
+            .captures_iter(&row[1])
+            .map(|c| {
+                tags.replace_all(&c[1], " ")
+                    .split_whitespace()
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            })
+            .collect::<Vec<_>>();
+        if cols.len() >= 8 && ["Food Processing", "Beverage (Soft)"].contains(&cols[0].as_str()) {
+            let parse = |i: usize| {
+                cols[i]
+                    .parse::<f64>()
+                    .map_err(|_| bad("Invalid sector multiple"))
+            };
+            out.push(json!({"industry":cols[0],"firms":parse(1)?,"positiveEbitdaEvEbitda":parse(3)?,"allFirmsEvEbitda":parse(7)?}));
+        }
+    }
+    if out.len() != 2 {
+        return Err(bad(
+            "Sector source schema changed; previous lookup retained",
+        ));
+    }
+    value["rows"] = json!(out);
+    value["retrievedAt"] = json!(now());
+    Ok(value)
 }

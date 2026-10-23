@@ -8,7 +8,7 @@ The current product scope remains a local external public-data MVP. The owner su
 
 A banker should be able to record the client's actual decision, constraints, criteria and meeting; approve a transparent work plan; prepare sourced alternatives and a status quo; challenge terms; inspect the exact calculation and evidence; carry review issues through correction; and reopen the exact reviewed artifact. A deck is downstream of that decision, rather than the product's authoritative starting point.
 
-For the three bounded public examples, verify financial outputs independently and explicitly reject unsupported coverage. Bond calculations are regular semiannual flat-yield illustrations using Treasury par references plus assumed spreads. Buyback and acquisition results retain the existing narrow methods and exclusions. Passing these tasks does not validate DCF, LBO, real underwriting, covenant/rating models or institutional datasets.
+For the three bounded public examples, verify financial outputs independently and explicitly reject unsupported coverage. Bond calculations are regular semiannual flat-yield illustrations using Treasury par references plus assumed spreads. Buyback and acquisition results retain the existing narrow methods and exclusions. M15 adds separate independent arithmetic and actual drafting rehearsals for a bounded IPO share/proceeds bridge and a single-tranche LBO debt-sweep schedule. These tests do not validate forecast DCF, integrated/multi-tranche LBO underwriting, covenant/rating models or institutional datasets.
 
 ### Technical acceptance
 

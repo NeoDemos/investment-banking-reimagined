@@ -11,7 +11,7 @@ fn unit(k: &str) -> &'static str {
     }
 }
 fn scenario(a: &Value, k: &str) -> Value {
-    json!({"id":format!("assumption:{}:{k}",a["id"].as_str().unwrap()),"label":k,"classification":"illustrative assumption","value":a["params"][k],"unit":unit(k),"owner":"Banker-confirmed scenario","rationale":a["assumptionRationale"],"range":"Not independently assessed; use sensitivities","sourceUrl":null})
+    json!({"id":format!("assumption:{}:{k}",a["id"].as_str().unwrap()),"label":k,"classification":"illustrative assumption","value":a["params"][k],"unit":if ["ipo","lbo"].contains(&a["kind"].as_str().unwrap_or("")){match k{"evMultiple"|"entryMultiple"|"exitMultiple"|"leverage"=>"x","years"=>"years","primaryRaise"=>"USDm",_=>"%"}}else{unit(k)},"owner":"Banker-confirmed scenario","rationale":a["assumptionRationale"],"range":"Not independently assessed; use sensitivities","sourceUrl":null})
 }
 fn fact(a: &Value, symbol: &str, k: &str) -> Value {
     let c = a["sourceSnapshot"]["companies"]
@@ -26,8 +26,8 @@ fn fact(a: &Value, symbol: &str, k: &str) -> Value {
     } else {
         vec![f]
     };
-    let concepts:Vec<Value>=reported.iter().map(|part|json!({"tag":part["tag"],"url":format!("https://data.sec.gov/api/xbrl/companyconcept/CIK{}/us-gaap/{}.json",c["cik"].as_str().unwrap(),part["tag"].as_str().unwrap()),"context":"Match the retained accession, units and period; this link is a fact series, not a verified document anchor"})).collect();
-    json!({"id":f["evidenceId"],"label":format!("{symbol} {k}"),"cik":c["cik"],"classification":if f["inputs"].is_array(){"derived from reported components"}else{"reported observation"},"definition":f["basis"],"value":f["value"].as_f64().unwrap()/1e6,"unit":if k=="shares"{"m shares"}else{"USDm"},"reportedValue":f["value"],"reportedUnit":f["unit"],"periodStart":f["periodStart"],"periodEnd":f["periodEnd"],"filed":f["filed"],"sourceUrl":f["sourceUrl"],"sourceDestination":"filing directory","tag":f["tag"],"accession":f["accession"],"components":f["inputs"],"conceptLinks":concepts})
+    let concepts:Vec<Value>=reported.iter().filter(|part|part["taxonomy"]!="issuer-report-label").map(|part|json!({"tag":part["tag"],"url":format!("https://data.sec.gov/api/xbrl/companyconcept/CIK{}/us-gaap/{}.json",c["cik"].as_str().unwrap(),part["tag"].as_str().unwrap()),"context":"Match the retained accession, units and period; this link is a fact series, not a verified document anchor"})).collect();
+    json!({"id":f["evidenceId"],"label":format!("{symbol} {k}"),"cik":c["cik"],"classification":if f["inputs"].is_array(){"derived from reported components"}else{"reported observation"},"definition":f["basis"],"value":f["value"].as_f64().unwrap()/1e6,"unit":if k=="shares"{"m shares"}else{"USDm"},"reportedValue":f["value"],"reportedUnit":f["unit"],"periodStart":f["periodStart"],"periodEnd":f["periodEnd"],"filed":f["filed"],"sourceUrl":f["sourceUrl"],"sourceDestination":if f["taxonomy"]=="issuer-report-label"{"issuer annual report"}else{"filing directory"},"tag":f["tag"],"accession":f["accession"],"components":f["inputs"],"conceptLinks":concepts})
 }
 fn curve(a: &Value, years: f64) -> Value {
     let c = &a["sourceSnapshot"]["curve"];
@@ -92,6 +92,25 @@ pub fn attach(room: &mut Value, id: &str) -> Result<(), ApiError> {
         &[],
         None,
     );
+    if ["ipo", "lbo"].contains(&a["kind"].as_str().unwrap()) {
+        let mut inputs: Vec<Value> = p
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(|k| scenario(&a, k))
+            .collect();
+        for key in ["debt", "cash", "operatingIncome", "da", "shares"] {
+            inputs.push(fact(&a, a["issuer"].as_str().unwrap(), key));
+        }
+        for metric in m["metrics"].as_array().unwrap() {
+            let key = metric["key"].as_str().unwrap();
+            let label = metric["label"].as_str().unwrap();
+            let formula=m["workings"].as_array().unwrap().iter().find(|w|w["label"]==label).map(|w|w["formula"].clone()).unwrap_or(json!("Derived from the stored annual schedule and explicit scenario assumptions; inspect the complete model"));
+            out[key] = json!({"label":label,"value":metric["value"],"unit":metric["unit"],"formula":formula,"engine":finance::ENGINE,"analysisId":id,"inputs":inputs,"limitation":m["warnings"]});
+        }
+        room["analyses"][id]["lineage"] = out;
+        return Ok(());
+    }
     match a["kind"].as_str().unwrap() {
         "bond" => {
             let tenor = p["tenor"].as_f64().unwrap();

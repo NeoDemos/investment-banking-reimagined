@@ -35,6 +35,7 @@ import "./client.css";
 type J = Record<string, any>;
 const names: Record<string, string> = {
   PEP: "PepsiCo",
+  AAPL: "Apple",
   CPB: "Campbell’s",
   GIS: "General Mills",
 };
@@ -84,6 +85,30 @@ function comparison(room: J) {
   }));
   const a = options[0]?.a;
   if (!a) return { columns: [], options: [] };
+  if (["ipo", "lbo"].includes(a.kind)) {
+    const keys =
+      a.kind === "ipo"
+        ? [
+            ["offerPrice", "Offer price", "USD/share"],
+            ["netProceeds", "Net primary proceeds", "USDm"],
+            ["dilution", "New investor ownership", "%"],
+          ]
+        : [
+            ["sponsorEquity", "Sponsor equity", "USDm"],
+            ["irr", "Sponsor IRR", "%"],
+            ["moic", "Sponsor MOIC", "x"],
+          ];
+    return {
+      columns: keys.map(([key, label, unit]) => ({
+        key,
+        label,
+        unit,
+        get: (x: J) => metric(x, key),
+        base: null,
+      })),
+      options,
+    };
+  }
   const columns =
     a.kind === "bond"
       ? [
@@ -169,17 +194,26 @@ function ParamsEditor({
   value,
   onChange,
   disabled = false,
+  kind,
 }: {
   value: Record<string, number>;
   onChange: (v: Record<string, number>) => void;
   disabled?: boolean;
+  kind?: string;
 }) {
   return (
     <div className="assumption-inputs">
       {Object.entries(value).map(([k, v]) => (
         <label key={k}>
           <span>
-            {INPUTS[k]?.[0] || k} <small>{INPUTS[k]?.[1]}</small>
+            {k === "fees" && ["ipo", "lbo"].includes(kind || "")
+              ? "Transaction fees"
+              : INPUTS[k]?.[0] || k}{" "}
+            <small>
+              {k === "fees" && ["ipo", "lbo"].includes(kind || "")
+                ? "%"
+                : INPUTS[k]?.[1]}
+            </small>
           </span>
           <input
             aria-label={INPUTS[k]?.[0] || k}
@@ -446,11 +480,19 @@ function Plan({
           <div className="scenario-grid">
             <section>
               <h3>Primary structure</h3>
-              <ParamsEditor value={base} onChange={setBase} />
+              <ParamsEditor
+                kind={room.mandate.kind}
+                value={base}
+                onChange={setBase}
+              />
             </section>
             <section>
               <h3>Alternative / downside</h3>
-              <ParamsEditor value={alt} onChange={setAlt} />
+              <ParamsEditor
+                kind={room.mandate.kind}
+                value={alt}
+                onChange={setAlt}
+              />
             </section>
           </div>
           <label className="wide-label">
@@ -488,10 +530,12 @@ function Scenarios({
   room,
   busy,
   onRevise,
+  onCoach,
 }: {
   room: J;
   busy: boolean;
   onRevise: (v: J) => Promise<any>;
+  onCoach: (prompt: string) => void;
 }) {
   const [which, setWhich] = useRevisionDraft(
     `scenario-selection:${room.id}`,
@@ -531,18 +575,68 @@ function Scenarios({
         <p>Approve the work plan to prepare sourced alternatives.</p>
       </div>
     );
+  const scheduleKeys =
+    a.kind === "lbo"
+      ? [
+          "year",
+          "ebitda",
+          "openingDebt",
+          "interest",
+          "cashBeforeInterest",
+          "cashAfterInterest",
+          "debtRepayment",
+          "closingDebt",
+          "excessCash",
+          "unfundedCashShortfall",
+        ]
+      : ["stage", "equity", "shares"];
+  const scheduleLabels: Record<string, string> = {
+    year: "Year",
+    ebitda: "EBITDA",
+    openingDebt: "Opening debt",
+    interest: "Cash interest",
+    cashBeforeInterest: "Cash before interest",
+    cashAfterInterest: "Cash after interest",
+    debtRepayment: "Debt repaid",
+    closingDebt: "Closing debt",
+    excessCash: "Retained excess cash",
+    unfundedCashShortfall: "Unfunded shortfall",
+    stage: "Stage",
+    equity: "Equity value",
+    shares: "Shares",
+  };
   return (
     <div className="client-scroll">
       <div className="section-heading">
         <div>
           <span className="client-eyebrow">FINANCIAL WORK</span>
-          <h2>Challenge one alternative at a time.</h2>
+          <h2>Inspect, tweak and coach the financial model.</h2>
           <p>
             Recalculate the chosen structure. Preserve prior results and the
             other alternative.
           </p>
         </div>
       </div>
+      <button
+        type="button"
+        className="quiet-action"
+        disabled={busy}
+        onClick={() =>
+          onCoach(
+            `Coach the ${which} action in this ${a.kind} model. Explain its assumptions, most sensitive driver and limitations using the stored calculations. Propose one useful sensitivity without changing reported facts or claiming approval.`,
+          )
+        }
+      >
+        Discuss this model with the agent <MessageSquare size={14} />
+      </button>
+      {room.modelCoaching?.length > 0 && (
+        <section className="model-coaching">
+          <h3>Agent coaching · reviewable interpretation</h3>
+          {room.modelCoaching.map((note: string, i: number) => (
+            <p key={i}>{note}</p>
+          ))}
+        </section>
+      )}
       <div className="workflow-choices">
         {room.options.map((o: J) => (
           <button
@@ -563,7 +657,12 @@ function Scenarios({
           void submit();
         }}
       >
-        <ParamsEditor value={params} onChange={setParams} disabled={busy} />
+        <ParamsEditor
+          kind={a.kind}
+          value={params}
+          onChange={setParams}
+          disabled={busy}
+        />
         <label className="wide-label">
           Reason for the change
           <textarea
@@ -604,6 +703,54 @@ function Scenarios({
           </div>
         )}
       </form>
+      <h3>Stored model schedule</h3>
+      {a.model.schedule?.length > 0 && (
+        <p className="review-provenance">
+          {a.kind === "lbo"
+            ? "Amounts in USD millions; cash conversion is after tax, capex and working capital, before interest."
+            : "Equity value in USD millions; shares in millions."}
+        </p>
+      )}
+      {a.model.schedule?.length > 0 ? (
+        <div className="pool-grid">
+          <table>
+            <thead>
+              <tr>
+                {scheduleKeys.map((key) => (
+                  <th key={key}>{scheduleLabels[key]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {a.model.schedule.map((row: J, i: number) => (
+                <tr key={i}>
+                  {scheduleKeys.map((key) => (
+                    <td key={key}>
+                      {typeof row[key] === "number"
+                        ? row[key].toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })
+                        : String(row[key])}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="review-provenance">
+          This method has no annual operating/debt schedule. Inspect its formula
+          workings below.
+        </p>
+      )}
+      <button
+        type="button"
+        className="quiet-action"
+        onClick={() => download(`financial-model-${a.id}.json`, a)}
+      >
+        Export exact model and source snapshot
+      </button>
       <h3>Inspect the calculation</h3>
       <div className="working-table">
         <div className="table-head">
@@ -1153,7 +1300,7 @@ export default function ClientStudio() {
     storyline: "Storyline",
     decision: "Decision",
     plan: "Work plan",
-    scenarios: "Scenarios",
+    scenarios: "Model inspector",
     materials: "Materials",
     evidence: "Evidence",
     review: "Review",
@@ -1308,16 +1455,24 @@ export default function ClientStudio() {
             </button>
           </div>
         )}
+        {(director.run || director.error) && (
+          <DirectorProgress
+            run={director.run}
+            error={director.error}
+            onCancel={() => void director.cancel()}
+            onDismiss={director.dismiss}
+            onRetry={(prompt) =>
+              void director.start({ prompt, refreshPublic: true })
+            }
+          />
+        )}
         <div
           className={`client-content ${discussion ? "with-discussion" : ""}`}
         >
           <div className="client-pane">
             {view === "home" ? (
               <DirectorDesk
-                onOpen={(id) => {
-                  void refresh();
-                  void open(id, "storyline");
-                }}
+                agent={director}
                 advanced={
                   <BriefForm
                     busy={busy}
@@ -1403,6 +1558,10 @@ export default function ClientStudio() {
                 key={`${room.id}-${room.revision}`}
                 room={room}
                 busy={busy}
+                onCoach={(message) => {
+                  setPrompt(message);
+                  setDiscussion(true);
+                }}
                 onRevise={(v) =>
                   action(`/api/client-work/${room.id}/scenario`, v)
                 }
@@ -1571,13 +1730,16 @@ export default function ClientStudio() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  void director.start({
-                    roomId: room.id,
-                    expectedRevision: room.revision,
-                    prompt,
-                    refreshPublic: false,
-                  });
-                  clearPrompt();
+                  void director
+                    .start({
+                      roomId: room.id,
+                      expectedRevision: room.revision,
+                      prompt,
+                      refreshPublic: false,
+                    })
+                    .then((started) => {
+                      if (started) clearPrompt();
+                    });
                 }}
               >
                 <textarea
@@ -1603,7 +1765,6 @@ export default function ClientStudio() {
                   <ArrowRight size={14} />
                 </button>
               </form>
-              <DirectorProgress run={director.run} error={director.error} />
             </aside>
           )}
         </div>

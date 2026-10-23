@@ -39,10 +39,10 @@ pub fn catalog() -> Vec<Tool> {
         let name = t["name"].as_str().unwrap();
         let schema = match name {
             "fetch_company_facts" => {
-                json!({"type":"object","properties":{"symbol":{"type":"string","enum":["PEP","CPB","GIS"]}},"required":["symbol"],"additionalProperties":false})
+                json!({"type":"object","properties":{"symbol":{"type":"string","enum":["PEP","CPB","GIS","AAPL"]}},"required":["symbol"],"additionalProperties":false})
             }
             "calculate_finance" => {
-                json!({"type":"object","properties":{"analysisId":{"type":"string","minLength":1,"maxLength":64},"kind":{"type":"string","enum":["bond","buyback","acquisition"]},"issuer":{"type":"string","enum":["PEP","CPB","GIS"]},"target":{"type":["string","null"]},"params":{"type":"object","additionalProperties":{"type":"number"}},"rationale":{"type":"string","minLength":20,"maxLength":2500}},"required":["analysisId","kind","issuer","target","params","rationale"],"additionalProperties":false})
+                json!({"type":"object","properties":{"analysisId":{"type":"string","minLength":1,"maxLength":64},"kind":{"type":"string","enum":["bond","buyback","acquisition","ipo","lbo"]},"issuer":{"type":"string","enum":["PEP","CPB","GIS","AAPL"]},"target":{"type":["string","null"]},"params":{"type":"object","additionalProperties":{"type":"number"}},"rationale":{"type":"string","minLength":20,"maxLength":2500}},"required":["analysisId","kind","issuer","target","params","rationale"],"additionalProperties":false})
             }
             "compose_materials" => {
                 json!({"type":"object","properties":{"title":{"type":"string"},"slides":{"type":"array","minItems":2,"maxItems":12,"items":{"type":"object","properties":{"id":{"type":"string"},"title":{"type":"string"},"layout":{"type":"string","enum":["cover","split","full","grid"]},"blocks":{"type":"array","minItems":1,"maxItems":4,"items":{"type":"object","properties":{"type":{"type":"string","enum":["text","metrics","chart","workings","sensitivity","facts","assumptions","sources"]},"text":{"type":["string","null"]},"analysisId":{"type":["string","null"]},"symbol":{"type":["string","null"]}},"required":["type"],"additionalProperties":false}}},"required":["id","title","layout","blocks"],"additionalProperties":false}}},"required":["title","slides"],"additionalProperties":false})
@@ -76,7 +76,7 @@ pub fn catalog() -> Vec<Tool> {
         (
             "build_context",
             "Select retrieved evidence and derived outputs for a bounded model context packet; no complete database dump.",
-            json!({"type":"object","properties":{"task":{"type":"string","maxLength":8000},"symbols":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"string","enum":["PEP","CPB","GIS"]}},"maxChars":{"type":"integer","minimum":4000,"maximum":48000}},"required":["task","symbols","maxChars"],"additionalProperties":false}),
+            json!({"type":"object","properties":{"task":{"type":"string","maxLength":8000},"symbols":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"string","enum":["PEP","CPB","GIS","AAPL"]}},"maxChars":{"type":"integer","minimum":4000,"maximum":48000}},"required":["task","symbols","maxChars"],"additionalProperties":false}),
         ),
     ] {
         v.push(

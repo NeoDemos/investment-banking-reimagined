@@ -159,6 +159,78 @@ function Table({ rows }: { rows: J[] }) {
 export function BlockView({ block: b, room }: { block: Block; room: Room }) {
   const a = b.analysisId ? room.analyses[b.analysisId] : null;
   const m = a?.model;
+  if (b.type === "market_context") {
+    const c = (room as any).sources["bund:EUR"];
+    return (
+      <div className="bound-peer-position">
+        <h3>German Federal reference yields · EUR</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Maturity</th>
+              <th>Yield</th>
+              <th>Observation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {c.points.map((p: any) => (
+              <tr key={p.years}>
+                <th>{p.years} years</th>
+                <td>{format(p.yield, "%")}</td>
+                <td>{p.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p>{c.basis}</p>
+      </div>
+    );
+  }
+  if (b.type === "schedule") {
+    const a = room.analyses[b.analysisId!];
+    const rows = a.model.schedule || [];
+    const keys =
+      a.kind === "lbo"
+        ? ["year", "ebitda", "interest", "closingDebt", "unfundedCashShortfall"]
+        : ["stage", "equity", "shares"];
+    return (
+      <div className="bound-peer-position">
+        <h3>
+          {a.kind === "lbo"
+            ? "Annual debt and cash-flow model"
+            : "Primary issuance model"}
+        </h3>
+        <table>
+          <thead>
+            <tr>
+              {keys.map((k) => (
+                <th key={k}>{k}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r: any, i: number) => (
+              <tr key={i}>
+                {keys.map((k) => (
+                  <td key={k}>
+                    {typeof r[k] === "number"
+                      ? r[k].toLocaleString(undefined, {
+                          maximumFractionDigits: 1,
+                        })
+                      : r[k]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p>
+          USDm, except year / stage and shares (millions). All projections and
+          transaction terms are explicit assumptions.
+        </p>
+      </div>
+    );
+  }
   if (b.type === "sector_benchmark") {
     const s = (room as any).sources["sector:US"];
     return (
@@ -347,6 +419,67 @@ export function BlockView({ block: b, room }: { block: Block; room: Room }) {
           comparison.
         </p>
       );
+    if (["ipo", "lbo"].includes(opts[0].a.kind)) {
+      const kind = opts[0].a.kind;
+      const keys =
+        kind === "ipo"
+          ? [
+              ["offerPrice", "Offer price", "USD/share"],
+              ["netProceeds", "Net primary proceeds", "USDm"],
+              ["dilution", "Investor ownership", "%"],
+            ]
+          : [
+              ["sponsorEquity", "Sponsor equity", "USDm"],
+              ["irr", "Sponsor IRR", "%"],
+              ["moic", "Sponsor MOIC", "x"],
+              ["exitEquity", "Exit equity", "USDm"],
+              ["exitDebt", "Exit debt", "USDm"],
+            ];
+      return (
+        <div className="bound-decision-comparison">
+          <table>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                {keys.map((k) => (
+                  <th key={k[0]}>{k[1]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {opts.map((o: any) => (
+                <tr key={o.id}>
+                  <th>{o.name}</th>
+                  {keys.map(([key, label, unit]) => (
+                    <td key={key}>
+                      {format(
+                        o.a.model.metrics.find((m: any) => m.key === key)
+                          ?.value,
+                        unit,
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+              <tr>
+                <th>Defer / no transaction</th>
+                {keys.map((k) => (
+                  <td key={k[0]}>Not applicable</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Illustrative{" "}
+            {kind === "ipo"
+              ? "primary-issuance valuation and dilution mechanics"
+              : "single-tranche debt-sweep sponsor returns"}
+            . Forecasts, multiples and terms are assumptions; inspect the model
+            and its exclusions.
+          </p>
+        </div>
+      );
+    }
     const base = opts[0].a,
       kind = base.kind;
     const value = (a: any, key: string) => a.lineage?.[key]?.value;
@@ -520,13 +653,21 @@ export function BlockView({ block: b, room }: { block: Block; room: Room }) {
   }
   if (b.type === "assumptions")
     return (
-      <div className="assumptions-block">
+      <div
+        className={`assumptions-block ${Object.keys(a.params).length > 6 ? "compact-assumptions" : ""}`}
+      >
         <h3>Scenario assumptions</h3>
         <Table
           rows={Object.entries(a.params).map(([k, v]) => ({
-            label: INPUTS[k]?.[0] || k,
+            label:
+              k === "fees" && ["ipo", "lbo"].includes(a.kind)
+                ? "Transaction fees"
+                : INPUTS[k]?.[0] || k,
             value: v,
-            unit: INPUTS[k]?.[1] || "",
+            unit:
+              k === "fees" && ["ipo", "lbo"].includes(a.kind)
+                ? "%"
+                : INPUTS[k]?.[1] || "",
           }))}
         />
         <p>{a.assumptionRationale}</p>
@@ -535,7 +676,7 @@ export function BlockView({ block: b, room }: { block: Block; room: Room }) {
   if (b.type === "workings") return <Table rows={m.workings.slice(0, 7)} />;
   if (b.type === "sensitivity") {
     const ss = m.sensitivity;
-    const max = Math.max(...ss.map((x: J) => Math.abs(x.value)), 1);
+    const max = Math.max(...ss.map((x: J) => Math.abs(x.value || 0)), 1);
     return (
       <div className="sensitivity-block">
         <h3>Scenario sensitivity</h3>

@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Database, RefreshCw } from "lucide-react";
 import { api } from "./api";
+import { ConnectionPicker } from "./DirectorDesk";
 type J = Record<string, any>;
 export function DataPool() {
+  const [connections, setConnections] = useState<J>({});
+  useEffect(() => {
+    void api<J>("/api/director/status").then(setConnections);
+  }, []);
   const [data, setData] = useState<J>({ receipts: [], jobs: [] }),
     [busy, setBusy] = useState(""),
     [error, setError] = useState("");
@@ -41,6 +46,20 @@ export function DataPool() {
         <Database size={28} />
       </div>
       {error && <p className="client-error">{error}</p>}
+      <ConnectionPicker
+        status={connections}
+        busy={!!busy}
+        onChange={(settings) => {
+          setConnections((old: J) => ({ ...old, settings }));
+          void api("/api/director/settings", settings).catch((e) =>
+            setError(String(e)),
+          );
+        }}
+      />
+      <p className="review-provenance">
+        Selections are saved for new assignments. Existing workrooms retain
+        their pinned sources.
+      </p>
       <div className="pool-sources">
         {latest.map((r: J) => (
           <section key={r.id}>
@@ -60,14 +79,20 @@ export function DataPool() {
                   : r.data.classification}
             </p>
             <code>{r.id.slice(0, 22)}…</code>
-            {r.source.startsWith("sec:") || r.source === "treasury:USD" ? (
+            {r.source.startsWith("sec:") ||
+            ["treasury:USD", "bund:EUR", "sector:US"].includes(r.source) ? (
               <button
                 className="quiet-action"
                 disabled={!!busy}
-                onClick={() => void ingest(r.source)}
+                onClick={() =>
+                  void ingest(
+                    r.source === "sec:AAPL" ? "issuer:apple" : r.source,
+                  )
+                }
               >
                 <RefreshCw size={13} />
-                {busy === r.source
+                {busy === r.source ||
+                (r.source === "sec:AAPL" && busy === "issuer:apple")
                   ? "Fetching & normalizing…"
                   : "Fetch public source"}
               </button>
@@ -80,8 +105,8 @@ export function DataPool() {
           <h2>The reported numbers, in one grid.</h2>
           <p>
             Source facts are inspectable and immutable. Edit scenario
-            assumptions in Scenarios; proposed source corrections require a
-            reviewed ingestion version.
+            assumptions in Model inspector; proposed source corrections require
+            a reviewed ingestion version.
           </p>
         </div>
       </div>
