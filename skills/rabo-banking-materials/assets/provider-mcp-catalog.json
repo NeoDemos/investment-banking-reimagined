@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-23",
+  "providers": [
+    {
+      "id": "gain",
+      "name": "Gain (formerly Gain.pro)",
+      "endpoint": null,
+      "domains": ["gain.ai", "gain.pro"],
+      "setup": "Obtain the MCP URL and authentication instructions from your Gain account manager. Public product page confirms MCP, but does not publish an endpoint.",
+      "documentation": "https://www.gain.ai/product",
+      "pricing": "Quote required; no verified public numeric MCP tariff found. Free platform trial advertised; MCP inclusion, duration and permitted use require confirmation.",
+      "trial": "Free trial advertised; MCP entitlement unverified"
+    },
+    {
+      "id": "dedale",
+      "name": "DEDALE Intelligence",
+      "endpoint": null,
+      "domains": ["dedale.com"],
+      "setup": "Request the account-specific MCP setup from DEDALE. Public announcement confirms a read-only integration with account-level access controls, but supplies no server URL.",
+      "documentation": "https://www.dedale.com/articles/dedale-intelligence-is-now-accessible-via-mcp",
+      "pricing": "Quote required; no verified public numeric MCP tariff or free MCP trial found.",
+      "trial": "Demo/introduction offered; free MCP trial unverified"
+    },
+    {
+      "id": "capiq",
+      "name": "S&P Global / Kensho LLM-ready API",
+      "endpoint": "https://kfinance.kensho.com/integrations/mcp",
+      "domains": ["kensho.com"],
+      "setup": "Use the S&P Global connector in Claude and sign in with provisioned Kensho Okta credentials. Custom clients may use an access token; provisioning and dataset entitlements are required.",
+      "documentation": "https://docs.kensho.com/llmreadyapi/mcp/custom/refresh-or-access-token",
+      "pricing": "Quote required; official custom integration documentation directs access-level pricing to an S&P representative. Existing Capital IQ desktop access does not establish API/MCP entitlement.",
+      "trial": "Trial enquiries explicitly offered at https://llmreadyapi.kensho.com/"
+    }
+  ]
+}

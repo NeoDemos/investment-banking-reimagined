@@ -23,7 +23,7 @@ def main():
    raise AssertionError('Server did not start')
   proc,token=boot()
   try:
-   a=req('/api/architecture');assert a['models']['state']=='deferred' and len(a['mcp']['tools'])==9;assert [p['state'] for p in a['providers']]==['ready','deferred','planned','planned','planned'];checks.append('Architecture is discovered from the real MCP server and planned providers are explicit')
+   a=req('/api/architecture');assert a['models']['state']=='deferred' and len(a['mcp']['tools'])==9;assert [p['state'] for p in a['providers']]==['ready','deferred','planned','planned','planned','planned','planned'];checks.append('Architecture is discovered from the real MCP server and planned providers are explicit')
    req('/api/agent/runs',{'roomId':None,'expectedRevision':None,'prompt':'prepare a draft','provider':'openai','allowCached':True},409);checks.append('Model invocation is deferred without requesting a key')
    b=req('/api/agent/briefs',{'roomId':None,'expectedRevision':None,'prompt':'Assess financing alternatives for the CFO'});assert b['draft'] is None and b['modelPort']['state']=='deferred';assert b['revision']==1;req('/api/agent/briefs',{'roomId':b['id'],'expectedRevision':0,'prompt':'stale'},409);checks.append('Free-form briefs persist honestly without fake generated materials; stale captures fail')
    rooms=[]

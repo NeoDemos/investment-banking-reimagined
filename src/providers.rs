@@ -136,6 +136,20 @@ impl Registry {
                 vec!["financials", "market data", "transactions"],
             ),
             (
+                "gain",
+                "Gain / formerly Gain.pro",
+                "provider-native MCP via authorised host; vendor URL required",
+                "https://www.gain.ai/product",
+                vec!["private companies", "ownership", "deals"],
+            ),
+            (
+                "dedale",
+                "DEDALE Intelligence",
+                "provider-native MCP via authorised host; vendor URL required",
+                "https://www.dedale.com/articles/dedale-intelligence-is-now-accessible-via-mcp",
+                vec!["technology research", "company profiles", "deal intelligence"],
+            ),
+            (
                 "daloopa",
                 "Daloopa",
                 "provider-native MCP",
@@ -176,7 +190,7 @@ mod tests {
     async fn planned_connections_cannot_execute() {
         let d = serde_json::from_str(include_str!("../data/public-snapshot.json")).unwrap();
         let r = Registry::new(d);
-        assert_eq!(r.descriptors().len(), 5);
+        assert_eq!(r.descriptors().len(), 7);
         assert!(r.company("factset", "PEP").await.is_err());
         assert!(r.company("missing", "PEP").await.is_err());
         assert_eq!(

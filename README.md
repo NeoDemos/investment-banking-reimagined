@@ -6,6 +6,10 @@ The primary flow first asks tailored questions about the client objective and ad
 
 React/TypeScript presents the work; Rust and SQLite own financial calculations, evidence, document revisions and review copies. The current agent uses the laptop's authenticated **Codex CLI**, with bounded structured planning and composition requests. The app never reads or copies Codex credentials. A successful local account-authenticated planning/composition rehearsal has run; account access and quota still govern subsequent requests. The default profile is Codex gpt-6.1-sol on High; Claude Code Opus on Medium is selectable through its local login. Separate API-key adapters remain disabled. Claude is signed in here but its actual readiness request hit the weekly limit.
 
+## Cowork skill and licensed data connections
+
+The same banking workflow can be trialled in Cowork without the custom frontend. [Setup, pricing research and limits](docs/COWORK_AND_PROVIDER_CONNECTIONS.md) covers the portable [Rabo banking materials skill](skills/rabo-banking-materials/SKILL.md), Gain/DEDALE/Kensho connection tooling and the distinction between configured URLs and authenticated provider data. Run `python3 scripts/package-cowork-skill.py` to create the upload ZIP. No licensed provider is authenticated by default.
+
 ## Run on this Mac
 
 Double-click **Start Demo.command**, or:
