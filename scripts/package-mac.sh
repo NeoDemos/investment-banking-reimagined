@@ -3,6 +3,12 @@ set -euo pipefail
 project_dir="$(cd -- "$(dirname -- "$0")/.." && pwd)"
 cd "$project_dir"
 app="dist/Banking Studio.app"
+mkdir -p "$HOME/Library/Application Support/Banking Studio Demo/brand"
+for weight in 300 400 700; do
+  if [[ -f ".local/brand/$weight.woff2" ]]; then
+    cp ".local/brand/$weight.woff2" "$HOME/Library/Application Support/Banking Studio Demo/brand/$weight.woff2"
+  fi
+done
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp target/release/banking-studio "$app/Contents/Resources/banking-studio"
 cat > "$app/Contents/Info.plist" <<'PLIST'
@@ -13,7 +19,9 @@ PLIST
 cat > "$app/Contents/MacOS/Banking Studio" <<'LAUNCHER'
 #!/bin/bash
 set -euo pipefail
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 export BANKING_STUDIO_DATA_DIR="$HOME/Library/Application Support/Banking Studio Demo"
+export BANKING_STUDIO_BRAND_DIR="$BANKING_STUDIO_DATA_DIR/brand"
 mkdir -p "$BANKING_STUDIO_DATA_DIR"
 if /usr/bin/curl --silent --fail http://localhost:4173/api/bootstrap >/dev/null; then
   /usr/bin/open http://localhost:4173

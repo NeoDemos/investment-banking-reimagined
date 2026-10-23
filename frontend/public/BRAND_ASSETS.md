@@ -1,0 +1,5 @@
+# Public brand study asset
+
+`rabobank-wordmark.svg` reproduces the inline vector path displayed in the header of https://www.rabobank.com/about-us/investor-relations/presentations, inspected 23 October 2026. The owner authorized this public-reference identity study for a personal external demonstration. Angular-only attributes and the home-page accessible label were removed; the path geometry is preserved. This is artwork, not an open-source font or an independently designed wordmark. Rabobank retains its marks; no affiliation, approval or general licence is implied.
+
+The website's Myriad light/regular/bold web-font assets are **not included here**. The owner's machine has local-only copies in an ignored folder, with the regular file identifying `MyriadW01-Regular`. The public investor PDF's customized `MyriadforRabobank` font is a different identity. Other installations must supply authorized local fonts or use installed Myriad / the OFL Source Sans 3 fallback. No PDF pixel parity is claimed.

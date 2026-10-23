@@ -1,44 +1,28 @@
 # Monday application demonstration — 26 October 2026
 
-Revised 23 October after the owner's feedback: show the **application workflow**, integrating financial work and materials. This is a React/TypeScript application, not a presentation viewer. Allow 8–10 minutes on the personal Mac, using public information only.
+Use the **agent workflow**, not the retained manual workspace. Open `Start Demo.command` and `http://localhost:4173` on the personal Mac. The `.app` is an unsigned browser launcher, not a native webview. Keep the terminal server open. Use public information only and a viewport of at least 1280×800.
 
-## Prepare
+## Rehearsal gate
 
-Double-click `Start Demo.command`, then open `http://localhost:4173`. The existing compiled application embeds the React assets; Node/npm are only needed to rebuild. The local unsigned `dist/Banking Studio.app` launcher opens the same application in the browser. It is not yet a native OS-webview editor. Keep the terminal open; Ctrl+C stops the source launcher. Closing a browser tab does not stop the server; for the `.app` launcher, quit `banking-studio` through Activity Monitor when finished.
+On 23 October the real local Claude Max request returned **weekly usage limit / HTTP 429**. The system reports this rather than generating a canned substitute. Before Monday, verify available Claude capacity or configure an OpenAI API key privately in Connections & design. A full successful live model draft and redraft remain unverified until this is done. The mock-model integration test is not the boss-demo rehearsal.
 
-Use at least 1280×800 for a comfortable workroom. Hash URLs identify engagements and tabs so reload/back navigation can return to the working context. Inspect sources and calculations before presenting. Myriad/Light are loaded from installed Mac fonts when available; Source Sans 3 is the bundled fallback. Exact customized Myriad for Rabobank and official brand/template approval remain unverified.
+## Demonstration
 
-## Demonstration flow
-
-| Time | User action | Application behavior |
+| Time | Banker interaction | Expected application behavior |
 |---|---|---|
-| 0–1 min | Start on Engagements. Choose Financing alternatives or type a brief and Create engagement. | An engagement brief, three independent financial analyses and a six-section editable material draft are saved in SQLite. Demo client coverage is explicitly PepsiCo. |
-| 1–2 min | Open Source library; click a reported number. | Inspect the original value/unit, period, filing date, XBRL definition and source filing. No invented live quote is needed. |
-| 2–4 min | Open Financial analysis. Change the bond credit spread from 125 to 175bps and recalculate. | Rust validates and recalculates the model, saves a new analysis version, and updates financial outputs. Sensitivity and sortable calculation workings are inspectable. |
-| 4–6 min | Use in client materials. Edit a narrative paragraph or section heading; save the draft. | The linked financial block reflects the new model version. Tiptap supports actual text/formatting edits. Changing numbers later preserves the written commentary; a banner requests narrative review. Generated financial summaries are live-bound, not manually copied prose. |
-| 6–8 min | Open Review room, choose the analysis, select a material section and save a numeric edit request. Apply review & revise. | A real revision job produces another calculation version. Linked figures update and the completion message appears. Unsupported requests stay unresolved. |
-| 8–10 min | Open Version history and Save current review copy. Change a model input again, then reopen that review copy. Export. | The saved narrative and old financial versions remain together. The live draft can keep evolving. HTML export includes the briefing plus source/assumption audit; XLSX is financial inspection. |
+| 0–1 min | Choose Financing discussion to populate an example brief; read it and click Prepare discussion. | The brief explicitly gives illustrative transaction terms. The model decides which tools to call; no template draft is created at engagement creation. |
+| 1–3 min | Watch execution; expand a call/result if useful. | SEC company facts and a USD Treasury curve are retrieved automatically. Failed refreshes can use a clearly dated cache when allowed. Disable cache in Settings to require fresh retrieval. |
+| 3–5 min | Open the composed materials, then Sources and Analysis. | Page count, sequence and visual blocks come from the model's design decisions. Reported facts retain dates/units/tags/filings. Rust supplies every displayed financial figure from the pinned source snapshot. |
+| 5–7 min | Ask: “Increase the assumed spread to 175 bps, show the downside first and make the discussion more concise. Preserve the source context.” | The agent recalculates into a new analysis record and composes another draft. The previous draft and source/calculation snapshot remain in history. The model may clarify an ambiguous instruction. |
+| 7–9 min | Choose Review together. Select pages, type a note on each and choose Add page review note; Apply review notes. | All page-specific feedback returns to the same agent pipeline. Completion appears in the app. Direct Edit page changes headline/narrative and saves a revision with concurrency checks. |
+| 9–10 min | Download inspection JSON and calculation workings CSV. | The database/engine is the working system; exports allow inspection. Current agent-aware editable PowerPoint/XLSX/standalone deck export is not claimed. |
 
-The initial seeded engagement is Capital allocation review. A separate browser-tested engagement may also be present locally. Creating a new engagement is the cleanest demonstration. All three analysis methods are included; the workflow choice determines the initial emphasis rather than claiming a general workflow builder.
+A natural brief can require clarification. Unobserved share prices and issuer spreads are assumptions, not facts. The example briefs make that explicit so the discussion can proceed without typing reported financial data. Public annual accounts are not current market data, LTM figures or forecasts. The source tab states actual vintages, refresh failures and normalized source hashes. There are three covered entities: PEP, CPB, GIS; unsupported coverage must be explained.
 
-## Typed review examples
+## Audio and branding
 
-- Bond: `Increase the spread to 175 bps and show the downside first.`
-- Buyback: `Change the execution price to $140 and show the downside first.`
-- Acquisition: `Change the premium to 30% and the synergies to 100 million. Show the downside first.`
+Recorded voice can populate the brief/review composer through an optional OpenAI transcription API key entered privately in the app. This audio path is not yet live tested. It is not a virtual human team or a full duplex meeting. Keep typed page review as the rehearsed fallback; no external email/message is sent.
 
-Without an API key, these use bounded numeric-command interpretation. This is not a general AI editor. Recognized numeric edits can apply while an unsupported part of a mixed note remains pending; inspect the change and unresolved state together. Human narrative is not automatically approved or rewritten. “Narrative checked” records a local user action, not bank sign-off.
+The SVG wordmark is the actual public investor-site vector path. Light/regular/bold Myriad website fonts are installed locally on this Mac, excluded from the repo/bundle. The public PDF's customized MyriadforRabobank font is a distinct identity, and PDF pixel parity or official approval is not claimed. The canvas uses 4:3 pages. Check every page for density and narrative quality before showing it.
 
-Build client draft prepares a local template using current scenarios and saves a new material revision. It explicitly replaces the current narrative; use it before manual editing, or save a review copy first. Earlier revisions remain stored; the UI exposes complete review copies, not a general historical-revision restore tool.
-
-## Optional voice rehearsal
-
-Enter a user-owned API key privately in local Settings. Before the meeting, test real text revision, transcription and WebRTC microphone/audio access. Those calls have not been live-tested during development because no API key was supplied. Keep typed review as the reliable fallback.
-
-The review room discusses the selected analysis and material sections. The optional AI voice gets public engagement context and can save proposed section notes. Ending the meeting triggers revision if notes exist. Rust validates numeric changes and recalculates. Read section uses device narration and is explicitly separate from external AI voice. No Teams invitation, external email or message is sent. Desktop completion alerts require browser permission.
-
-## Scope to state accurately
-
-The public snapshot is as of 22 October; the Treasury observation is 21 October. Stock prices, issuer spreads, deal shares and transaction terms are assumptions unless explicitly sourced. PepsiCo is FY2025; Campbell’s and General Mills are FY2026, without LTM/calendarization. Acquisition analysis excludes PPA, one-off costs, timing, new equity issuance and most EV adjustments. Qualified banker review is still required.
-
-The UI is an independently implemented public-reference design. This is not an official Rabobank product, approved financial advice or a verified bank/ZDR processing route. Native Windows/macOS webview packaging, enterprise identity, multi-user controls, broader valuation coverage, institutional feeds and editable PowerPoint remain later work. See [open-source/reference decisions](REACT_WORKSPACE_AND_OPEN_SOURCE.md) and [bank acceptance gates](BANK_ACCEPTANCE.md).
+This is an independent public-data prototype. No bank affiliation, confidential processing, ZDR assurance, financial advice approval or bank acceptance is implied. Qualified finance review, native managed deployment, bank identity/models, broader valuation coverage and licensed market data remain later work. See [agent workflow](AGENT_WORKFLOW.md) and [financial conventions](MVP_ARCHITECTURE.md).

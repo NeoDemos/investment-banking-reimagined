@@ -1,3 +1,5 @@
+> Superseded primary interaction, 23 October: the manual six-section workspace below is retained as implementation history. The current application uses the [agent workflow](AGENT_WORKFLOW.md), automatic connectors and dynamic page composition. Its entry bundle does not load Tiptap/TanStack; those packages support the retained workspace. Branding now uses the actual public SVG wordmark and local-only website Myriad assets.
+
 # React workspace correction and open-source foundations
 
 23 October 2026. The owner's correction is that the deliverable is a working **application for preparing client materials**, integrating financial work and communication. The first implementation overemphasized a slide viewer. That interface is replaced by a React/TypeScript engagement workspace, retaining the Rust financial core.

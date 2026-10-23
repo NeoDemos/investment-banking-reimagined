@@ -4,7 +4,7 @@ import "@fontsource/source-sans-3/latin-300.css";
 import "@fontsource/source-sans-3/latin-400.css";
 import "@fontsource/source-sans-3/latin-600.css";
 import "./styles.css";
-import App from "./App";
+import App from "./AgentStudio";
 class WorkspaceBoundary extends Component<
   { children: ReactNode },
   { failed: boolean }
@@ -19,7 +19,7 @@ class WorkspaceBoundary extends Component<
   render() {
     return this.state.failed ? (
       <main className="startup">
-        <span className="brand-word">Rabobank</span>
+        <img width="150" src="/rabobank-wordmark.svg" alt="Rabobank"/>
         <h2>This view could not open.</h2>
         <p>
           Saved engagements and review copies remain in the local workspace.

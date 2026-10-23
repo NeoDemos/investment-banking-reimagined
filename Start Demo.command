@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 project_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
 cd "$project_dir"
 if [[ ! -x target/release/banking-studio ]]; then

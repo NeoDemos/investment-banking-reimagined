@@ -22,6 +22,22 @@ The estimates below are **prospective owner-effort ranges**, not elapsed agent r
 
 Suggested specialist time, additional to the owner estimates: 2–4 finance-review hours for the three demonstrations. Cut live voice first if account/network testing fails; retain a complete typed review, recalculation, presentation and export story. Do not fill missing market quotes with invented observations. Do not add native installers, bank SSO, confidential data, full DCF, precedent-transaction feeds or a general CIM writer before Monday.
 
+## Agent-workflow correction — M11 / #51
+
+The owner rejected the manual-first six-section interaction after M10. M11 introduces the genuine intent → source connectors → financial tools → dynamic materials → conversational review path. Target **23–26 October**; incremental prospective owner effort **12 / 20 / 32 hours low/base/high**, not measured coding-agent runtime. This supplements the prior 47-hour base to **67 prospective base hours for the revised scope**, not a record of elapsed work or proof of subscription capacity. Finance review adds 2–4h; model availability is an external gate.
+
+| Subtask | Window | Base owner h | Completion evidence |
+|---|---|---:|---|
+| Intent/tool/source/assumption contract | 23 Oct | 2 | Application-owned action/observation protocol and explicit unsupported coverage |
+| Automatic connectors and pinned sources | 23–24 Oct | 4 | SEC/Treasury calls, normalized metadata, dated cache and hashes |
+| Bounded model loop and durable run lifecycle | 23–24 Oct | 4 | Tool allowlist, clarification, step/time bounds, cancellation/restart |
+| Primary React interaction and dynamic composition | 24–25 Oct | 5 | Banker brief, trace, 2–12 composed pages, same-agent page review |
+| Exact public SVG and local-only Myriad | 23–24 Oct | 1 | Vector path and website font identities inspected; no redistribution |
+| State/adversarial/UI checks | 24–25 Oct | 3 | Mock-model protocol, real connector attempts, source bindings, concurrent writes |
+| Live first draft/redraft and banker rehearsal | 25–26 Oct | 1 + wait | **Open:** real Claude Max request hit weekly quota; no successful live draft yet |
+
+[M11 issue #51](https://github.com/NeoDemos/investment-banking-reimagined/issues/51) remains open. The original #46 live API/audio and #48 owner-review gates also remain open. A mock model test is not a live demonstration. The public website Myriad differs from PDF-custom MyriadforRabobank; exact PDF pixel parity is not claimed. See [current architecture and evidence](../AGENT_WORKFLOW.md). Proposed lead/worker assignments remain planning roles; no multi-agent implementation throughput was measured here.
+
 ## After Monday
 
 | Work | Earliest sensible horizon | Active owner effort | External dependency / completion definition |

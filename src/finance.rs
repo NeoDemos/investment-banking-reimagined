@@ -100,13 +100,62 @@ fn row(label: &str, value: f64, unit: &str, formula: &str) -> Value {
     json!({"label":label,"value":value,"unit":unit,"formula":formula})
 }
 pub fn calculate(data: &Value, kind: &str, p: &Params) -> Result<Value, String> {
+    calculate_for(data, kind, p, "PEP", "CPB")
+}
+pub fn calculate_for(
+    data: &Value,
+    kind: &str,
+    p: &Params,
+    issuer: &str,
+    target: &str,
+) -> Result<Value, String> {
     validate(kind, p)?;
+    let required_symbols = if kind == "acquisition" {
+        vec![issuer, target]
+    } else {
+        vec![issuer]
+    };
+    for symbol in required_symbols {
+        let c = data["companies"]
+            .as_array()
+            .and_then(|cs| cs.iter().find(|c| c["symbol"] == symbol))
+            .ok_or("Retrieve company facts before calculating")?;
+        for key in [
+            "debt",
+            "cash",
+            "netIncome",
+            "shares",
+            "operatingIncome",
+            "da",
+        ] {
+            if c["facts"][key]["value"]
+                .as_f64()
+                .filter(|n| n.is_finite())
+                .is_none()
+            {
+                return Err(format!("Missing financial input: {symbol}.{key}"));
+            }
+        }
+        if c["facts"]["shares"]["value"].as_f64().unwrap() <= 0.
+            || (c["facts"]["operatingIncome"]["value"].as_f64().unwrap()
+                + c["facts"]["da"]["value"].as_f64().unwrap())
+                <= 0.
+        {
+            return Err("Positive shares and EBITDA proxy required".into());
+        }
+    }
+    if data["curve"]["points"]
+        .as_array()
+        .is_none_or(|p| p.len() < 2)
+    {
+        return Err("Retrieve the USD Treasury curve before calculating".into());
+    }
     let get = |k: &str| p[k];
-    let debt = fact(data, "PEP", "debt");
-    let cash = fact(data, "PEP", "cash");
-    let ni = fact(data, "PEP", "netIncome");
-    let shares = fact(data, "PEP", "shares");
-    let ebitda = fact(data, "PEP", "operatingIncome") + fact(data, "PEP", "da");
+    let debt = fact(data, issuer, "debt");
+    let cash = fact(data, issuer, "cash");
+    let ni = fact(data, issuer, "netIncome");
+    let shares = fact(data, issuer, "shares");
+    let ebitda = fact(data, issuer, "operatingIncome") + fact(data, issuer, "da");
     let base_eps = ni / shares;
     let base_leverage = (debt - cash) / ebitda;
     let cash_yield = treasury(data, 1.);
@@ -148,10 +197,10 @@ pub fn calculate(data: &Value, kind: &str, p: &Params) -> Result<Value, String> 
             (vec![stat("retired","Shares repurchased",repurchased,"m shares"),stat("eps","Illustrative pro forma EPS",eps,"USD/share"),stat("accretion","EPS change",uplift,"%")],vec![row("Historical earnings to common",ni,"USDm","Reported common earnings in latest annual filing"),row("Historical diluted shares",shares,"m shares","Reported weighted-average diluted shares; full-period exercise"),row("Historical modeled EPS",base_eps,"USD/share","Common earnings / weighted-average diluted shares"),row("Repurchased shares",repurchased,"m shares","Repurchase amount / assumed execution price"),row("Lost after-tax cash income",lost_income,"USDm","Spend × 1-year Treasury yield / 100 × (1 − tax / 100)"),row("Pro forma earnings",pf_ni,"USDm","Historical common earnings − lost after-tax cash income"),row("Pro forma diluted shares",newshares,"m shares","Historical diluted shares − repurchased shares"),row("Pro forma EPS",eps,"USD/share","Pro forma common earnings / pro forma diluted shares"),row("EPS change",uplift,"%","(Pro forma EPS / historical modeled EPS − 1) × 100"),row("Remaining cash",cash-amount,"USDm","Reported cash − repurchase spend")],json!({"type":"bars","label":"Diluted shares (millions)","items":[{"label":"Before","value":shares},{"label":"After repurchase","value":newshares}]}),sens,"Share repurchase".to_string(),format!("A USD {amount:.0}m cash-funded repurchase changes modeled EPS by {uplift:+.2}% at an assumed ${price:.2} execution price."),vec![format!("The scenario retires {repurchased:.2}m shares and leaves USD {:.0}m of reported cash before other cash flows.",cash-amount),format!("The earnings comparison includes USD {lost_income:.1}m of lost after-tax cash income using the 1-year Treasury reference."),"EPS accretion does not establish value creation. Compare the execution price with fundamental value and liquidity needs.".into()])
         }
         _ => {
-            let target_debt = fact(data, "CPB", "debt");
-            let target_cash = fact(data, "CPB", "cash");
-            let target_ni = fact(data, "CPB", "netIncome");
-            let target_ebitda = fact(data, "CPB", "operatingIncome") + fact(data, "CPB", "da");
+            let target_debt = fact(data, target, "debt");
+            let target_cash = fact(data, target, "cash");
+            let target_ni = fact(data, target, "netIncome");
+            let target_ebitda = fact(data, target, "operatingIncome") + fact(data, target, "da");
             let equity = get("targetShares") * get("targetPrice") * (1. + get("premium") / 100.);
             let ev = equity + target_debt - target_cash;
             let raised = equity * get("debtPercent") / 100.;
@@ -166,7 +215,11 @@ pub fn calculate(data: &Value, kind: &str, p: &Params) -> Result<Value, String> 
             let pf_cash = cash + target_cash - cash_used;
             let pf_netdebt = debt + target_debt + raised - pf_cash;
             let leverage = pf_netdebt / (ebitda + target_ebitda + get("synergies"));
-            warnings.push("Fiscal periods differ: PepsiCo FY2025 and Campbell’s FY2026. This exercise is not calendarized or LTM.".to_string());
+            warnings.push(format!(
+                "Annual periods: {} and {}. This exercise is not calendarized or LTM.",
+                company(data, issuer)["periodEnd"],
+                company(data, target)["periodEnd"]
+            ));
             warnings.push("Deal shares and stock prices are scenario assumptions. EPS excludes purchase accounting, transaction costs and integration timing.".to_string());
             if cash_used > cash {
                 warnings.push("Cash funding exceeds the acquirer’s reported cash balance.".into())
@@ -175,7 +228,7 @@ pub fn calculate(data: &Value, kind: &str, p: &Params) -> Result<Value, String> 
                 warnings.push("Pro forma leverage exceeds the illustrative 3.5x discussion threshold, not a rating-agency limit.".into())
             }
             let sens:Vec<Value>=[0.,10.,20.,30.,40.].iter().map(|prem|{let eq=get("targetShares")*get("targetPrice")*(1.+prem/100.);let newdebt=eq*get("debtPercent")/100.;let cashpart=eq-newdebt;let inc=ni+target_ni+(get("synergies")-newdebt*debt_yield/100.-cashpart*cash_yield/100.)*(1.-get("tax")/100.);json!({"label":format!("{prem:.0}% premium"),"value":(inc/ni-1.)*100.,"secondary":eq,"unit":"% EPS change","secondaryUnit":"USDm equity"})}).collect();
-            (vec![stat("equity","Equity purchase price",equity,"USDm"),stat("multiple","EV / EBITDA proxy",ev/target_ebitda,"x"),stat("leverage","Pro forma net leverage",leverage,"x")],vec![row("Equity purchase price",equity,"USDm","Assumed deal shares × assumed target price × (1 + premium / 100)"),row("Target enterprise value",ev,"USDm","Equity purchase price + target debt − target cash; excludes other EV adjustments"),row("EV / EBITDA proxy",ev/target_ebitda,"x","Target enterprise value / (reported operating income + D&A)"),row("New acquisition debt",raised,"USDm","Equity purchase price × debt funding percentage / 100"),row("Acquirer cash contribution",cash_used,"USDm","Equity purchase price − new acquisition debt"),row("Financing yield assumption",debt_yield,"%","5-year Treasury reference + assumed credit spread / 100"),row("Incremental debt interest",interest,"USDm","New debt × financing yield / 100"),row("Pro forma common earnings",pf_ni,"USDm","Acquirer + target common earnings + (synergy − debt interest − lost cash interest) × (1 − tax)"),row("Pro forma EPS before PPA",eps,"USD/share","Pro forma common earnings / acquirer diluted shares; no new equity issuance"),row("EPS change before PPA",acc,"%","(Pro forma EPS / historical modeled EPS − 1) × 100"),row("Combined remaining cash",pf_cash,"USDm","Acquirer cash + target cash − cash contribution"),row("Pro forma net debt",pf_netdebt,"USDm","Acquirer debt + target debt + new financing − combined remaining cash"),row("Pro forma net leverage",leverage,"x","Pro forma net debt / (acquirer + target EBITDA proxies + full synergies)")],json!({"type":"bars","label":"Sources for equity purchase price (USDm)","items":[{"label":"New debt","value":raised},{"label":"Acquirer cash","value":cash_used}]}),sens,"Peer acquisition".to_string(),format!("The hypothetical Campbell’s acquisition implies {leverage:.2}x net leverage and {acc:+.2}% EPS change before purchase accounting."),vec![format!("The equity purchase price is USD {equity:.0}m, with USD {raised:.0}m of new acquisition financing."),format!("The scenario includes USD {:.0}m of annual pre-tax synergies. Test a no-synergy case before relying on them.",get("synergies")),"This is a financial scenario, not an announced transaction or assessment of strategic, regulatory or execution feasibility.".into()])
+            (vec![stat("equity","Equity purchase price",equity,"USDm"),stat("multiple","EV / EBITDA proxy",ev/target_ebitda,"x"),stat("leverage","Pro forma net leverage",leverage,"x")],vec![row("Equity purchase price",equity,"USDm","Assumed deal shares × assumed target price × (1 + premium / 100)"),row("Target enterprise value",ev,"USDm","Equity purchase price + target debt − target cash; excludes other EV adjustments"),row("EV / EBITDA proxy",ev/target_ebitda,"x","Target enterprise value / (reported operating income + D&A)"),row("New acquisition debt",raised,"USDm","Equity purchase price × debt funding percentage / 100"),row("Acquirer cash contribution",cash_used,"USDm","Equity purchase price − new acquisition debt"),row("Financing yield assumption",debt_yield,"%","5-year Treasury reference + assumed credit spread / 100"),row("Incremental debt interest",interest,"USDm","New debt × financing yield / 100"),row("Pro forma common earnings",pf_ni,"USDm","Acquirer + target common earnings + (synergy − debt interest − lost cash interest) × (1 − tax)"),row("Pro forma EPS before PPA",eps,"USD/share","Pro forma common earnings / acquirer diluted shares; no new equity issuance"),row("EPS change before PPA",acc,"%","(Pro forma EPS / historical modeled EPS − 1) × 100"),row("Combined remaining cash",pf_cash,"USDm","Acquirer cash + target cash − cash contribution"),row("Pro forma net debt",pf_netdebt,"USDm","Acquirer debt + target debt + new financing − combined remaining cash"),row("Pro forma net leverage",leverage,"x","Pro forma net debt / (acquirer + target EBITDA proxies + full synergies)")],json!({"type":"bars","label":"Sources for equity purchase price (USDm)","items":[{"label":"New debt","value":raised},{"label":"Acquirer cash","value":cash_used}]}),sens,"Peer acquisition".to_string(),format!("The hypothetical acquisition implies {leverage:.2}x net leverage and {acc:+.2}% EPS change before purchase accounting."),vec![format!("The equity purchase price is USD {equity:.0}m, with USD {raised:.0}m of new acquisition financing."),format!("The scenario includes USD {:.0}m of annual pre-tax synergies. Test a no-synergy case before relying on them.",get("synergies")),"This is a financial scenario, not an announced transaction or assessment of strategic, regulatory or execution feasibility.".into()])
         }
     };
     warnings.push("Stock prices, credit spreads, financing and transaction terms are analyst assumptions unless a dated quote has been explicitly applied.".into());
@@ -192,7 +245,7 @@ pub fn calculate(data: &Value, kind: &str, p: &Params) -> Result<Value, String> 
         "x",
     ));
     Ok(
-        json!({"engine":ENGINE,"title":title,"company":"PepsiCo","summary":summary,"metrics":metrics,"workings":workings,"chart":chart,"sensitivity":sensitivity,"conclusions":conclusions,"warnings":warnings,"references":{"curveDate":data["curve"]["date"],"asOf":data["asOf"],"cashYield":cash_yield,"benchmark":treasury(data,if kind=="bond"{get("tenor")}else{5.}),"baseEPS":base_eps,"baseLeverage":base_leverage}}),
+        json!({"engine":ENGINE,"title":title,"company":company(data,issuer)["name"],"issuer":issuer,"target":target,"summary":summary,"metrics":metrics,"workings":workings,"chart":chart,"sensitivity":sensitivity,"conclusions":conclusions,"warnings":warnings,"references":{"curveDate":data["curve"]["date"],"asOf":data["asOf"],"cashYield":cash_yield,"benchmark":treasury(data,if kind=="bond"{get("tenor")}else{5.}),"baseEPS":base_eps,"baseLeverage":base_leverage}}),
     )
 }
 #[cfg(test)]

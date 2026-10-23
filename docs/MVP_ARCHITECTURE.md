@@ -4,23 +4,11 @@ Status: local external React application, revised 23 October 2026. Independently
 
 ## Application structure
 
-```mermaid
-flowchart LR
-    P[Public SEC / Treasury snapshot] --> R[Rust financial methods]
-    U[Digital presentation and page review] --> A[Validated assumptions]
-    A --> R
-    R --> D[(Local SQLite)]
-    D --> U
-    D --> X[Digital presentation / XLSX inspection]
-    V[Optional external AI voice / text] --> N[Proposed edits and review notes]
-    N --> A
-```
+The current primary interaction is the [agent workflow](AGENT_WORKFLOW.md): banker intent, automatic public connectors, a bounded model decision loop, Rust financial tools, dynamically composed structured pages and conversational revision. Read that document for tools, state, failure modes and actual live-access evidence. The previous manual six-section React workspace remains in source and API compatibility only; it is not the drafting engine.
 
-`frontend/src/` contains the React/TypeScript application, with Tiptap editing and TanStack financial grids. `src/finance.rs` owns mathematics and input limits; `src/workspace.rs` owns engagements, material revisions, analysis bindings and saved review copies. `src/main.rs` serves the loopback API, revision jobs and provider requests. `src/workbook.rs` creates XLSX inspection copies. Vite builds static assets into ignored `public/react/`; Rust embeds them in the release binary. Node/npm and Python are development tools, not application runtime services.
+`src/agent.rs` owns runs, model decisions, validation and atomic versioned commits. `src/connectors.rs` retrieves and normalizes actual SEC/Treasury observations with explicit dated fallback and source hashes. `src/finance.rs` accepts issuer/target context, validates assumptions and computes outputs. Each calculation pins its source snapshot. `frontend/src/AgentStudio.tsx` is the primary React application. Rust embeds the static React production build; SQLite holds committed rooms, history, runs, events and connector cache. A signed-in local Claude CLI or optional API is needed for genuine model decisions; no deterministic replacement is labelled as an agent.
 
-SQLite stores financial facts, methods, assumptions, immutable calculation versions, review notes, jobs and dated quotes, plus engagements, analysis membership, structured rich-text revisions and saved review copies. A review copy captures both narrative and exact analysis versions. New engagements get independent analysis IDs. A database does not acquire corporate-finance expertise by containing documents: this MVP makes financial conventions executable in Rust, and stores the methods/version identifiers alongside results. Models propose bounded input edits; they do not compute material figures or overwrite reported facts.
-
-Each save checks the expected version. A stale save fails rather than overwriting another draft. Existing calculation snapshots remain unchanged. A demo freeze records that exact version, while further edits create another draft. This is single-user review state, not maker/checker separation of duties or a regulatory records system. Version models use the embedded public snapshot; refreshing sources requires a rebuild and fresh demo database. Durable multi-vintage source snapshots and migration controls remain future work.
+The local Claude run reached the provider but failed with the weekly usage limit. Successful live drafting remains unverified. This is single-user local state, not bank records, maker/checker or multi-tenant security.
 
 ## Financial conventions
 
@@ -34,18 +22,4 @@ Each save checks the expected version. A stale save fails rather than overwritin
 
 ## Presentation adaptation
 
-References are the public [Rabobank investor presentations page](https://www.rabobank.com/about-us/investor-relations/presentations), [H1 2026 results](https://media.rabobank.com/asset/e7a03d73-245e-47a1-a3de-5517892a183b/Results-Presentation-H1-2026.pdf) and [FY2025 investor presentation](https://media.rabobank.com/asset/d6eb375a-c232-4194-b8e5-0a9a044f0a2e/Investor-Presentation-FY-2025.pdf). H1 slides were visually inspected, including the cover and financial-information layouts.
-
-The public H1 reference uses a 4:3 canvas. The app adapts its navy/blue/orange palette, pale backgrounds, large light-weight headings, orange financial figures, blue captions, thin separators and discreet footer to 16:10 digital pages. CSS uses locally installed Myriad and Myriad Light when available, with bundled OFL-licensed Source Sans 3 fallback. The exact customized Myriad for Rabobank font is not bundled or claimed. No original photography, proprietary font file or extracted logo artwork is bundled. A text wordmark provides the requested identity study; this is not an official bank template, endorsement or brand-approval claim. Brand-owner review and an authorized template remain necessary for real client use.
-
-## Trust boundaries and known gaps
-
-The server binds only to IPv4 loopback, checks Host and mutating-request Origin, and requires a random per-process token for writes. The UI escapes dynamic text and uses a restrictive CSP. Source and export routes are fixed; arbitrary filesystem paths are not served. Request size and numeric input ranges are bounded. These controls were exercised locally; they are not a security assessment.
-
-Keys from Settings remain in server memory; environment keys can instead come from ignored `.env.local`. Keys do not enter SQLite, bootstrap responses or exports. Local SQLite is not encrypted by this app; rely on neither local storage nor loopback as protection for confidential material. There is no bank SSO, role authorization, information barrier, managed secret storage, central logging, signed installer, records retention policy or independent penetration test. The app cannot support bank deployment in its current form.
-
-When explicitly used, external model requests send public briefing data and notes to the provider. Live voice sends microphone audio over WebRTC. Text requests use `store:false`; this is not proof of ZDR. Quote requests use a fixed provider and supported symbol allowlist. Licences, model access, retention, geographic processing and actual bank permission are unverified. Live API tests remain outstanding because no keys were provided.
-
-## Verification evidence
-
-Twelve Rust unit tests cover pricing identities, sensitivities, input validation, review handling and rich-text allowlists. The isolated integration script checks three seeded cases, independent Python recomputation of principal financial outputs, all XLSX working-result caches, revision/version behavior, unresolved notes, freeze semantics and loopback request boundaries. It does not run a full independent valuation validation or recalculate XLSX formulas in Microsoft Excel. The integration script now covers 28 check groups, including engagement creation, rich-text persistence, optimistic material saves, rejected script/cross-engagement nodes, narrative preservation and exact saved review copies. Browser checks cover React navigation, actual editor input/save, model-to-material updates, source inspection and typed review. See [machine-readable results](verification.json).
+The current canvas follows the public 4:3 reference, the actual public investor-site SVG wordmark and locally installed Myriad website font assets. No proprietary fonts are committed or bundled. The PDF's customized MyriadforRabobank font is distinct, and pixel-identical PDF reproduction is not claimed. Model-selected block composition is validated and remains subject to page-density and banker review. See [branding and design evidence](AGENT_WORKFLOW.md#dynamic-design-and-branding).

@@ -1,3 +1,5 @@
+mod agent;
+mod connectors;
 mod finance;
 mod workbook;
 mod workspace;
@@ -46,6 +48,8 @@ struct AppState {
     client: reqwest::Client,
     token: String,
     port: u16,
+    claude_available: bool,
+    agent_gate: Arc<tokio::sync::Semaphore>,
 }
 #[derive(Clone)]
 struct Keys {
@@ -783,7 +787,16 @@ async fn main() {
         db.execute("INSERT OR REPLACE INTO methods VALUES(?,?)",params![kind,json!({"version":finance::ENGINE,"workings":finance::calculate(&data,kind,&finance::defaults(kind)).unwrap()["workings"]}).to_string()]).unwrap();
     }
     workspace::init(&db).expect("Engagement database migration");
+    agent::init(&db).expect("Agent database migration");
+    let claude_available =
+        std::process::Command::new(std::env::var("CLAUDE_BIN").unwrap_or("claude".into()))
+            .arg("--version")
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false);
     let s = Arc::new(AppState {
+        claude_available,
+        agent_gate: Arc::new(tokio::sync::Semaphore::new(1)),
         db: Mutex::new(db),
         data,
         keys: RwLock::new(Keys {
@@ -828,6 +841,13 @@ async fn main() {
             "/api/projects/{id}/snapshots/{sid}",
             get(workspace::get_snapshot),
         )
+        .route("/api/agent/rooms", get(agent::list))
+        .route("/api/agent/rooms/{id}", get(agent::get_room))
+        .route("/api/agent/rooms/{id}/draft", post(agent::edit))
+        .route("/api/agent/runs", post(agent::start))
+        .route("/api/agent/runs/{id}", get(agent::get_run))
+        .route("/api/agent/runs/{id}/cancel", post(agent::cancel))
+        .route("/api/brand/font/{weight}", get(agent::font))
         .route("/api/bootstrap", get(bootstrap))
         .route("/api/briefs/{id}", get(get_brief))
         .route("/api/briefs/{id}/assumptions", post(assumptions))
