@@ -4,11 +4,9 @@ Status: local external React application, revised 23 October 2026. Independently
 
 ## Application structure
 
-The current primary interaction is the [agent workflow](AGENT_WORKFLOW.md): banker intent, automatic public connectors, a bounded model decision loop, Rust financial tools, dynamically composed structured pages and conversational revision. Read that document for tools, state, failure modes and actual live-access evidence. The previous manual six-section React workspace remains in source and API compatibility only; it is not the drafting engine.
+The current [MCP architecture](MCP_ARCHITECTURE.md) separates provider ports, canonical evidence, real SDK tools/resources, bounded context, workflow/model ports and semantic document/scene rendering. External model, voice and live source connections are deferred under the owner's revised instruction. Local blueprints exercise the full data-to-materials path without a model or API key; free-form instructions are saved for the next phase. [Peer research](PEER_ARCHITECTURE_RESEARCH.md) grounds these decisions in public product and technical sources.
 
-`src/agent.rs` owns runs, model decisions, validation and atomic versioned commits. `src/connectors.rs` retrieves and normalizes actual SEC/Treasury observations with explicit dated fallback and source hashes. `src/finance.rs` accepts issuer/target context, validates assumptions and computes outputs. Each calculation pins its source snapshot. `frontend/src/AgentStudio.tsx` is the primary React application. Rust embeds the static React production build; SQLite holds committed rooms, history, runs, events and connector cache. A signed-in local Claude CLI or optional API is needed for genuine model decisions; no deterministic replacement is labelled as an agent.
-
-The local Claude run reached the provider but failed with the weekly usage limit. Successful live drafting remains unverified. This is single-user local state, not bank records, maker/checker or multi-tenant security.
+This supersedes the preceding manual-first and direct-tool-call prototypes. Legacy local state/APIs are retained. Source and calculation snapshots remain versioned with document revisions, and floating-point JSON values round-trip exactly. These are prototype state controls, not bank records, maker/checker or bank acceptance.
 
 ## Financial conventions
 

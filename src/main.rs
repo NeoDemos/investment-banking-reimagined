@@ -1,7 +1,12 @@
 mod agent;
 mod connectors;
+mod evidence;
 mod finance;
+mod materials;
+mod mcp;
+mod providers;
 mod workbook;
+mod workflow;
 mod workspace;
 #[derive(rust_embed::RustEmbed)]
 #[folder = "public/react/"]
@@ -189,6 +194,13 @@ async fn guard(State(s): State<App>, req: axum::extract::Request, next: Next) ->
         {
             return (StatusCode::FORBIDDEN, "Missing local request token").into_response();
         }
+    }
+    if !mcp::external_enabled()
+        && ["/api/voice", "/api/transcribe", "/api/quotes/"]
+            .iter()
+            .any(|p| req.uri().path().starts_with(p))
+    {
+        return (StatusCode::CONFLICT,Json(json!({"error":"External model, voice and market-data connections are deferred to the next phase."}))).into_response();
     }
     let mut r = next.run(req).await;
     r.headers_mut()
@@ -467,6 +479,11 @@ async fn run_revision(
     let kind = b["kind"].as_str().unwrap();
     let (mut p, mut editorial, mut unresolved) = extract_local(kind, &old, notes);
     if mode == "ai" {
+        if !mcp::external_enabled() {
+            return Err(bad(
+                "External model connections are deferred to the next phase",
+            ));
+        }
         let keys = s.keys.read().unwrap().clone();
         let keys_enum: Vec<String> = old.keys().cloned().collect();
         let schema = json!({"type":"object","properties":{"changes":{"type":"array","items":{"type":"object","properties":{"key":{"type":"string","enum":keys_enum},"value":{"type":"number"}},"required":["key","value"],"additionalProperties":false}},"summary":{"type":"string"},"focus":{"type":"string","enum":["balanced","downside"]},"unresolved":{"type":"array","items":{"type":"string"}}},"required":["changes","summary","focus","unresolved"],"additionalProperties":false});
@@ -734,6 +751,35 @@ async fn xlsx(
 }
 #[tokio::main(flavor = "multi_thread", worker_threads = 2)]
 async fn main() {
+    if std::env::args().any(|a| a == "--mcp") {
+        let data: Value =
+            serde_json::from_str(include_str!("../data/public-snapshot.json")).unwrap();
+        let db = Connection::open_in_memory().unwrap();
+        agent::init(&db).unwrap();
+        evidence::init(&db, &data).unwrap();
+        let app = Arc::new(AppState {
+            db: Mutex::new(db),
+            data,
+            keys: RwLock::new(Keys {
+                openai: String::new(),
+                alpha: String::new(),
+                text_model: String::new(),
+                transcribe_model: String::new(),
+                voice_model: String::new(),
+            }),
+            client: reqwest::Client::new(),
+            token: new_id(),
+            port: 0,
+            claude_available: false,
+            agent_gate: Arc::new(tokio::sync::Semaphore::new(1)),
+        });
+        if let Err(e) = mcp::stdio(app).await {
+            eprintln!("MCP server stopped: {}", e.1);
+            std::process::exit(1)
+        }
+        return;
+    }
+
     dotenvy::from_filename(".env.local").ok();
     let port = std::env::var("PORT")
         .ok()
@@ -788,8 +834,9 @@ async fn main() {
     }
     workspace::init(&db).expect("Engagement database migration");
     agent::init(&db).expect("Agent database migration");
-    let claude_available =
-        std::process::Command::new(std::env::var("CLAUDE_BIN").unwrap_or("claude".into()))
+    evidence::init(&db, &data).expect("Canonical public evidence index");
+    let claude_available = mcp::external_enabled()
+        && std::process::Command::new(std::env::var("CLAUDE_BIN").unwrap_or("claude".into()))
             .arg("--version")
             .output()
             .map(|o| o.status.success())
@@ -841,6 +888,10 @@ async fn main() {
             "/api/projects/{id}/snapshots/{sid}",
             get(workspace::get_snapshot),
         )
+        .route("/api/architecture", get(mcp::architecture))
+        .route("/api/workflows/preview", post(workflow::preview))
+        .route("/api/agent/rooms/{id}/patch", post(workflow::patch))
+        .route("/api/agent/briefs", post(workflow::capture))
         .route("/api/agent/rooms", get(agent::list))
         .route("/api/agent/rooms/{id}", get(agent::get_room))
         .route("/api/agent/rooms/{id}/draft", post(agent::edit))

@@ -47,7 +47,7 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="banking-studio-test-") as local:
         env = os.environ.copy()
-        env.update(PORT=str(port), BANKING_STUDIO_DATA_DIR=local, OPENAI_API_KEY="", ALPHA_VANTAGE_API_KEY="")
+        env.update(PORT=str(port), BANKING_STUDIO_DATA_DIR=local, OPENAI_API_KEY="", ALPHA_VANTAGE_API_KEY="", BANKING_STUDIO_EXTERNAL_CONNECTIONS="0")
         start = time.perf_counter()
         proc = subprocess.Popen([str(BINARY)], cwd=local, env=env, stdout=subprocess.DEVNULL)
         try:
@@ -121,9 +121,9 @@ def main():
             invalid["tenor"] = -1
             request("/api/briefs/bond/assumptions", {"expectedVersion": 3, "params": invalid}, status=400)
             check("Invalid assumptions preserve the prior version", request("/api/briefs/bond")["version"] == 3)
-            request("/api/voice", {"briefId": "bond", "sdp": ""}, status=400)
-            request("/api/quotes/PEP", {}, status=400)
-            check("Missing API access fails explicitly", True)
+            request("/api/voice", {"briefId": "bond", "sdp": ""}, status=409)
+            request("/api/quotes/PEP", {}, status=409)
+            check("Deferred external connections fail explicitly", True)
             seed = request("/api/projects")["projects"]
             check("Existing financial cases migrate into a connected engagement", len(seed) == 1 and len(seed[0]["analyses"]) == 3 and len(seed[0]["document"]["sections"]) == 6)
             project = request("/api/projects", {"title": "Integration review", "client": "PepsiCo", "objective": "Test connected financial work and materials", "dueDate": "2026-10-26"})
@@ -176,7 +176,7 @@ def main():
                 request("/api/briefs/bond")
                 latency.append((time.perf_counter() - t) * 1000)
             rss = int(subprocess.check_output(["ps", "-o", "rss=", "-p", str(proc.pid)]).strip()) / 1024
-            result = {"checksPassed": len(checks), "checks": checks, "measurement": {"machine": "local Apple Silicon Mac; not representative of managed bank hardware", "process": "release Rust backend only; browser excluded", "startupMs": round(startup, 1), "backendRssMiB": round(rss, 1), "briefGetMedianMs": round(statistics.median(latency), 2), "briefGetP95Ms": round(sorted(latency)[94], 2), "binaryMiB": round(BINARY.stat().st_size / 1024**2, 2)}, "notTested": ["Live OpenAI text, transcription and WebRTC calls: no API key", "Live Alpha Vantage quote: no key/entitlement", "Managed Windows/macOS deployment", "Bank acceptance"]}
+            result = {"checksPassed": len(checks), "checks": checks, "measurement": {"machine": "local Apple Silicon Mac; not representative of managed bank hardware", "process": "release Rust backend only; browser excluded", "startupMs": round(startup, 1), "backendRssMiB": round(rss, 1), "briefGetMedianMs": round(statistics.median(latency), 2), "briefGetP95Ms": round(sorted(latency)[94], 2), "binaryMiB": round(BINARY.stat().st_size / 1024**2, 2)}, "notTested": ["Live model, transcription and voice: deferred by owner instruction", "Live quote/provider integration: deferred by owner instruction", "Managed Windows/macOS deployment", "Bank acceptance"]}
             print(json.dumps(result, indent=2))
         finally:
             proc.terminate()

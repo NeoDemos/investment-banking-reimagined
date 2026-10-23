@@ -1,3 +1,5 @@
+> Current scope, 23 October: external API/model connections are deferred by the owner. The primary architecture now uses the official MCP SDK, canonical evidence/context and a scene compiler. See [current architecture](MCP_ARCHITECTURE.md) and [peer research](PEER_ARCHITECTURE_RESEARCH.md). This document below records the preceding implementation and its historical checks.
+
 # Agent workflow correction — 23 October 2026
 
 The previous application put manual assumption forms and a six-section template at its centre. That did not implement the owner's intended interaction. The primary React entry now uses `AgentStudio.tsx`; the old workspace source and APIs are retained for compatibility with existing local state, and are not the drafting agent.

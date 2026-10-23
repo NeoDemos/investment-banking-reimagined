@@ -1,3 +1,5 @@
+> Current scope, 23 October: external API/model connections are deferred by the owner. The primary architecture now uses the official MCP SDK, canonical evidence/context and a scene compiler. See [current architecture](MCP_ARCHITECTURE.md) and [peer research](PEER_ARCHITECTURE_RESEARCH.md). This document below records the preceding implementation and its historical checks.
+
 > Superseded primary interaction, 23 October: the manual six-section workspace below is retained as implementation history. The current application uses the [agent workflow](AGENT_WORKFLOW.md), automatic connectors and dynamic page composition. Its entry bundle does not load Tiptap/TanStack; those packages support the retained workspace. Branding now uses the actual public SVG wordmark and local-only website Myriad assets.
 
 # React workspace correction and open-source foundations

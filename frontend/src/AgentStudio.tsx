@@ -9,6 +9,7 @@ import {
   Download,
   FileText,
   LayoutPanelLeft,
+  Layers3,
   LoaderCircle,
   MessageSquare,
   Mic,
@@ -21,6 +22,12 @@ import {
 import { api, setToken } from "./api";
 import { format, INPUTS } from "./types";
 import "./agent.css";
+import {
+  PlatformWorkspace,
+  Playbooks,
+  type Platform,
+  type PlatformView,
+} from "./PlatformWorkspace";
 type J = Record<string, any>;
 type Block = {
   type: string;
@@ -40,7 +47,15 @@ type Room = {
   analyses: J;
   history: J[];
   lastRunId?: string;
+  scene?: J;
+  contextPacket?: J;
+  executionMode?: string;
+  workflow?: { stages: { id: string; label: string; state: string }[] };
 };
+type RoomSummary = Pick<
+  Room,
+  "id" | "title" | "revision" | "draft" | "lastRunId" | "executionMode"
+>;
 type Run = {
   status: string;
   result: J;
@@ -60,6 +75,12 @@ const examples = [
     "Prepare a hypothetical PepsiCo acquisition of Campbell’s. Retrieve both companies’ public accounts and the Treasury curve. For an explicitly illustrative scenario assume 300 million target deal shares, USD 25 per share, 25% premium, USD 150 million annual synergies, 60% debt funding, 125 bps financing spread and 25% tax. Show economics, leverage, sensitivity and pre-PPA limitations. This is not an announced deal.",
   ],
 ];
+const sourceLabel = (mode?: string) =>
+  mode === "archive"
+    ? "Frozen public archive"
+    : mode === "cached"
+      ? "Dated cache · refresh unavailable"
+      : "Retrieved from public source";
 const n = (v: number, unit: string) =>
   unit === "% EPS change"
     ? `${format(v, "%")} EPS`
@@ -254,10 +275,7 @@ function BlockView({ block: b, room }: { block: Block; room: Room }) {
             <span
               className={c.provenance?.mode === "cached" ? "cache-label" : ""}
             >
-              {c.provenance?.mode === "cached"
-                ? "Dated cache · refresh unavailable"
-                : "Retrieved from public source"}{" "}
-              ·{" "}
+              {sourceLabel(c.provenance?.mode)} ·{" "}
               {c.provenance?.retrievedAt?.slice(0, 10) ||
                 c.provenance?.original?.retrievedAt?.slice(0, 10) ||
                 "snapshot"}
@@ -284,8 +302,9 @@ function Page({
   total: number;
 }) {
   const cached = Object.values(room.sources).some(
-    (c: any) => c.provenance?.mode === "cached",
+    (c: any) => c.provenance?.mode !== "retrieved",
   );
+  const scene = room.scene?.pages?.find((p: J) => p.id === slide.id);
   return (
     <article className={`agent-page layout-${slide.layout}`}>
       <header>
@@ -299,17 +318,31 @@ function Page({
         <h2>{slide.title}</h2>
         <i />
       </div>
-      <div className="page-blocks">
+      <div className={`page-blocks ${scene ? "scene-composition" : ""}`}>
         {slide.blocks.map((b, i) => (
-          <div className={`page-block block-${b.type}`} key={i}>
+          <div
+            className={`page-block block-${b.type}`}
+            key={i}
+            data-frame-id={scene?.frames[i]?.id}
+            style={
+              scene
+                ? {
+                    left: `${scene.frames[i].bounds.x * 100}%`,
+                    top: `${scene.frames[i].bounds.y * 100}%`,
+                    width: `${scene.frames[i].bounds.width * 100}%`,
+                    height: `${scene.frames[i].bounds.height * 100}%`,
+                  }
+                : undefined
+            }
+          >
             <BlockView block={b} room={room} />
           </div>
         ))}
       </div>
       <footer>
         <span>
-          {cached ? "Includes dated cached public data" : "Public source data"}{" "}
-          · Illustrative assumptions · Subject to review
+          {cached ? "Dated public archive / cache" : "Public source data"} ·
+          Illustrative assumptions · Subject to review
         </span>
         <span>
           {index + 1} / {total}
@@ -319,14 +352,17 @@ function Page({
   );
 }
 export default function AgentStudio() {
-  const [rooms, setRooms] = useState<Room[]>([]),
+  const [rooms, setRooms] = useState<RoomSummary[]>([]),
     [room, setRoom] = useState<Room | null>(null),
     [prompt, setPrompt] = useState(""),
     [runId, setRunId] = useState(""),
     [run, setRun] = useState<Run | null>(null),
     [page, setPage] = useState(0),
     [tab, setTab] = useState("draft"),
-    [provider, setProvider] = useState("claude"),
+    [provider, setProvider] = useState("deferred"),
+    [section, setSection] = useState<PlatformView>("workroom"),
+    [platform, setPlatform] = useState<Platform | null>(null),
+    [previewBusy, setPreviewBusy] = useState(false),
     [cache, setCache] = useState(true),
     [local, setLocal] = useState(false),
     [ai, setAi] = useState(false),
@@ -339,7 +375,9 @@ export default function AgentStudio() {
     [editTitle, setEditTitle] = useState(""),
     [edits, setEdits] = useState<Record<number, string>>({}),
     [meeting, setMeeting] = useState(false),
-    [notes, setNotes] = useState<{ page: number; text: string }[]>([]),
+    [notes, setNotes] = useState<
+      { page: number; pageId: string; revision: number; text: string }[]
+    >([]),
     [recording, setRecording] = useState(false),
     [transcribing, setTranscribing] = useState(false),
     [notice, setNotice] = useState("");
@@ -350,7 +388,7 @@ export default function AgentStudio() {
     messagesEnd = useRef<HTMLDivElement>(null);
   const active = runId && (!run || run.status === "running");
   const loadRooms = async () => {
-    const v = await api<{ rooms: Room[]; localClaude: boolean }>(
+    const v = await api<{ rooms: RoomSummary[]; localClaude: boolean }>(
       "/api/agent/rooms",
     );
     setRooms(v.rooms);
@@ -363,12 +401,15 @@ export default function AgentStudio() {
       try {
         const b = await api<J>("/api/bootstrap");
         setToken(b.token);
-        setAi(b.capabilities.ai);
+        setAi(false);
+        setPlatform(await api<Platform>("/api/architecture"));
         const rr = await loadRooms();
         const hash = location.hash.match(/^#workroom\/(.+)$/);
         if (hash) {
           const found = rr.find((r) => r.id === hash[1]);
-          setRoom(found || null);
+          setRoom(
+            found ? await api<Room>(`/api/agent/rooms/${found.id}`) : null,
+          );
           if (found?.lastRunId)
             setRun(await api<Run>(`/api/agent/runs/${found.lastRunId}`));
         }
@@ -377,7 +418,7 @@ export default function AgentStudio() {
           const p = JSON.parse(pending);
           setRunId(p.runId);
           const r = rr.find((r) => r.id === p.roomId);
-          if (r) setRoom(r);
+          if (r) setRoom(await api<Room>(`/api/agent/rooms/${r.id}`));
         }
         setReady(true);
       } catch (e) {
@@ -412,7 +453,7 @@ export default function AgentStudio() {
           const id = r.result.roomId || room?.id;
           if (id) {
             const next = rr.find((x) => x.id === id);
-            if (next) setRoom(next);
+            if (next) setRoom(await api<Room>(`/api/agent/rooms/${next.id}`));
           }
           if (r.status === "failed")
             setError(
@@ -438,47 +479,94 @@ export default function AgentStudio() {
       clearTimeout(timer);
     };
   }, [runId]);
-  const open = (r: Room) => {
+  const open = async (r: Room | RoomSummary) => {
     if (active) return;
-    setRoom(r);
-    setPage(0);
-    setRun(null);
-    if (r.lastRunId)
-      void api<Run>(`/api/agent/runs/${r.lastRunId}`)
-        .then(setRun)
-        .catch((e) => setError(String(e)));
-    setEdit(false);
-    setNotes([]);
-    location.hash = `workroom/${r.id}`;
+    try {
+      const full: Room =
+        "messages" in r
+          ? (r as Room)
+          : await api<Room>(`/api/agent/rooms/${r.id}`);
+      setSection("workroom");
+      setRoom(full);
+      setTab("draft");
+      setPage(0);
+      setRun(null);
+      if (full.lastRunId)
+        setRun(await api<Run>(`/api/agent/runs/${full.lastRunId}`));
+      setEdit(false);
+      setNotes([]);
+      location.hash = `workroom/${full.id}`;
+    } catch (e) {
+      setError(String(e));
+    }
   };
   const send = async (text = prompt) => {
     if (active || !text.trim()) return false;
     setError("");
-    setNotice("");
     try {
-      const r = await api<{ roomId: string; runId: string }>(
-        "/api/agent/runs",
-        {
-          roomId: room?.id || null,
-          expectedRevision: room?.revision ?? null,
-          prompt: text,
-          provider,
-          allowCached: cache,
-        },
-      );
-      const newRoom = await api<Room>(`/api/agent/rooms/${r.roomId}`);
-      setRoom(newRoom);
-      setRun(null);
-      setRunId(r.runId);
-      sessionStorage.setItem("draftingRun", JSON.stringify(r));
-      location.hash = `workroom/${r.roomId}`;
+      const r = await api<Room>("/api/agent/briefs", {
+        roomId: room?.id || null,
+        expectedRevision: room?.revision ?? null,
+        prompt: text,
+      });
+      setRoom(r);
       setPrompt("");
-      setInspect(true);
-      setEdit(false);
+      setRun(null);
+      await loadRooms();
+      location.hash = `workroom/${r.id}`;
+      setNotice(
+        "Brief saved. Model integration is deferred; local blueprints exercise the complete data-to-materials path.",
+      );
       return true;
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       return false;
+    }
+  };
+  const runBlueprint = async (
+    kind: string,
+    issuer: string,
+    target?: string,
+  ) => {
+    if (previewBusy) return;
+    setPreviewBusy(true);
+    setError("");
+    try {
+      const r = await api<Room>("/api/workflows/preview", {
+        kind,
+        issuer,
+        target: target || null,
+      });
+      await loadRooms();
+      await open(r);
+      setInspect(false);
+      if (r.lastRunId) setRun(await api<Run>(`/api/agent/runs/${r.lastRunId}`));
+      setNotice(
+        "Local workflow complete: MCP tools, pinned evidence, Rust analysis and scene compilation. No model or external API used.",
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPreviewBusy(false);
+    }
+  };
+  const applyPagePatch = async (operations: unknown[]) => {
+    if (!room) return;
+    setError("");
+    try {
+      const r = await api<Room>(`/api/agent/rooms/${room.id}/patch`, {
+        expectedRevision: room.revision,
+        operations,
+      });
+      const selected = room.draft?.slides[page]?.id;
+      setRoom(r);
+      if (selected) {
+        const next = r.draft?.slides.findIndex((p) => p.id === selected);
+        if (next !== undefined && next >= 0) setPage(next);
+      }
+      await loadRooms();
+    } catch (e) {
+      setError(String(e));
     }
   };
   const slide =
@@ -546,7 +634,15 @@ export default function AgentStudio() {
   };
   const addNote = () => {
     if (!prompt.trim()) return;
-    setNotes((ns) => [...ns, { page: page + 1, text: prompt.trim() }]);
+    setNotes((ns) => [
+      ...ns,
+      {
+        page: page + 1,
+        pageId: slide?.id || "brief",
+        revision: room?.revision || 0,
+        text: prompt.trim(),
+      },
+    ]);
     setPrompt("");
   };
   if (!ready)
@@ -567,6 +663,7 @@ export default function AgentStudio() {
           className="new-workroom"
           disabled={!!active}
           onClick={() => {
+            setSection("workroom");
             setRoom(null);
             setPage(0);
             setRun(null);
@@ -578,6 +675,24 @@ export default function AgentStudio() {
           <Plus size={17} />
           New discussion
         </button>
+        <div className="platform-navigation">
+          {(
+            [
+              ["connections", "Data connections", Database],
+              ["library", "Materials library", FileText],
+              ["architecture", "Architecture", LayoutPanelLeft],
+            ] as const
+          ).map(([id, label, Icon]) => (
+            <button
+              className={section === id ? "selected" : ""}
+              key={id}
+              onClick={() => setSection(id)}
+            >
+              <Icon size={15} />
+              {label}
+            </button>
+          ))}
+        </div>
         <span className="nav-caption">YOUR WORKROOMS</span>
         <nav>
           {rooms.map((r) => (
@@ -596,10 +711,10 @@ export default function AgentStudio() {
         <div className="sidebar-bottom">
           <div>
             <span className="status-dot" />
-            Local workspace · SQLite
+            Local public workspace
           </div>
           <button onClick={() => setSettings(true)}>
-            <Settings2 size={16} /> Connections & design
+            <Settings2 size={16} /> Platform & design
           </button>
           <p>
             Independent external prototype
@@ -613,9 +728,20 @@ export default function AgentStudio() {
           <div>
             <span>Corporate Finance</span>
             <ChevronRight size={13} />
-            <strong>{room ? "Client workroom" : "New discussion"}</strong>
+            <strong>
+              {section === "workroom"
+                ? room
+                  ? "Client workroom"
+                  : "New discussion"
+                : section === "connections"
+                  ? "Data connections"
+                  : section === "library"
+                    ? "Materials library"
+                    : "Architecture"}
+            </strong>
           </div>
           <div>
+            <span className="phase-label">Local architecture preview</span>
             <span className="draft-status">
               {active
                 ? "Agent working"
@@ -647,22 +773,29 @@ export default function AgentStudio() {
             <span className="avatar">DT</span>
           </div>
         </header>
-        {!room ? (
+        {section !== "workroom" ? (
+          <PlatformWorkspace
+            view={section}
+            platform={platform}
+            rooms={rooms}
+            onOpen={(id) => {
+              const r = rooms.find((r) => r.id === id);
+              if (r) open(r);
+            }}
+            onRun={runBlueprint}
+            busy={previewBusy}
+          />
+        ) : !room ? (
           <section className="agent-welcome">
             <span className="eyebrow">
               FROM CONVERSATION TO CLIENT MATERIALS
             </span>
-            <h1>
-              What are we preparing
-              <br />
-              for the client?
-            </h1>
+            <h1>What are we preparing for the client?</h1>
             <p>
-              Describe the decision. Your agent gathers public data, runs the
-              analysis
+              Capture the client decision, explore connected evidence and
+              inspect the analysis
               <br />
-              and designs a sourced discussion in your company’s visual
-              language.
+              and dynamically composed materials. Model connections come next.
             </p>
             <div className="brief-composer">
               <textarea
@@ -681,39 +814,15 @@ export default function AgentStudio() {
                   disabled={!prompt.trim()}
                   onClick={() => void send()}
                 >
-                  Prepare discussion <ArrowRight size={17} />
+                  Save brief <ArrowRight size={17} />
                 </button>
               </div>
             </div>
-            <div className="example-briefs">
-              {examples.map(([title, text], i) => (
-                <button key={title} onClick={() => setPrompt(text)}>
-                  <span>0{i + 1}</span>
-                  <h3>
-                    {title}
-                    <ArrowUpRight size={16} />
-                  </h3>
-                  <p>
-                    {
-                      [
-                        "Price an illustrative issuance and discuss financing trade-offs.",
-                        "Assess a repurchase and its effect on earnings per share.",
-                        "Evaluate purchase economics, funding and leverage.",
-                      ][i]
-                    }
-                  </p>
-                </button>
-              ))}
-            </div>
+            <Playbooks onRun={runBlueprint} busy={previewBusy} />
             <div className="welcome-connections">
               <span className="status-dot" />
-              {local
-                ? "Local Claude CLI installed · capacity checked on run"
-                : "Connect a model to start"}
-              <span>
-                Public data is retrieved automatically. Source vintages stay
-                visible.
-              </span>
+              Public archive ready · sources retain dates and units
+              <span>Live data and model connections are deferred.</span>
             </div>
           </section>
         ) : (
@@ -724,6 +833,15 @@ export default function AgentStudio() {
                 <h2>{room.draft?.title || "Developing the brief"}</h2>
                 <p>Brief → sources → financial tools → materials</p>
               </div>
+              {room.workflow && (
+                <div className="workflow-strip">
+                  {room.workflow.stages.map((stage) => (
+                    <span key={stage.id} className={stage.state}>
+                      {stage.label}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="conversation-scroll">
                 {room.messages.map((m, i) => (
                   <div
@@ -731,7 +849,11 @@ export default function AgentStudio() {
                     className={`conversation-message role-${m.role}`}
                   >
                     <span className="message-role">
-                      {m.role === "banker" ? "YOU" : "STUDIO AGENT"}
+                      {m.role === "banker"
+                        ? "YOU"
+                        : m.role === "system"
+                          ? "WORKFLOW"
+                          : "STUDIO AGENT"}
                     </span>
                     <p>{m.text}</p>
                   </div>
@@ -815,7 +937,7 @@ export default function AgentStudio() {
                     disabled={!notes.length || !!active}
                     onClick={async () => {
                       const submitted = await send(
-                        `Apply these review notes to the existing draft. Preserve unaffected pages and source links. ${notes.map((n) => `Page ${n.page}: ${n.text}`).join("\n")}`,
+                        `Apply these review notes to the existing draft. Preserve unaffected pages and source links. ${notes.map((n) => `Page id ${n.pageId} (page ${n.page}, captured revision ${n.revision}): ${n.text}`).join("\n")}`,
                       );
                       if (submitted) {
                         setNotes([]);
@@ -823,7 +945,7 @@ export default function AgentStudio() {
                       }
                     }}
                   >
-                    Apply review notes <ArrowRight size={14} />
+                    Save review brief <ArrowRight size={14} />
                   </button>
                 </div>
               )}
@@ -851,7 +973,7 @@ export default function AgentStudio() {
                     title={
                       ai
                         ? "Record audio and transcribe using OpenAI"
-                        : "Configure an OpenAI API key for audio transcription"
+                        : "Voice connections are deferred to the next phase"
                     }
                     disabled={!ai || !!active || transcribing}
                     onClick={() => void record()}
@@ -886,7 +1008,7 @@ export default function AgentStudio() {
                       className="send-icon"
                       disabled={!prompt.trim()}
                       aria-label={
-                        meeting ? "Add page review note" : "Send follow-up"
+                        meeting ? "Add page review note" : "Save follow-up"
                       }
                       onClick={() => (meeting ? addNote() : void send())}
                     >
@@ -903,6 +1025,7 @@ export default function AgentStudio() {
                     ["draft", "Materials", LayoutPanelLeft],
                     ["analysis", "Analysis", FileText],
                     ["sources", "Sources", Database],
+                    ["context", "Context", Layers3],
                   ].map(([id, title, Icon]) => (
                     <button
                       key={id as string}
@@ -931,7 +1054,52 @@ export default function AgentStudio() {
                         {page + 1} of {room.draft!.slides.length} pages ·{" "}
                         {slide.layout} composition
                       </span>
-                      <div>
+                      <div className="scene-tools">
+                        <label>
+                          Composition{" "}
+                          <select
+                            aria-label="Page composition"
+                            value={slide.layout}
+                            onChange={(e) =>
+                              void applyPagePatch([
+                                {
+                                  op: "set_layout",
+                                  pageId: slide.id,
+                                  layout: e.target.value,
+                                },
+                              ])
+                            }
+                          >
+                            {["cover", "split", "full", "grid"].map((l) => (
+                              <option
+                                key={l}
+                                value={l}
+                                disabled={
+                                  slide.blocks.length > 1 &&
+                                  ["full", "cover"].includes(l) &&
+                                  slide.blocks.some((b) => b.type !== "text")
+                                }
+                              >
+                                {l}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <button
+                          aria-label="Move page earlier"
+                          disabled={page === 0}
+                          onClick={() =>
+                            void applyPagePatch([
+                              {
+                                op: "move_page",
+                                pageId: slide.id,
+                                to: page - 1,
+                              },
+                            ])
+                          }
+                        >
+                          Move earlier
+                        </button>
                         <button
                           disabled={!!active}
                           onClick={() => {
@@ -1051,13 +1219,76 @@ export default function AgentStudio() {
                     <p>
                       {active
                         ? "The agent will retrieve evidence, calculate the scenario and compose the pages here."
-                        : run?.status === "failed"
-                          ? "The model request failed. Inspect the execution, then retry when model capacity is available or choose another connection in Settings."
-                          : "Answer the agent’s question to continue. Reported facts will be retrieved automatically."}
+                        : "Your brief is saved for the next model-enabled phase. Explore a local workflow from Data connections to inspect the complete evidence-to-materials path now."}
                     </p>
                     {active && <LoaderCircle className="spin" size={23} />}
                   </div>
                 )
+              ) : tab === "context" ? (
+                <div className="inspection-panel context-panel">
+                  <h2>Context for the assignment</h2>
+                  <p>
+                    The workflow selects evidence and financial outputs before a
+                    model sees the task. Source records retain their units,
+                    periods and citation identities.
+                  </p>
+                  {room.contextPacket ? (
+                    <>
+                      <div className="packet-counts">
+                        <span>
+                          {room.contextPacket.observations.length} evidence
+                          records
+                        </span>
+                        <span>
+                          {
+                            Object.keys(room.contextPacket.citationManifest)
+                              .length
+                          }{" "}
+                          citations
+                        </span>
+                        <span>
+                          {room.contextPacket.omittedEvidenceIds.length} omitted
+                          by budget
+                        </span>
+                      </div>
+                      <p>{room.contextPacket.task}</p>
+                      {room.contextPacket.observations.map((o: J) => (
+                        <div className="evidence-row" key={o.id}>
+                          <strong>
+                            {o.symbol} · {o.metric}
+                          </strong>
+                          <span>
+                            {n(o.normalized.value, o.normalized.unit)}
+                          </span>
+                          <small>
+                            Annual period {o.period.end} · filed {o.publishedAt}
+                          </small>
+                          <small>
+                            Reported: {o.reported.value.toLocaleString()}{" "}
+                            {o.reported.unit}
+                          </small>
+                          <a
+                            href={o.source.uri}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {o.source.tag} ↗
+                          </a>
+                          <small>{o.source.basis}</small>
+                        </div>
+                      ))}
+                      <details>
+                        <summary>Inspect bounded context contract</summary>
+                        <pre>{JSON.stringify(room.contextPacket, null, 2)}</pre>
+                      </details>
+                    </>
+                  ) : (
+                    <p>
+                      Run a local workflow to assemble a bounded evidence
+                      packet. A saved brief does not invent supporting data.
+                    </p>
+                  )}
+                </div>
               ) : tab === "analysis" ? (
                 <div className="inspection-panel">
                   <h2>The financial record</h2>
@@ -1130,11 +1361,13 @@ export default function AgentStudio() {
                     ([id, c]: [string, any]) => (
                       <section key={id}>
                         <span
-                          className={`source-pill ${c.provenance?.mode === "cached" ? "cached" : ""}`}
+                          className={`source-pill ${c.provenance?.mode !== "retrieved" ? "cached" : ""}`}
                         >
-                          {c.provenance?.mode === "cached"
-                            ? "DATED CACHE"
-                            : "RETRIEVED"}
+                          {c.provenance?.mode === "archive"
+                            ? "FROZEN ARCHIVE"
+                            : c.provenance?.mode === "cached"
+                              ? "DATED CACHE"
+                              : "RETRIEVED"}
                         </span>
                         <h3>{c.name || "U.S. Treasury"}</h3>
                         <p>
@@ -1216,97 +1449,33 @@ export default function AgentStudio() {
       {settings && (
         <div className="modal-shade">
           <section
-            className="agent-settings"
+            className="platform-dialog"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="connection-title"
+            aria-label="Platform and design"
           >
-            <div>
-              <h2 id="connection-title">Connections & design</h2>
-              <button
-                onClick={() => setSettings(false)}
-                aria-label="Close settings"
-              >
-                <X size={19} />
-              </button>
-            </div>
-            <label>
-              Drafting connection
-              <select
-                value={provider}
-                onChange={(e) => setProvider(e.target.value)}
-              >
-                <option value="claude" disabled={!local}>
-                  Local Claude Code {local ? "· installed" : "· unavailable"}
-                </option>
-                <option value="openai">
-                  OpenAI API {ai ? "· connected" : "· key required"}
-                </option>
-              </select>
-            </label>
-            <p>
-              Local Claude uses your installed, signed-in CLI through its
-              supported interface. No filesystem, shell, browser or external MCP
-              tools are enabled. Usage draws on your plan. This connection is
-              for your personal external demo.
-            </p>
-            <label>
-              OpenAI API key · optional for drafting, required for audio
-              <input
-                type="password"
-                autoComplete="off"
-                value={key}
-                onChange={(e) => setKey(e.target.value)}
-                placeholder={
-                  ai
-                    ? "Key configured in server memory"
-                    : "Enter privately here"
-                }
-              />
-            </label>
             <button
-              disabled={!key.trim()}
-              onClick={async () => {
-                try {
-                  const c = await api<J>("/api/settings", { openai: key });
-                  setAi(c.ai);
-                  setKey("");
-                  setNotice("API connection saved in server memory.");
-                  setSettings(false);
-                } catch (e) {
-                  setError(String(e));
-                }
-              }}
+              className="close-platform"
+              onClick={() => setSettings(false)}
+              aria-label="Close platform"
             >
-              Save API connection
+              <X size={18} />
             </button>
-            <label className="check-setting">
-              <input
-                type="checkbox"
-                checked={cache}
-                onChange={(e) => setCache(e.target.checked)}
-              />
-              Allow explicitly dated public cache when a connector cannot
-              refresh
-            </label>
-            <hr />
-            <h3>Rabobank public design reference</h3>
-            <p>
-              The wordmark is the actual vector path from the public investor
-              site. Myriad web fonts are loaded from this Mac’s local brand
-              folder when available. Fonts are excluded from the repository.
-              This prototype is independent and is not bank-approved.
-            </p>
-            <div className="font-check">
-              Aa <span>Myriad · corporate typography</span>
-            </div>
-            <a
-              href="https://www.rabobank.com/about-us/investor-relations/presentations"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Public investor design reference ↗
-            </a>
+            <PlatformWorkspace
+              view="architecture"
+              platform={platform}
+              rooms={rooms}
+              onOpen={(id) => {
+                setSettings(false);
+                const r = rooms.find((r) => r.id === id);
+                if (r) open(r);
+              }}
+              onRun={(...args) => {
+                setSettings(false);
+                void runBlueprint(...args);
+              }}
+              busy={previewBusy}
+            />
           </section>
         </div>
       )}

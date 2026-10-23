@@ -20,12 +20,14 @@ else:tool,args='compose_materials',{'title':'TEST FIXTURE — financing discussi
 print(json.dumps({'is_error':False,'structured_output':{'tool':tool,'arguments':json.dumps(args)},'usage':{'fixture':True}}))
 '''
 def main():
+ if os.environ.get("BANKING_STUDIO_VERIFY_MODEL_PORT") != "1":
+  raise SystemExit("Model-port rehearsal is deferred. Run scripts/verify_mcp_architecture.py for this phase; use BANKING_STUDIO_VERIFY_MODEL_PORT=1 only for an explicitly requested later mock-model-port test.")
  checks=[]
  with tempfile.TemporaryDirectory(prefix='banking-agent-test-') as tmp:
   tmp=pathlib.Path(tmp);mock=tmp/'mock-model';mock.write_text(FIXTURE);mock.chmod(0o755)
   with socket.socket() as x:x.bind(('127.0.0.1',0));port=x.getsockname()[1]
   base=f'http://127.0.0.1:{port}';token=''
-  env={**os.environ,'PORT':str(port),'BANKING_STUDIO_DATA_DIR':str(tmp),'CLAUDE_BIN':str(mock),'OPENAI_API_KEY':'','ALPHA_VANTAGE_API_KEY':''}
+  env={**os.environ,'PORT':str(port),'BANKING_STUDIO_DATA_DIR':str(tmp),'CLAUDE_BIN':str(mock),'OPENAI_API_KEY':'','ALPHA_VANTAGE_API_KEY':'','BANKING_STUDIO_EXTERNAL_CONNECTIONS':'1'}
   def req(path,body=None,status=200):
    q=urllib.request.Request(base+path,data=None if body is None else json.dumps(body).encode(),headers={'content-type':'application/json','x-demo-token':token})
    try:r=urllib.request.urlopen(q,timeout=10)

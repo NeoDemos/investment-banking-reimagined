@@ -1,28 +1,22 @@
-# Monday application demonstration — 26 October 2026
+# Monday demonstration — local MCP-backed workspace
 
-Use the **agent workflow**, not the retained manual workspace. Open `Start Demo.command` and `http://localhost:4173` on the personal Mac. The `.app` is an unsigned browser launcher, not a native webview. Keep the terminal server open. Use public information only and a viewport of at least 1280×800.
+The owner explicitly deferred model, voice and live data connections. **No API key is required.** Show the working architecture and interaction with the dated public archive. Use the personal Mac, `Start Demo.command` and `http://localhost:4173`, at least 1280×800. The `.app` is an unsigned browser launcher, not a managed native webview.
 
-## Rehearsal gate
-
-On 23 October the real local Claude Max request returned **weekly usage limit / HTTP 429**. The system reports this rather than generating a canned substitute. Before Monday, verify available Claude capacity or configure an OpenAI API key privately in Connections & design. A full successful live model draft and redraft remain unverified until this is done. The mock-model integration test is not the boss-demo rehearsal.
-
-## Demonstration
-
-| Time | Banker interaction | Expected application behavior |
+| Time | Action | What it demonstrates |
 |---|---|---|
-| 0–1 min | Choose Financing discussion to populate an example brief; read it and click Prepare discussion. | The brief explicitly gives illustrative transaction terms. The model decides which tools to call; no template draft is created at engagement creation. |
-| 1–3 min | Watch execution; expand a call/result if useful. | SEC company facts and a USD Treasury curve are retrieved automatically. Failed refreshes can use a clearly dated cache when allowed. Disable cache in Settings to require fresh retrieval. |
-| 3–5 min | Open the composed materials, then Sources and Analysis. | Page count, sequence and visual blocks come from the model's design decisions. Reported facts retain dates/units/tags/filings. Rust supplies every displayed financial figure from the pinned source snapshot. |
-| 5–7 min | Ask: “Increase the assumed spread to 175 bps, show the downside first and make the discussion more concise. Preserve the source context.” | The agent recalculates into a new analysis record and composes another draft. The previous draft and source/calculation snapshot remain in history. The model may clarify an ambiguous instruction. |
-| 7–9 min | Choose Review together. Select pages, type a note on each and choose Add page review note; Apply review notes. | All page-specific feedback returns to the same agent pipeline. Completion appears in the app. Direct Edit page changes headline/narrative and saves a revision with concurrency checks. |
-| 9–10 min | Download inspection JSON and calculation workings CSV. | The database/engine is the working system; exports allow inspection. Current agent-aware editable PowerPoint/XLSX/standalone deck export is not claimed. |
+| 0–1 min | Open Data connections. | Ready local archive and explicitly planned/deferred source contracts; no claim of a licensed live feed. |
+| 1–2 min | Explore the Financing discussion blueprint for PepsiCo. | Actual MCP discovery/calls retrieve the archive, run Rust finance, build bounded context and compile five pages. The narrative/terms are labelled examples, not AI inference. |
+| 2–3 min | Inspect execution, Sources and Context. | Source units, periods, filing dates/tags and citation identities remain attached. The context packet selects data rather than sending a whole database. |
+| 3–5 min | Browse materials. Inspect Analysis if needed. | Figures resolve to the calculated model; source data and assumed transaction terms are distinct. The canvas consumes compiled scene frames. |
+| 5–6 min | Change a permitted page composition, edit a headline and move a page earlier. | A new document/scene revision preserves analytical/source records and stable page IDs. Stale edits are rejected. |
+| 6–7 min | Use Review together to collect page comments, then Save review brief. | Feedback is tied to page identities and retained as a pending instruction. Model execution is next phase; do not claim the draft was automatically rewritten. |
+| 7–8 min | Open Materials library; explore another blueprint. | Capital returns produces four pages; acquisition seven. Source/calc objects and document shape vary with the workflow. |
+| Optional | Inspect Architecture. | Actual discovered MCP schemas/resources, provider contracts, context and document boundaries, and the deferred model port. |
 
-A natural brief can require clarification. Unobserved share prices and issuer spreads are assumptions, not facts. The example briefs make that explicit so the discussion can proceed without typing reported financial data. Public annual accounts are not current market data, LTM figures or forecasts. The source tab states actual vintages, refresh failures and normalized source hashes. There are three covered entities: PEP, CPB, GIS; unsupported coverage must be explained.
+A free-form banker brief can be saved now without pretending the system interpreted it. To show the full executable path without external inference, select a local blueprint. Company selection identifies data; users are not punching reported financial values into an analysis form.
 
-## Audio and branding
+The archive is deliberately dated. Annual US GAAP is not LTM/forecast/consensus; EBITDA is an operating-income-plus-D&A proxy. Stock prices, issuer credit spreads, deal shares and transaction terms are explicit illustration assumptions. Bond pricing uses a Treasury par reference and flat YTM; acquisition outputs exclude PPA, costs and timing. Qualified financial review is still required. See the in-app methodology/resource contract.
 
-Recorded voice can populate the brief/review composer through an optional OpenAI transcription API key entered privately in the app. This audio path is not yet live tested. It is not a virtual human team or a full duplex meeting. Keep typed page review as the rehearsed fallback; no external email/message is sent.
+The actual public SVG wordmark and locally supplied Myriad website fonts support the identity study. Fonts are not redistributed; PDF-custom font pixel parity and official bank approval are not claimed. Inspect every page before presenting. Current JSON/CSV are inspection exports; editable PowerPoint, richer Office export, live voice, licensed feeds and managed native deployment remain later work.
 
-The SVG wordmark is the actual public investor-site vector path. Light/regular/bold Myriad website fonts are installed locally on this Mac, excluded from the repo/bundle. The public PDF's customized MyriadforRabobank font is a distinct identity, and PDF pixel parity or official approval is not claimed. The canvas uses 4:3 pages. Check every page for density and narrative quality before showing it.
-
-This is an independent public-data prototype. No bank affiliation, confidential processing, ZDR assurance, financial advice approval or bank acceptance is implied. Qualified finance review, native managed deployment, bank identity/models, broader valuation coverage and licensed market data remain later work. See [agent workflow](AGENT_WORKFLOW.md) and [financial conventions](MVP_ARCHITECTURE.md).
+[Research](PEER_ARCHITECTURE_RESEARCH.md) · [Current architecture and phase plan](MCP_ARCHITECTURE.md) · [Bank programme](BANK_ACCEPTANCE.md).

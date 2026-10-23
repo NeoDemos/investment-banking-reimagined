@@ -160,6 +160,12 @@ pub fn calculate_for(
     let base_leverage = (debt - cash) / ebitda;
     let cash_yield = treasury(data, 1.);
     let mut warnings = vec![];
+    if kind != "bond" && ni == 0. {
+        return Err("EPS percentage change is undefined with zero historical earnings".into());
+    }
+    if kind != "bond" && ni < 0. {
+        warnings.push("Historical earnings are negative. A positive EPS percentage ratio can mean a larger loss per share; inspect the before/after EPS amounts rather than interpret it as accretion.".into());
+    }
     let (mut metrics, workings, chart, sensitivity, title, summary, mut conclusions) = match kind {
         "bond" => {
             let amount = get("amount");
@@ -305,6 +311,26 @@ mod tests {
             for r in m["workings"].as_array().unwrap() {
                 assert!(r["value"].as_f64().unwrap().is_finite())
             }
+        }
+    }
+    #[test]
+    fn eps_ratios_handle_zero_and_negative_earnings_explicitly() {
+        let mut d = data();
+        let m = calculate_for(&d, "buyback", &defaults("buyback"), "GIS", "CPB").unwrap();
+        assert!(
+            m["warnings"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|w| w.as_str().unwrap().contains("larger loss"))
+        );
+        d["companies"][0]["facts"]["netIncome"]["value"] = json!(0.);
+        for kind in ["buyback", "acquisition"] {
+            assert!(
+                calculate(&d, kind, &defaults(kind))
+                    .unwrap_err()
+                    .contains("undefined")
+            );
         }
     }
 }

@@ -1,0 +1,119 @@
+{
+  "asOf": "2026-10-23",
+  "scope": "Architecture-first local public archive; external connections deferred by owner",
+  "rustUnitAndProtocolTests": {
+    "passed": 23,
+    "command": "cargo test"
+  },
+  "typescript": "npm run check passed",
+  "productionBuild": "npm run build and cargo build --release passed",
+  "mcpWorkflow": {
+    "asOf": "2026-10-23",
+    "checksPassed": 11,
+    "checks": [
+      "Architecture is discovered from the real MCP server and planned providers are explicit",
+      "Model invocation is deferred without requesting a key",
+      "Free-form briefs persist honestly without fake generated materials; stale captures fail",
+      "Lightweight room summaries do not download analytical/source/history payloads",
+      "Three genuine local MCP workflows generate different page counts with canonical source/context/financial bindings",
+      "Scoped document edits/reordering recompile scenes without changing financial data",
+      "Stale and partially invalid edit batches cannot overwrite a saved artifact",
+      "Invalid financial bindings are rejected at the document boundary",
+      "Unsupported entities and invalid financial workflow scope fail explicitly",
+      "Restart preserves exact document, scene and bounded context snapshots",
+      "Standalone SDK stdio supports legacy MCP initialization, tool discovery/call, structured observations and citation resource read; arbitrary files are rejected"
+    ],
+    "localWorkflowLatencyMs": {
+      "bondMs": 5.66,
+      "buybackMs": 4.87,
+      "acquisitionMs": 6.36
+    },
+    "externalConnections": "Deferred; proxy points to a closed port during tests",
+    "modelCalls": 0,
+    "blueprintPageCounts": {
+      "bond": 5,
+      "buyback": 4,
+      "acquisition": 7
+    },
+    "notClaimed": [
+      "Autonomous natural-language drafting",
+      "Live provider entitlements or model/API integration",
+      "Bank acceptance",
+      "General pixel-perfect typesetting"
+    ]
+  },
+  "retainedDeterministicApi": {
+    "checksPassed": 28,
+    "checks": [
+      "Compiled React assets serve without a frontend development server",
+      "Three seeded financial cases",
+      "Offline capabilities honestly reported",
+      "CSRF, Origin and Host boundaries reject invalid requests",
+      "Public observations respect the as-of date",
+      "bond Excel formula caches equal every Rust working",
+      "buyback Excel formula caches equal every Rust working",
+      "acquisition Excel formula caches equal every Rust working",
+      "Bond PV independently recomputed",
+      "Buyback EPS independently recomputed including opportunity cost",
+      "Acquisition EPS independently recomputed",
+      "Background revision actually completes",
+      "Review changes assumptions and recalculates",
+      "Unrecognized requests remain visible and pending",
+      "Historical calculations remain immutable",
+      "Freeze applies to exact version; editing creates a new draft",
+      "Invalid assumptions preserve the prior version",
+      "Deferred external connections fail explicitly",
+      "Existing financial cases migrate into a connected engagement",
+      "New engagement owns three independent analysis records",
+      "Structured rich text persists as a material revision",
+      "Stale material saves cannot overwrite current work",
+      "Document validation rejects scripts and cross-engagement analysis links",
+      "Recalculation updates the project analysis while preserving written narrative",
+      "Review copy preserves exact narrative and old financial versions",
+      "Draft workflow binds current calculations into a new editable revision",
+      "Unsupported client is not silently priced with PepsiCo data",
+      "Engagement, draft revision and exact review copy survive process restart"
+    ],
+    "measurement": {
+      "machine": "local Apple Silicon Mac; not representative of managed bank hardware",
+      "process": "release Rust backend only; browser excluded",
+      "startupMs": 580.3,
+      "backendRssMiB": 11.8,
+      "briefGetMedianMs": 0.21,
+      "briefGetP95Ms": 0.26,
+      "binaryMiB": 11.07
+    },
+    "notTested": [
+      "Live model, transcription and voice: deferred by owner instruction",
+      "Live quote/provider integration: deferred by owner instruction",
+      "Managed Windows/macOS deployment",
+      "Bank acceptance"
+    ]
+  },
+  "browser": {
+    "viewport": "1280\u00d7800",
+    "financingPagesChecked": 5,
+    "buybackPagesChecked": 4,
+    "acquisitionPagesChecked": 7,
+    "checks": [
+      "Every example page inspected for clipped scene blocks",
+      "Source inspection shows archive vintage and original/normalized units",
+      "Context view shows selected evidence and citation identities",
+      "Composition change and page move persist as distinct revisions",
+      "Material library reopens selected workroom with scene and no credential field",
+      "Architecture UI shows catalog discovered from running MCP server"
+    ],
+    "limits": "Verified example documents only; not a general typesetting proof"
+  },
+  "precisionRegression": "serde_json float_roundtrip enabled; source and calculated JSON remain exactly equal across scoped edits/restart",
+  "financialEdgeCases": "Zero baseline earnings reject EPS percentage calculations; negative earnings carry explicit loss-ratio warning",
+  "historicalEvidence": "docs/agent-verification.json describes pre-MCP mocked-model checks, not current live acceptance",
+  "notClaimed": [
+    "Autonomous natural-language drafting",
+    "Live data/model/voice connectivity",
+    "Full per-derived-number lineage",
+    "Bank acceptance",
+    "Managed Windows/macOS distribution",
+    "Universal pixel-perfect or official Rabobank brand matching"
+  ]
+}

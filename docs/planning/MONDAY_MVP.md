@@ -2,9 +2,9 @@
 
 Scope authorized 22 October 2026. Target demonstration: Monday **26 October 2026**, personal Mac, public information only. This supplements the [original 37-task plan](TASK_REGISTER.md); it does not mark its bank controls or full valuation acceptance work complete.
 
-[GitHub Monday MVP track #39](https://github.com/NeoDemos/investment-banking-reimagined/issues/39) · [Project](https://github.com/users/NeoDemos/projects/3) · [Structured task metadata](monday-mvp.json). Tasks M01–M09 are issues #40–48, with native child/dependency links and per-task project dates/effort. Live API rehearsal (#46) and owner/banker review (#48) remain open.
+[GitHub Monday MVP track #39](https://github.com/NeoDemos/investment-banking-reimagined/issues/39) · [Project](https://github.com/users/NeoDemos/projects/3) · [Structured task metadata](monday-mvp.json). Tasks M01–M09 are issues #40–48, with native child/dependency links and per-task project dates/effort. Live API rehearsal (#46) and model-port acceptance (#51) are deferred to the next phase by the owner. Owner/banker review (#48) remains open for Monday. **M12 / #52 is the current technical architecture acceptance baseline.**
 
-**23 October correction:** the owner required an integrated React application rather than a presentation-viewer interface. M10 supplements the original nine tasks: engagement/workflow navigation, React/TypeScript, Tiptap material editing, linked financial blocks, saved review copies and local Myriad typography. Target 23–26 October; incremental prospective owner effort **8/12/20 hours low/base/high**, not recorded agent runtime. The initial 35-hour base estimate below remains the original baseline; including this correction the prospective base becomes 47 hours. See [reference/open-source decisions](../REACT_WORKSPACE_AND_OPEN_SOURCE.md). Live APIs and owner/banker review remain separate outstanding gates.
+**23 October correction:** the owner required an integrated React application rather than a presentation-viewer interface. M10 supplements the original nine tasks: engagement/workflow navigation, React/TypeScript, Tiptap material editing, linked financial blocks, saved review copies and local Myriad typography. Target 23–26 October; incremental prospective owner effort **8/12/20 hours low/base/high**, not recorded agent runtime. The initial 35-hour base estimate below remains the original baseline; including this correction the prospective base becomes 47 hours. See [reference/open-source decisions](../REACT_WORKSPACE_AND_OPEN_SOURCE.md). This is historical scope: live APIs are now deferred; owner/banker review remains separate.
 
 The estimates below are **prospective owner-effort ranges**, not elapsed agent runtime or recorded hours. Base effort totals 35 hours before optional provider-account delays; one focused owner can prepare the narrow slice in the Thursday–Sunday window, with scope/review risk. Existing implementation reduces remaining coding work but does not eliminate rehearsal or specialist review. Neither a Max subscription nor more agents makes external entitlements, expert decisions or tenant approval instantaneous.
 
@@ -16,27 +16,27 @@ The estimates below are **prospective owner-effort ranges**, not elapsed agent r
 | M04 — Digital corporate-identity presentations | Fri 23 Oct | 3 / 5 / 8 | M02, M03 | Six-page layouts implemented and browser inspected. Official template/font and brand-owner approval are excluded. |
 | M05 — Page review, revisions and completion messages | Fri–Sat 23–24 Oct | 2 / 3 / 5 | M03, M04 | Typed bounded commands, background job, new version, unresolved notes and local completion tested. |
 | M06 — Offline presentation and inspection exports | Sat 24 Oct | 2 / 3 / 4 | M02, M04 | HTML and XLSX implemented; XLSX cached results checked. Native PPTX excluded. |
-| M07 — API voice and structured-edit adapters | Sat 24 Oct | 2 / 3 / 6 | M05, user-owned API access | Adapters implemented. **Live text/transcription/voice rehearsal pending key, account access and microphone/network permission.** Keep typed fallback. |
+| M07 — API voice and structured-edit adapters | Next phase; 1–3 working days after model acceptance/access | 2 / 3 / 6 | M05, permitted API access | **Deferred by owner; not a Monday blocker.** Retained adapters are disabled by default. |
 | M08 — Local correctness, UI, security and footprint checks | Sat–Sun 24–25 Oct | 4 / 5 / 8 | M02–M07 | Unit/integration/browser evidence recorded; production and managed-device verification excluded. Re-run only after relevant changes. |
-| M09 — Package, financial review and boss-demo rehearsal | Sun 25 Oct; show Mon 26 Oct | 2 / 2 / 3 | M04–M08 | Local Mac launchers and demonstration script prepared. Owner/banker rehearsal and live-voice decision remain outstanding. |
+| M09 — Package, financial review and boss-demo rehearsal | Sun 25 Oct; show Mon 26 Oct | 2 / 2 / 3 | M04–M06, M08, M12 | Local Mac launcher and no-API demonstration script prepared. Owner/banker walkthrough remains outstanding. |
 
 Suggested specialist time, additional to the owner estimates: 2–4 finance-review hours for the three demonstrations. Cut live voice first if account/network testing fails; retain a complete typed review, recalculation, presentation and export story. Do not fill missing market quotes with invented observations. Do not add native installers, bank SSO, confidential data, full DCF, precedent-transaction feeds or a general CIM writer before Monday.
 
-## Agent-workflow correction — M11 / #51
+## Current architecture baseline — M12 / #52
 
-The owner rejected the manual-first six-section interaction after M10. M11 introduces the genuine intent → source connectors → financial tools → dynamic materials → conversational review path. Target **23–26 October**; incremental prospective owner effort **12 / 20 / 32 hours low/base/high**, not measured coding-agent runtime. This supplements the prior 47-hour base to **67 prospective base hours for the revised scope**, not a record of elapsed work or proof of subscription capacity. Finance review adds 2–4h; model availability is an external gate.
+The owner deferred external connections and requested a proper source → MCP → context/workflow → dynamic-materials application. [M12 #52](https://github.com/NeoDemos/investment-banking-reimagined/issues/52) is technically complete in draft PR #49. It uses actual MCP SDK discovery/calls/resources and curated local blueprints; free-form briefs are saved pending the later model port. No autonomous natural-language generation is claimed.
 
-| Subtask | Window | Base owner h | Completion evidence |
+| Subtask | Window | Owner h low/base/high | Completion evidence |
 |---|---|---:|---|
-| Intent/tool/source/assumption contract | 23 Oct | 2 | Application-owned action/observation protocol and explicit unsupported coverage |
-| Automatic connectors and pinned sources | 23–24 Oct | 4 | SEC/Treasury calls, normalized metadata, dated cache and hashes |
-| Bounded model loop and durable run lifecycle | 23–24 Oct | 4 | Tool allowlist, clarification, step/time bounds, cancellation/restart |
-| Primary React interaction and dynamic composition | 24–25 Oct | 5 | Banker brief, trace, 2–12 composed pages, same-agent page review |
-| Exact public SVG and local-only Myriad | 23–24 Oct | 1 | Vector path and website font identities inspected; no redistribution |
-| State/adversarial/UI checks | 24–25 Oct | 3 | Mock-model protocol, real connector attempts, source bindings, concurrent writes |
-| Live first draft/redraft and banker rehearsal | 25–26 Oct | 1 + wait | **Open:** real Claude Max request hit weekly quota; no successful live draft yet |
+| Primary-source peer/MCP research and contracts | 23 Oct | 1 / 2 / 4 | Product/provider/SDK evidence and independent implementation decisions |
+| Evidence/provider/MCP boundary | 23–24 Oct | 2 / 4 / 7 | Canonical IDs/units/vintages; actual SDK tools/resources; planned adapters fail explicitly |
+| Context and document/scene contracts | 23–24 Oct | 2 / 3 / 5 | Bounded packets, resolvable citations, numeric bindings and scoped revisions |
+| React workspace and local blueprint flow | 24–25 Oct | 2 / 3 / 5 | Connections, library, context, materials and saved review; no API-key gate |
+| Protocol/state/rendering verification | 24–25 Oct | 1 / 2 / 3 | Independent stdio, exact numeric persistence, three workflows and browser review |
 
-[M11 issue #51](https://github.com/NeoDemos/investment-banking-reimagined/issues/51) remains open. The original #46 live API/audio and #48 owner-review gates also remain open. A mock model test is not a live demonstration. The public website Myriad differs from PDF-custom MyriadforRabobank; exact PDF pixel parity is not claimed. See [current architecture and evidence](../AGENT_WORKFLOW.md). Proposed lead/worker assignments remain planning roles; no multi-agent implementation throughput was measured here.
+Total **8 / 14 / 24 prospective owner hours**, not recorded runtime. This scope overlaps the M10/M11 foundation: historical correction forecasts are **not cumulative delivered effort**. The current evidence includes 23 Rust tests, 11 actual MCP/workflow check groups, 28 retained API checks and all 16 example pages inspected at 1280×800. Model calls: zero. [Architecture, remaining tasks and estimates](../MCP_ARCHITECTURE.md) · [Research](../PEER_ARCHITECTURE_RESEARCH.md) · [Verification](../mcp-verification.json).
+
+Historical M11 (#51) implemented a custom model/tool loop and hit a live quota limit. Its live acceptance now belongs to the next phase; the former quota is not a present blocker. Remaining model-port work is re-estimated at **4 / 8 / 14 owner h**, roughly **2–5 working days after access and architecture review**. #46 voice/API acceptance is also deferred. #48 owner/banker walkthrough remains open. Public website Myriad differs from PDF-custom MyriadforRabobank; exact PDF pixel parity is not claimed.
 
 ## After Monday
 

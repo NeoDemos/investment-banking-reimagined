@@ -134,8 +134,8 @@
     {
       "code": "M07",
       "title": "Rehearse API text, recorded speech and live voice end to end",
-      "start": "2026-10-24",
-      "target": "2026-10-24",
+      "start": null,
+      "target": null,
       "lowHours": 2,
       "ownerHours": 3,
       "highHours": 6,
@@ -149,7 +149,11 @@
         "node_id": "I_kwDOVSrbdM8AAAABZBJvrA",
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/46",
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhCnQfU"
-      }
+      },
+      "phase": "Next phase",
+      "deferredByOwner": true,
+      "horizon": "1\u20133 working days after model-port acceptance and access",
+      "acceptanceGate": "Deferred; not a Monday architecture blocker"
     },
     {
       "code": "M08",
@@ -187,8 +191,8 @@
         "M04",
         "M05",
         "M06",
-        "M07",
-        "M08"
+        "M08",
+        "M12"
       ],
       "technicalComplete": false,
       "github": {
@@ -223,24 +227,55 @@
     },
     {
       "code": "M11",
-      "title": "Sourced agent workflow and dynamic materials correction",
-      "start": "2026-10-23",
-      "target": "2026-10-26",
-      "lowHours": 12,
-      "ownerHours": 20,
-      "highHours": 32,
+      "title": "Connect and verify the deferred model decision port",
+      "start": null,
+      "target": null,
+      "lowHours": 4,
+      "ownerHours": 8,
+      "highHours": 14,
       "dependsOn": [
         "M10"
       ],
       "technicalComplete": false,
       "implementationPresent": true,
-      "liveGate": "Claude Max weekly usage_limit_reached; successful draft/redraft and banker rehearsal pending",
+      "liveGate": "Deferred by owner instruction; no key or live rehearsal required in current phase",
       "github": {
         "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/51",
         "id": 5994019134,
         "node_id": "I_kwDOVSrbdM8AAAABZUV5Pg",
         "number": 51,
         "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC7jmk"
+      },
+      "phase": "Next phase",
+      "deferredByOwner": true,
+      "horizon": "2\u20135 working days after access and architecture review",
+      "historicalForecast": {
+        "lowHours": 12,
+        "ownerHours": 20,
+        "highHours": 32,
+        "note": "Superseded scope; not cumulative actual runtime"
+      }
+    },
+    {
+      "code": "M12",
+      "title": "MCP evidence, context and dynamic-document architecture",
+      "start": "2026-10-23",
+      "target": "2026-10-26",
+      "lowHours": 8,
+      "ownerHours": 14,
+      "highHours": 24,
+      "dependsOn": [
+        "M10"
+      ],
+      "technicalComplete": true,
+      "currentAcceptanceBaseline": true,
+      "estimationNote": "Overlaps historical M10/M11 foundations; do not sum correction estimates as actual delivered effort",
+      "github": {
+        "number": 52,
+        "id": 5995475071,
+        "node_id": "I_kwDOVSrbdM8AAAABZVuwfw",
+        "html_url": "https://github.com/NeoDemos/investment-banking-reimagined/issues/52",
+        "projectItemId": "PVTI_lAHOD8BOsc4BoIS3zhC9CnM"
       }
     }
   ],
@@ -249,6 +284,7 @@
     "id": "PVT_kwHOD8BOsc4BoIS3",
     "phaseOption": "725ddb26",
     "authorizationOption": "321e8f88",
-    "nativeDependencies": 20
-  }
+    "nativeDependencies": 21
+  },
+  "currentScope": "Architecture/local public archive; live model/data/voice connections deferred by owner"
 }
